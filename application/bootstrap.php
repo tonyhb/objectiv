@@ -105,6 +105,38 @@ Kohana::modules(array(
  * Set the routes. Each route must have a minimum of a name, a URI and a set of
  * defaults for the URI.
  */
+
+/**
+ * This is the route for API calls.
+ * 
+ * We use lambda logic here because we can detect the format types using accept
+ * headers before any controller logic, removing possible false defaults.
+ * We can also map the http request method to the action without any logic
+ * in the controller.
+ **/
+Route::set('api', function($uri)
+	{
+		// Compile the regex
+		$regex = Route::compile('api(.<format>)/<version>/<object>(/<id>)', array());
+
+		if ( ! preg_match($regex, $uri, $matches))
+			return FALSE;
+
+		// If the format wasn't provided use format from Accept headers or JSON as default
+		if (empty($matches['format']))
+		{
+			$matches['format'] = (strpos($_SERVER['HTTP_ACCEPT'], 'application/xml')) ? 'xml' : 'json';
+		}
+
+		return array(
+			'directory' => 'api/'.$matches['version'],
+			'controller' => $matches['object'],
+			'action' => $_SERVER['REQUEST_METHOD'],
+			'id' => $matches['id'],
+		);
+	},
+	'api(.<format>)/<version>/<object>(/<id>)');
+
 Route::set('front', '(<action>(/<id>))')
 	->defaults(array(
 		'controller' => 'front',

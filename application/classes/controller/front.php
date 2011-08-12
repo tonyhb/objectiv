@@ -50,6 +50,12 @@ class Controller_Front extends Controller_Template
 		if ($data = $this->request->post())
 		{
 			// Try creating account/useer/site. 
+			$account_request = Request::factory('api.json/1/accounts')
+				->method('PUT')
+				->post($data)
+				->execute();
+
+			// @TODO: Evaluate HTTP response and show information accordingly
 		}
 
 		$this->template->body = View::factory('front/signup')

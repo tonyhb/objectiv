@@ -128,6 +128,7 @@ Route::set('api', function($uri)
 			$matches['format'] = (strpos($_SERVER['HTTP_ACCEPT'], 'application/xml')) ? 'xml' : 'json';
 		}
 
+		// Add other defaults to the route
 		$matches += array(
 			'version' => '1',
 			'object' => 'sites',
@@ -140,7 +141,6 @@ Route::set('api', function($uri)
 			'action' => $_SERVER['REQUEST_METHOD'],
 			'id' => $matches['id'],
 		);
-
 	},
 	'api(.<format>)/<version>(/<object>(/<id>))');
 

@@ -1,3 +1,6 @@
 [submodule "system"]
 	path = system
 	url = git://github.com/kohana/core.git
+[submodule "modules/hint"]
+	path = modules/hint
+	url = git://github.com/goyote/hint.git

@@ -25,6 +25,8 @@ class Controller_Front extends Controller_Template
 			// Initialise empty variables for the render process
 			$this->template->title =
 			$this->template->body = '';
+
+			$this->template->styles = array('assets/css/front.css' => 'all');
 		}
 	}
 
@@ -35,17 +37,23 @@ class Controller_Front extends Controller_Template
 	 **/
 	public function action_index()
 	{
-
 	}
 
 	/**
 	 * Load the sign up page
 	 *
+	 * @param  $id   string  subdomain passed when accessing a site that doesn't exist.
 	 * @return void
 	 */
 	public function action_sign_up()
 	{
-		$this->template->body = View::factory('front/signup');
+		if ($data = $this->request->post())
+		{
+			// Try creating account/useer/site. 
+		}
+
+		$this->template->body = View::factory('front/signup')
+			->set('data', $this->request->post());
 	}
 
 } // END class Controller_Front extends Controller_Template

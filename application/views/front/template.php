@@ -7,6 +7,8 @@
 <head>
 	<title><?php echo $title ?></title>
 	<meta charset="utf-8">
+
+	<?php foreach ($styles as $file => $type) echo HTML::style($file, array('media' => $type)), PHP_EOL, "\t" ?>
 </head>
 <body>
 	<?php echo $body ?>

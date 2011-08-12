@@ -117,7 +117,7 @@ Kohana::modules(array(
 Route::set('api', function($uri)
 	{
 		// Compile the regex
-		$regex = Route::compile('api(.<format>)/<version>/<object>(/<id>)', array());
+		$regex = Route::compile('api(.<format>)/<version>(/<object>(/<id>))');
 
 		if ( ! preg_match($regex, $uri, $matches))
 			return FALSE;
@@ -128,14 +128,21 @@ Route::set('api', function($uri)
 			$matches['format'] = (strpos($_SERVER['HTTP_ACCEPT'], 'application/xml')) ? 'xml' : 'json';
 		}
 
+		$matches += array(
+			'version' => '1',
+			'object' => 'sites',
+			'id' => ''
+		);
+
 		return array(
 			'directory' => 'api/'.$matches['version'],
 			'controller' => $matches['object'],
 			'action' => $_SERVER['REQUEST_METHOD'],
 			'id' => $matches['id'],
 		);
+
 	},
-	'api(.<format>)/<version>/<object>(/<id>)');
+	'api(.<format>)/<version>(/<object>(/<id>))');
 
 Route::set('front', '(<action>(/<id>))')
 	->defaults(array(

@@ -101,11 +101,28 @@ if ( ! defined('KOHANA_START_MEMORY'))
 // Bootstrap the application
 require APPPATH.'bootstrap'.EXT;
 
-/**
- * Execute the main request. A source of the URI can be passed, eg: $_SERVER['PATH_INFO'].
- * If no source is specified, the URI will be automatically detected.
- */
-echo Request::factory()
-	->execute()
+// Store the request so we can try/catch errors and show relevant pages
+$request = Request::factory();
+
+try
+{
+	$request->execute()
 	->send_headers()
 	->body();
+}
+catch(App_API_Exception $e)
+{
+	// Call the API Error helper to encode the message and set correct headers
+	$response = App_API::error($e->getMessage(), $e->getCode());
+
+	// Send the headers and the error content
+	echo $response->send_headers()->body();
+}
+catch(App_Exception $e)
+{
+	// Something critically wrong with the application. Get help, fast.
+}
+catch(Exception $e)
+{
+	// Huh?
+}

@@ -99,6 +99,7 @@ Kohana::$config->attach(new Config_File);
  */
 Kohana::modules(array(
 	'hint'       => MODPATH.'hint',
+	'mundo'      => MODPATH.'mundo',
 	));
 
 /**
@@ -128,6 +129,12 @@ Route::set('api', function($uri)
 			$matches['format'] = (strpos($_SERVER['HTTP_ACCEPT'], 'application/xml')) ? 'xml' : 'json';
 		}
 
+		if ($matches['object'] == 'base')
+		{
+			// Ensure no-one can access the base class
+			unset($matches['object']);
+		}
+
 		// Add other defaults to the route
 		$matches += array(
 			'version' => '1',
@@ -140,6 +147,8 @@ Route::set('api', function($uri)
 			'controller' => $matches['object'],
 			'action' => $_SERVER['REQUEST_METHOD'],
 			'id' => $matches['id'],
+			'format' => $matches['format'],
+			'version' => $matches['version'],
 		);
 	},
 	'api(.<format>)/<version>(/<object>(/<id>))');

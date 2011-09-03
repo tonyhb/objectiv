@@ -106,23 +106,25 @@ $request = Request::factory();
 
 try
 {
-	$request->execute()
+	echo $request->execute()
 	->send_headers()
 	->body();
 }
-catch(App_API_Exception $e)
-{
-	// Call the API Error helper to encode the message and set correct headers
-	$response = App_API::error($e->getMessage(), $e->getCode());
-
-	// Send the headers and the error content
-	echo $response->send_headers()->body();
-}
-catch(App_Exception $e)
-{
-	// Something critically wrong with the application. Get help, fast.
-}
 catch(Exception $e)
 {
-	// Huh?
+	if (Route::name($request->route()) == 'api')
+	{
+		echo $request->post('_app_error', $e->getMessage())
+			->post('_app_error_status', $e->getCode())
+			->controller('base')
+			->action('error')
+			->execute()
+			->send_headers()
+			->body();
+
+		return;
+	}
+
+	// For now just throw the error...
+	throw $e;
 }

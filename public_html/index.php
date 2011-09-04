@@ -112,16 +112,29 @@ try
 }
 catch(Exception $e)
 {
-	if (Route::name($request->route()) == 'api')
+	if ($request->route() AND Route::name($request->route()) == 'api')
 	{
-		echo $request->post('_app_error', $e->getMessage())
-			->post('_app_error_status', $e->getCode())
-			->controller('base')
-			->action('error')
-			->execute()
-			->send_headers()
-			->body();
+		$message = $e->getMessage();
+		$status = $e->getCode();
 
+		if ( ! in_array($request->param('version'), App_API::$api_versions))
+		{
+			// Requesting an incorrect verison of the API
+			$message = "Unknown API version '".$request->param('version')."'. Supported versions are: ";
+
+			// Show supported API versions
+			$message .= implode(', ', App_API::$api_versions);
+
+			// Override Kohana's "Controller Not Found" and 500 internal with our own 400
+			$status = 400;
+
+			// Set a working API directory/version
+			$request->directory('api/1');
+		}
+
+		$response = App_API::error($message, $status);
+
+		echo $response->send_headers()->body();
 		return;
 	}
 

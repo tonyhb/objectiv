@@ -17,26 +17,24 @@ class Controller_API_1_Base extends Controller
 	public $output;
 
 	/**
-	 * Format the response should be encoded in
-	 *
-	 * @var string
-	 */
-	public $format;
-
-	/**
 	 * Ran before every API call
 	 *
 	 */
 	public function before()
 	{
-		// Check if we're calling this controller's error action
-		if ($this->request->controller() != 'base')
-		{
-			// Internal requests aren't mapped by the routing logic; set
-			$this->request->action($this->request->method());
-		}
+		// Internal requests aren't mapped by the routing logic; set
+		$this->request->action($this->request->method());
 
-		$this->format = $this->request->param('format');
+		// Set our request format
+		App_API::$format = $this->request->param('format');
+
+		// Ensure the format is valid
+		if (App_API::$format != 'json' AND App_API::$format != 'xml')
+		{
+			// By default, echo a JSON response (less taxing)
+			App_API::$format = 'json';
+			throw new App_API_Exception("Unknown encoding type '".$this->request->param('format')."'. Supported response encoding types are JSON and XML.", NULL, 400);
+		}
 	}
 
 	/**
@@ -50,57 +48,8 @@ class Controller_API_1_Base extends Controller
 	 */
 	public function after()
 	{
-		if ($this->format == 'json')
-		{
-			// Set our headers
-			$this->response->headers('Content-Type', 'application/json');
-
-			$this->response->body(json_encode($this->output));
-			return;
-		}
-
-		$this->response->headers('Content-Type', 'application/xml');
-
-		// Encode XML
-		$output_xml = new SimpleXMLElement('<?xml version="1.0"?><response></response>');
-
-		/**
-		 * @todo Encode XML
-		 */
-
-		$this->response->body($output_xml->asXML());
-	}
-
-	/**
-	 * This method is called when the API throws an error.  This encodes 
-	 * the error message according to the requested format and displays it 
-	 * to the user.
-	 *
-	 * We could not throw exceptions because internal API requests from
-	 * the admin panel stop execution when they are raised.
-	 *
-	 * Note that this handles both server (5xx) and client (4xx) errors
-	 *
-	 * @param  string   Message from the thrown exception
-	 * @param  int      HTTP Status code to send
-	 * @return Response
-	 */
-	public function error($message, $status)
-	{
-		$this->output = array('status' => 'error', 'message' => $message);
-
-		$this->response->status($status);
-	}
-
-	/**
-	 * This action is only called when an error is caught in index.php.
-	 * The code in bootstrap.php ensures that this method is not callable 
-	 * to the outside world.
-	 *
-	 */
-	public function action_error()
-	{
-		$this->error($this->request->post('_app_error'), $this->request->post('_app_error_status'));
+		// Encode our response body according to the requested format
+		App_API::encode_response($this->output, $this->response);
 	}
 
 } // END class API_1_Base

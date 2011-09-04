@@ -5,7 +5,7 @@
  *
  * This file manages initialisation and site loading.
  *
- * @packaged App
+ * @package App
  * @author Tony Holdstock-Brown
  **/
 class App_Core

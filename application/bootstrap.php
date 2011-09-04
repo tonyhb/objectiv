@@ -72,8 +72,7 @@ if (isset($_SERVER['KOHANA_ENV']))
  * The following options are available:
  *
  * - string   base_url    path, and optionally domain, of your application   NULL
- * - string   index_file  name of your index file, usually "index.php"       index.php
- * - string   charset     internal character set used for input and output   utf-8
+ * - string   index_file  name of your index file, usually "index.php"       index.php * - string   charset     internal character set used for input and output   utf-8
  * - string   cache_dir   set the internal cache directory                   APPPATH/cache
  * - boolean  errors      enable or disable error handling                   TRUE
  * - boolean  profile     enable or disable internal profiling               TRUE
@@ -129,18 +128,25 @@ Route::set('api', function($uri)
 			$matches['format'] = (strpos($_SERVER['HTTP_ACCEPT'], 'application/xml')) ? 'xml' : 'json';
 		}
 
+		// Add other defaults to the route
+		$matches += array(
+			'version' => '1',
+			'object' => 'accounts',
+			'id' => ''
+		);
+
 		if ($matches['object'] == 'base')
 		{
 			// Ensure no-one can access the base class
 			unset($matches['object']);
 		}
 
-		// Add other defaults to the route
-		$matches += array(
-			'version' => '1',
-			'object' => 'sites',
-			'id' => ''
-		);
+		// Finally, ensure the api version exists
+		if ( ! in_array($matches['version'], App_API::$api_versions))
+		{
+			// @todo Should
+			$matches['version'] = '1';
+		}
 
 		return array(
 			'directory' => 'api/'.$matches['version'],

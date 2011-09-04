@@ -11,6 +11,7 @@ class Controller_API_1_Accounts extends Controller_API_1_Base
 
 	public function action_get()
 	{
+		$this->output = "GET";
 	}
 
 	/**
@@ -19,8 +20,10 @@ class Controller_API_1_Accounts extends Controller_API_1_Base
 	 * @return mixed  json or xml with creation status
 	 * @author Tony Holdstock-Brown
 	 **/
-	public function action_put()
+	public function action_post()
 	{
+		throw new App_API_exception("Please pass all necessary details", NULL, 400);
+
 		// This is an internal-only API; deny access if request is external
 		if ($this->request->is_external())
 		{
@@ -33,7 +36,18 @@ class Controller_API_1_Accounts extends Controller_API_1_Base
 			return;
 		}
 
-		// @TODO: Take postdata, try creating a model and return a 201/400 accordingly
+		// Create an account model
+		$account = Mundo::factory('account');
+
+		// Attempt to register
+		if ($account->register($this->request->post()))
+		{
+			$this->response->status(201);
+		}
+		else
+		{
+			$this->response->status(400);
+		}
 	}
 
 } // END class API_1_Accounts extends API_1_Base

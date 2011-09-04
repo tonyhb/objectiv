@@ -31,6 +31,74 @@ class App_API
 	public static $format = 'json';
 
 	/**
+	 * This is set before throwing an API error to set any metadata
+	 * necessary. 
+	 *
+	 * This allows us to provide error information over and above
+	 * a single error message from getMessage()
+	 */
+	public static $error_metadata = array();
+
+	/**
+	 * This is set before throwing an API error to set content within the
+	 * response.
+	 *
+	 * This allows us to provide error information over and above
+	 * a single error message from getMessage()
+	 */
+	public static $error_content = array();
+	/**
+	 * This method is called when the API throws an API exception.
+	 *
+	 * This encodes the error message according to the requested format and
+	 * returns a response class with the appropriate headers and response.
+	 *
+	 * Note that this handles both server (5xx) and client (4xx) errors
+	 *
+	 * @param  string   Message from the thrown exception
+	 * @param  int      HTTP Status code to send
+	 * @param  string   Optional URI to show in the error message
+	 * @return Response
+	 */
+	public static function error($message, $status, $uri = NULL)
+	{
+		// Create a new response
+		$response = new Response;
+
+		if (empty(self::$error_metadata))
+		{
+			// Give us some basic information for prognosis
+			self::$error_metadata = array(
+				'uri' => Request::$current->uri()
+			);
+		}
+
+		if (empty(self::$error_content))
+		{
+			// Add the status and description by default
+			array_push(self::$error_content, array(
+				'status' => $status,
+				'description' => $message,
+			));
+		}
+
+		// Format the data
+		$message = array(
+			'contentType' => 'error',
+			'metadata' => self::$error_metadata,
+			'content' => self::$error_content,
+		);
+
+		// Set the status
+		$response->status($status);
+
+		// Encode the response
+		self::encode_response($message, $response);
+
+		return $response;
+	}
+
+	/**
 	 * Encodes the API output and sets the content-type headers 
 	 * according to the requested format.
 	 *
@@ -78,34 +146,6 @@ class App_API
 		$response->body($output_xml->asXML());
 	}
 
-	/**
-	 * This method is called when the API throws an API exception.
-	 *
-	 * This encodes the error message according to the requested format and
-	 * returns a response class with the appropriate headers and response.
-	 *
-	 * Note that this handles both server (5xx) and client (4xx) errors
-	 *
-	 * @param  string   Message from the thrown exception
-	 * @param  int      HTTP Status code to send
-	 * @return Response
-	 */
-	public static function error($message, $status)
-	{
-		// Create a new response
-		$response = new Response;
-
-		// Format the data
-		$message = array('status' => 'error', 'message' => $message);
-
-		// Set the status
-		$response->status($status);
-
-		// Encode the response
-		self::encode_response($message, $response);
-
-		return $response;
-	}
 
 	/**
 	 * This method allows communication with the API from internal requests
@@ -114,22 +154,42 @@ class App_API
 	 * in internal requests by default; this is a helper function to wrap
 	 * requests in a try-catch block and always return a response class.
 	 *
+	 * The $options array allows us to set different header values in the
+	 * request. For example, we could use the following:
+	 *
+	 * array(
+	 *   'method' => 'PUT',
+	 *   'post' => array('key' => 'value'),
+	 *   'headers' => array('X-Header-Key' => 'value', 'Content-Type' => 'application/json')
+	 * );
+	 *
+	 * Note that all keys in the $options array must be a method of the
+	 * Request class.
+	 *
 	 * @param string  URI of the api method to call
-	 * @param string  REST HTTP mode to use (GET, PUT, POST, DELETE)
+	 * @param array   An array of options for the request.
 	 * @param array   Post-data to send along with PUT and POST
 	 * @param response
 	 */
-	public static function call($uri, $method = 'GET', $postdata = NULL)
+	public static function call($uri, $options = NULL)
 	{
 		try
 		{
 			// Create a new response using the supplied HTTP method
-			$response = Request::factory($uri)->method($method);
+			$response = Request::factory($uri);
 
-			if ($postdata)
+			if ($options)
 			{
-				// Only set POSTDATA if it is supplied
-				$response->post($postdata);
+				// Loop through each request option
+				foreach ($options as $key => $value)
+				{
+					// Test that the key is a method in the Response class
+					if (is_callable(array($response, $key)))
+					{
+						// And call it with the value passed.
+						call_user_func(array($response, $key), $value);
+					}
+				}
 			}
 
 			// Return the API response
@@ -140,5 +200,58 @@ class App_API
 			// There was an error with the API call. Return the API error.
 			return self::error($e->getMessage(), $e->getCode());
 		}
+		catch(HTTP_Exception_404 $e)
+		{
+			// Explode our URI into sections for error management.
+			$segmented_uri = explode('/', $uri);
+
+			// Take the period from /api.json/1/
+			$format = explode('.', $segmented_uri[0]);
+
+			// Generate the 404 error.
+			return self::http_404($segmented_uri[1], $format[1], $uri);
+		}
 	}
+
+	/**
+	 * This function checks Kohana 404 errors agains incorrect versions
+	 * resources.
+	 *
+	 * It is called in index.php and App_API::call when an
+	 * HTTP_Exception_404 is called.
+	 */
+	public static function http_404($version, $format, $uri)
+	{
+		$status = 404;
+
+		// Did this 404 occured because of an incorrect version number in the URI?
+		if ( ! in_array($version, self::$api_versions))
+		{
+			// Requesting an incorrect verison of the API
+			$message = "Unknown API version '".$version."'. Supported versions are: ";
+
+			// Show supported API versions
+			$message .= implode(', ', App_API::$api_versions);
+
+			// Override Kohana's "Controller Not Found" and 500 internal with our own 400
+			$status = 400;
+		}
+		else
+		{
+			// If not, there was an incorrect resource in the URI
+			$object = str_replace('api.'.$format.'/'.$version.'/', '', $uri);
+
+			// Write our error message
+			$message = "The requested resource '".$object."' was not found.";
+		}
+
+		// Overwritten because the error() method wouldn't detect API URI from internal call
+		self::$error_metadata = array(
+			'uri' => $uri,
+		);
+
+		// There was an incorrect version number or resource supplied
+		return self::error($message, $status);
+	}
+
 }

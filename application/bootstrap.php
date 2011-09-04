@@ -141,13 +141,6 @@ Route::set('api', function($uri)
 			unset($matches['object']);
 		}
 
-		// Finally, ensure the api version exists
-		if ( ! in_array($matches['version'], App_API::$api_versions))
-		{
-			// @todo Should
-			$matches['version'] = '1';
-		}
-
 		return array(
 			'directory' => 'api/'.$matches['version'],
 			'controller' => $matches['object'],

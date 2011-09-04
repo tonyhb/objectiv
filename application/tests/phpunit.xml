@@ -1,0 +1,33 @@
+<phpunit 
+	colors="true"
+	bootstrap="../../public_html/index.php"
+	verbose="false"
+	stopOnError="false"
+	stopOnFailure="false"
+	stopOnIncomplete="false"
+	stopOnSkipped="false"
+	> 
+
+	<php>
+		<server name="HTTP_HOST" value="epithet.local" />
+		<server name="KOHANA_ENV" value="TESTING" />
+		<server name="REQUEST_METHOD" value="GET" />
+	</php>
+
+	<testsuites> 
+		<testsuite name="API Tests"> 
+			<file>./API/error_handling.php</file>
+		</testsuite> 
+	</testsuites> 
+
+	<filter>
+		<whitelist>
+			<directory suffix=".php">../classes/</directory>
+			<directory suffix=".php">../views/</directory>
+			<exclude>
+			</exclude>
+		</whitelist>
+	</filter>
+
+</phpunit>
+

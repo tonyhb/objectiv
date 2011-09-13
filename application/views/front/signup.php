@@ -2,22 +2,22 @@
 </header>
 <section id="main">
 	<div class="container">
-		<?php if ( ! empty($e) ): ?>
+		<?php if ( ! empty($errors) ): ?>
 			<section class="errors">
 				<h1>The following errors occured:</h1>
 				<ul>
-				<?php foreach ($e as $field => $error): ?>
+				<?php foreach ($errors as $field => $error): ?>
 					<li><?php echo $error ?></li>
 				<?php endforeach ?>
 				</ul>
 			</section>
 		<?php endif ?>
 		
-				<form action="" method="post">
-							<div class="register_account">
-											<label for="contact_name">Your name</label>
-															<div class="input"><input type="text" name="contact_name" value="<?php if(isset($data['contact_name'])) echo $data['contact_name'] ?>" id="contact_name" /></div>
-																	
+		<form action="" method="post">
+			<div class="register_account">
+				<label for="contact_name">Your name</label>
+				<div class="input"><input type="text" name="contact_name" value="<?php if(isset($data['contact_name'])) echo $data['contact_name'] ?>" id="contact_name" /></div>
+
 				<label for="contact_email">Your email address</label>
 				<div class="input"><input type="email" name="contact_email" value="<?php if(isset($data['contact_email'])) echo $data['contact_email'] ?>" id="contact_email" /></div>
 		

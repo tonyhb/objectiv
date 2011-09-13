@@ -47,19 +47,37 @@ class Controller_Front extends Controller_Template
 	 */
 	public function action_sign_up()
 	{
+		$this->template->body = View::factory('front/signup');
+
 		if ($data = $this->request->post())
 		{
-			// Try creating account/useer/site. 
-			$account_request = Request::factory('api.json/1/accounts')
-				->method('PUT')
-				->post($data)
-				->execute();
+			try
+			{
+				// This isn't an API call, this is a register function.
+				$registered = App::register($this->request->post());
+			}
+			catch(Exception $e)
+			{
+				// Set tbe error message to display in the next if block
+				$registered = array($e->getMessage());
+			}
 
-			// @TODO: Evaluate HTTP response and show information accordingly
+			if ($registered === TRUE)
+			{
+				$this->request->redirect('signed_up');
+			}
+			else
+			{
+				$this->template->body->set('errors', $registered);
+			}
 		}
 
-		$this->template->body = View::factory('front/signup')
-			->set('data', $this->request->post());
+		$this->template->body->set('data', $this->request->post());
+	}
+
+	public function action_signed_up()
+	{
+		$this->template->body = "Thank you for signing up.";
 	}
 
 } // END class Controller_Front extends Controller_Template

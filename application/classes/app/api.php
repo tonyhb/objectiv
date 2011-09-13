@@ -47,105 +47,6 @@ class App_API
 	 * a single error message from getMessage()
 	 */
 	public static $error_content = array();
-	/**
-	 * This method is called when the API throws an API exception.
-	 *
-	 * This encodes the error message according to the requested format and
-	 * returns a response class with the appropriate headers and response.
-	 *
-	 * Note that this handles both server (5xx) and client (4xx) errors
-	 *
-	 * @param  string   Message from the thrown exception
-	 * @param  int      HTTP Status code to send
-	 * @param  string   Optional URI to show in the error message
-	 * @return Response
-	 */
-	public static function error($message, $status, $uri = NULL)
-	{
-		// Create a new response
-		$response = new Response;
-
-		if (empty(self::$error_metadata))
-		{
-			// Give us some basic information for prognosis
-			self::$error_metadata = array(
-				'uri' => Request::$current->uri()
-			);
-		}
-
-		if (empty(self::$error_content))
-		{
-			// Add the status and description by default
-			array_push(self::$error_content, array(
-				'status' => $status,
-				'description' => $message,
-			));
-		}
-
-		// Format the data
-		$message = array(
-			'contentType' => 'error',
-			'metadata' => self::$error_metadata,
-			'content' => self::$error_content,
-		);
-
-		// Set the status
-		$response->status($status);
-
-		// Encode the response
-		self::encode_response($message, $response);
-
-		return $response;
-	}
-
-	/**
-	 * Encodes the API output and sets the content-type headers 
-	 * according to the requested format.
-	 *
-	 * The $response argument allows us to call this method within the API
-	 * for standard output; we need to pass $this->response in the after()
-	 * method.
-	 *
-	 * It is included here because it is also used when throwing an error,
-	 * and this solves code duplication issues.
-	 *
-	 * @param array   Data to encode and send to client
-	 * @param string  JSON or XML depending on desired format
-	 * @param string  Desired format or NULL for the client requested format
-	 * @return void
-	 */
-	public static function encode_response($output, Response &$response, $format = NULL)
-	{
-		if ( ! $format)
-		{
-			// Use the client-requested format instead of an override
-			$format = self::$format;
-		}
-
-		if ($format == 'json')
-		{
-			// Set our headers
-			$response->headers('Content-Type', 'application/json');
-
-			// Set the response to our encoded content
-			$response->body(json_encode($output));
-
-			// Don't return the response because it was passed by reference - theres no point.
-			return;
-		}
-
-		$response->headers('Content-Type', 'application/xml');
-
-		// Encode XML
-		$output_xml = new SimpleXMLElement('<?xml version="1.0"?><response></response>');
-
-		/**
-		 * @todo Encode XML
-		 */
-
-		$response->body($output_xml->asXML());
-	}
-
 
 	/**
 	 * This method allows communication with the API from internal requests
@@ -211,6 +112,126 @@ class App_API
 			// Generate the 404 error.
 			return self::http_404($segmented_uri[1], $format[1], $uri);
 		}
+		catch(Exception $e)
+		{
+			// Server error?
+			if (Kohana::$environment === Kohana::DEVELOPMENT.'1')
+			{
+				throw $e;
+			}
+
+			return self::error($e->getMessage(), 500);
+		}
+	}
+
+	/**
+	 * This method is called when the API throws an API exception.
+	 *
+	 * This encodes the error message according to the requested format and
+	 * returns a response class with the appropriate headers and response.
+	 *
+	 * Note that this handles both server (5xx) and client (4xx) errors
+	 *
+	 * @param  string   Message from the thrown exception
+	 * @param  int      HTTP Status code to send
+	 * @param  string   Optional URI to show in the error message
+	 * @return Response
+	 */
+	public static function error($message, $status, $uri = NULL)
+	{
+		// Create a new response
+		$response = new Response;
+
+		if (empty(self::$error_metadata))
+		{
+			// Give us some basic information for prognosis
+			self::$error_metadata = array(
+				'uri' => Request::$current->uri()
+			);
+		}
+
+		if (empty(self::$error_content))
+		{
+			// Add the status and description by default
+			array_push(self::$error_content, array(
+				'status' => $status,
+				'description' => $message,
+			));
+		}
+		else
+		{
+			// Overwrite the status and description anyway.
+			self::$error_content = Arr::merge(array(
+				'status' => $status,
+				'description' => $message,
+			), self::$error_content);
+
+			// Wrap it in a container array for continuity with multiple content items
+			self::$error_content = array(self::$error_content);
+		}
+
+		// Format the data
+		$message = array(
+			'contentType' => 'error',
+			'metadata' => self::$error_metadata,
+			'content' => self::$error_content,
+		);
+
+		// Set the status
+		$response->status($status);
+
+		// Encode the response
+		self::encode_response($message, $response);
+
+		return $response;
+	}
+
+	/**
+	 * Encodes the API output and sets the content-type headers 
+	 * according to the requested format.
+	 *
+	 * The $response argument allows us to call this method within the API
+	 * for standard output; we need to pass $this->response in the after()
+	 * method.
+	 *
+	 * It is included here because it is also used when throwing an error,
+	 * and this solves code duplication issues.
+	 *
+	 * @param array   Data to encode and send to client
+	 * @param string  JSON or XML depending on desired format
+	 * @param string  Desired format or NULL for the client requested format
+	 * @return void
+	 */
+	public static function encode_response($output, Response &$response, $format = NULL)
+	{
+		if ( ! $format)
+		{
+			// Use the client-requested format instead of an override
+			$format = self::$format;
+		}
+
+		if ($format == 'json')
+		{
+			// Set our headers
+			$response->headers('Content-Type', 'application/json');
+
+			// Set the response to our encoded content
+			$response->body(json_encode($output));
+
+			// Don't return the response because it was passed by reference - theres no point.
+			return;
+		}
+
+		$response->headers('Content-Type', 'application/xml');
+
+		// Encode XML
+		$output_xml = new SimpleXMLElement('<?xml version="1.0"?><response></response>');
+
+		/**
+		 * @todo Encode XML
+		 */
+
+		$response->body($output_xml->asXML());
 	}
 
 	/**

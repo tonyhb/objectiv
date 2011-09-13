@@ -81,7 +81,20 @@ if (isset($_SERVER['KOHANA_ENV']))
 Kohana::init(array(
 	'base_url'   => '/',
 	'index_file' => '',
+	'profile'    => FALSE, //Kohana::$environment !== Kohana::PRODUCTION,
+	'caching'    => Kohana::$environment === Kohana::PRODUCTION,
 ));
+
+if (Kohana::$environment === Kohana::DEVELOPMENT)
+{
+	if (extension_loaded('xhprof'))
+	{
+		include_once '/usr/local/lib/php/xhprof_lib/utils/xhprof_lib.php';
+		include_once '/usr/local/lib/php/xhprof_lib/utils/xhprof_runs.php';
+
+		xhprof_enable(XHPROF_FLAGS_CPU + XHPROF_FLAGS_MEMORY + XHPROF_FLAGS_NO_BUILTINS);
+	}
+}
 
 /**
  * Attach the file write to logging. Multiple writers are supported.

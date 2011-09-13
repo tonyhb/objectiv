@@ -104,6 +104,8 @@ require APPPATH.'bootstrap'.EXT;
 // Store the request so we can try/catch errors and show relevant pages
 $request = Request::factory();
 
+
+
 try
 {
 	echo $request->execute()
@@ -130,4 +132,21 @@ catch(Exception $e)
 
 	// For now just throw the error...
 	throw $e;
+}
+
+if (Kohana::$environment === Kohana::DEVELOPMENT)
+{
+	if (extension_loaded('xhprof')) {
+
+		$namespace = 'CMS';  
+
+		$xhprof_data = xhprof_disable();
+		$xhprof_runs = new XHProfRuns_Default();
+
+		$run_id = $xhprof_runs->save_run($xhprof_data, $namespace);
+
+
+		$profiler_url = sprintf('http://xhprof/?run=%s&source=%s', $run_id, $namespace);
+		echo '<a href="'. $profiler_url .'" target="_blank" style="position: absolute; right:5px;bottom:5px; font-size:10px">Profiler output</a>';
+	}
 }

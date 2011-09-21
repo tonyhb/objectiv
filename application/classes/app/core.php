@@ -170,7 +170,7 @@ class App_Core
 		catch(Exception $e)
 		{
 			/**
-			 * @todo Cleanup: Delete any models that were saved
+			 * @todo Cleanup: delete created models OR 2PC for creating accounts?
 			 */
 
 			// Throw the error; the error message will be caught in the controller

@@ -122,6 +122,10 @@ catch(Exception $e)
 		}
 		else
 		{
+			/**
+			 * @todo Postmark/SendGrid integration to send an email with 50x server errors
+			 */
+
 			$response = App_API::error($e->getMessage(), $e->getCode());
 		}
 
@@ -129,6 +133,10 @@ catch(Exception $e)
 
 		return;
 	}
+
+	/**
+	 * @todo Postmark/SendGrid integration to send an email with 50x server errors
+	 */
 
 	// For now just throw the error...
 	throw $e;

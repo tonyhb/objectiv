@@ -165,6 +165,26 @@ Route::set('api', function($uri)
 	},
 	'api(.<format>)/<version>(/<object>(/<id>))');
 
+Route::set('admin', function($uri)
+	{
+		// Check to see if we're accessing the admin section from a subdomain
+		$url_segments = explode('.', $_SERVER['HTTP_HOST']);
+
+		// Get our app URL from the config
+		$app_url = Kohana::$config->load('app')->url;
+
+		if ($url_segments[0] != 'admin' AND ($_SERVER['HTTP_HOST'] == $app_url AND substr($uri, 0, 5) != 'admin'))
+		{
+			return;
+		}
+
+		return array(
+			'controller' => 'admin',
+			'action' => 'index',
+		);
+
+	});
+
 Route::set('front', '(<action>(/<id>))')
 	->defaults(array(
 		'controller' => 'front',

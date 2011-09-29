@@ -111,6 +111,7 @@ Kohana::$config->attach(new Config_File);
  */
 Kohana::modules(array(
 	'hint'       => MODPATH.'hint',
+	'uuid'       => MODPATH.'uuid',
 	'mundo'      => MODPATH.'mundo',
 	));
 

@@ -125,7 +125,6 @@ catch(Exception $e)
 			/**
 			 * @todo Postmark/SendGrid integration to send an email with 50x server errors
 			 */
-
 			$response = App_API::error($e->getMessage(), $e->getCode());
 		}
 

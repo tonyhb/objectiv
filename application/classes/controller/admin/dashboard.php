@@ -8,5 +8,6 @@ class Controller_Admin_Dashboard extends Controller
 
 	public function index()
 	{
+		$this->response->body("Site dashboard");
 	}
 }

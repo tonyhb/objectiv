@@ -93,21 +93,28 @@ class Controller_Admin extends Controller_Template
 			return;
 		}
 
-		// Try routing the request
+		// Add the prefix to the requested controller
+		$controller = 'Controller_Admin_'.$this->_controller;
 
-		try
+		if ( ! Kohana::find_file('classes', str_replace('_', '/', $controller)))
 		{
-			$controller = 'Controller_Admin_'.$this->_controller;
-			$controller = new $controller($this->request, $this->response);
-
-			$controller->{$this->_action}($this->_params);
-
-			$this->auto_render = FALSE;
+			// We're asking for an object that doesn't exist
+			throw new HTTP_Exception_404("The requested object :controller was not found", array(":controller" => $this->_controller));
 		}
-		catch(Exception $e)
+
+		// Create a new controller which accesses our current request and response object
+		$controller = new $controller($this->request, $this->response);
+
+		if ( ! is_callable(array($controller, $this->_action)))
 		{
-			throw $e;
+			// We also need to ensure the action exists
+			throw new HTTP_Exception_404("The requested action :action was not found in :controller", array(":action" => $this->_action, ":controller" => $this->_controller));
 		}
+
+		$controller->{$this->_action}($this->_params);
+
+		// Ensure our templating doesn't run
+		$this->auto_render = FALSE;
 	}
 
 	/**

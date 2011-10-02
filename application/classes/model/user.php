@@ -82,6 +82,10 @@ class Model_User extends Mundo_Object
 			// Strip to 21 characters
 			$salt = substr($salt, 0, 21);
 		}
+		else
+		{
+			$salt = substr($salt, 0, 21);
+		}
 
 		// Add the blowcrypt and cost watermarks
 		$salt = "$2a$15$".$salt."$";
@@ -92,7 +96,7 @@ class Model_User extends Mundo_Object
 		// Remove the blowcrypt and cost watermarks
 		$hash = substr($hash, 7);
 
-		// Remove the full-stop inbetween the salt and the hash
+		// Remove the full-stop inbetween the salt and the hash, which is the 21st character
 		return preg_replace('#\.#', '', $hash, 1);
 	}
 

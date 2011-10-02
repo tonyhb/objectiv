@@ -179,9 +179,61 @@ Route::set('admin', function($uri)
 			return;
 		}
 
+		$uri_segments = explode("/", $uri);
+
+		// Remove the any empties, normally caused by a trailing slash
+		$uri_segments = array_filter($uri_segments);
+
+		// Load an initial Mundo site object
+		$site = Mundo::factory('site');
+
+		// Try and find out if we're accessing a specific site
+		if (substr($_SERVER['HTTP_HOST'], 0, 5) == 'admin')
+		{
+			// We logged in to a specific site's admin panel from the admin subdomain
+			$site_url = substr($_SERVER['HTTP_HOST'], 6);
+
+			// Try loading the site from the URL
+			$site->set('url.dom', $site_url)->load();
+
+			if ( ! $site->loaded())
+				return FALSE;
+
+			App::$site = $site;
+		}
+		else if (isset($uri_segments[1]))
+		{
+			$site->set('_id', new MongoId($uri_segments[1]))->load();
+
+			if ( ! $site->loaded())
+				return FALSE;
+
+			App::$site = $site;
+
+			// Remove admin and the site id from uri segemnts
+			$uri_segments = array_slice($uri_segments, 2);
+		}
+		else
+		{
+			// Show a list of sites
+			return array(
+				'controller' => 'admin',
+				'action' => 'index',
+			);
+		}
+
+		// Our controller is the first value
+		$controller = count($uri_segments) ? array_shift($uri_segments) : 'dashboard'; 
+
+		// Our action is now the first value or index by defalut
+		$action = count($uri_segments) ? array_shift($uri_segments) : 'index';
+
+		// Assign the rest of the URI segments as parameters
+		$params = count($uri_segments) ? implode('/', $uri_segments) : NULL;
+
 		return array(
-			'controller' => 'admin',
-			'action' => 'index',
+			'controller' => 'admin_'.$controller,
+			'action' => $action,
 		);
 
 	});

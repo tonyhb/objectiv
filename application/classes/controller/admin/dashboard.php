@@ -3,12 +3,12 @@
 /**
  * This is the dashboard for a site
  */
-class Controller_Admin_Dashboard extends Controller
+class Controller_Admin_Dashboard extends Controller_Admin
 {
 
 	public function action_index()
 	{
-		$this->response->body("Site dashboard");
+		$this->template->body = "Site dashboard";
 	}
 
 }

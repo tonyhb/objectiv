@@ -9,6 +9,9 @@
 	<meta charset="utf-8">
 
 	<?php foreach ($styles as $file => $type) echo HTML::style($file, array('media' => $type)), PHP_EOL, "\t" ?>
+
+	<?php foreach ($meta as $name => $content) echo '<meta name="'.$name.'" content="'.$content.'">', PHP_EOL, "\t" ?>
+
 </head>
 <body>
 	<?php echo $body ?>

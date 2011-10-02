@@ -8,7 +8,7 @@
  **/
 class Controller_Front extends Controller_Template
 {
-	public $template = 'front/template';
+	public $template = 'templates/html5';
 
 	/**
 	 * Initialises default template variables
@@ -27,6 +27,7 @@ class Controller_Front extends Controller_Template
 			$this->template->body = '';
 
 			$this->template->styles = array('assets/css/front.css' => 'all');
+			$this->template->meta = array();
 		}
 	}
 
@@ -37,6 +38,7 @@ class Controller_Front extends Controller_Template
 	 **/
 	public function action_index()
 	{
+		$this->template->body = '<h1>CMS Home</h1>';
 	}
 
 	/**

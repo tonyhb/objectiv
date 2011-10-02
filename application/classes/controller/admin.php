@@ -6,8 +6,10 @@
  * @package CMS
  * @subpackage Admin
  **/
-class Controller_Admin extends Controller
+class Controller_Admin extends Controller_Template
 {
+	public $template = 'templates/html5';
+
 	/**
 	 * This stores the controller name from the URI
 	 *
@@ -36,12 +38,22 @@ class Controller_Admin extends Controller
 			$this->request->redirect('https://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']);
 		}
 
-		// Call the controller's default before method
+		// Call the standard template controller's before method
 		parent::before();
 
 		// Set salt for admin cookies
 		Cookie::$salt = 'D^FKoHhBfbjksJ7L7p{aBcc3]ou#yB';
 
+		// Template stuff
+		if ($this->auto_render)
+		{
+			// Initialise empty variables for the render process
+			$this->template->title =
+			$this->template->body = '';
+
+			$this->template->styles = array('assets/css/admin.css' => 'all');
+			$this->template->meta = array();
+		}
 	}
 
 	/**
@@ -60,11 +72,12 @@ class Controller_Admin extends Controller
 		// Check authentication
 		if ( ! App_Auth::authenticate($this->request->post()))
 		{
-			$this->_show_login();
+			$this->template->body = View::factory('admin/login');
 
 			// Go no further, amigo!
 			return;
 		}
+
 
 		// Find out which site we're working on and authorise against it
 		if ( ! $this->_detect_site())
@@ -76,20 +89,20 @@ class Controller_Admin extends Controller
 		if ( ! App::$site)
 		{
 			// Show the list of sites
-			$template = View::Factory('templates/html5');
-			$template->body = View::factory('admin/site_list');
-			$this->response->body($template);
-
+			$this->template->body = View::factory('admin/site_list');
 			return;
 		}
 
+		// Try routing the request
+
 		try
 		{
-			// Try routing the request
 			$controller = 'Controller_Admin_'.$this->_controller;
 			$controller = new $controller($this->request, $this->response);
 
-			$this->respinse$controller->{$this->_action}($this->_params);
+			$controller->{$this->_action}($this->_params);
+
+			$this->auto_render = FALSE;
 		}
 		catch(Exception $e)
 		{
@@ -133,11 +146,13 @@ class Controller_Admin extends Controller
 			if ( ! App_Auth::authorise_user(array('login', 'admin')))
 			{
 				// We used the admin subdomain for a site but the user doens't have privileges, show login
-				$this->_show_login();
+				$this->template->body = View::factory('admin/login');
 
 				return FALSE;
 			}
 
+			// Ensure the admin panel is never indexed on site subdomains
+			$this->template->meta = array('robots' => 'noindex');
 		}
 		else if (isset($uri_segments[1]))
 		{
@@ -168,34 +183,6 @@ class Controller_Admin extends Controller
 		$this->_params = count($uri_segments) ? $uri_segments : NULL;
 
 		return TRUE;
-	}
-
-	/**
-	 * This method shows the login form.
-	 *
-	 * @return void
-	 */
-	protected function _show_login()
-	{
-		$template = View::factory('templates/html5');
-
-		// Initialise empty variables for the render process
-		$template->title =
-		$template->body = '';
-
-		$template->styles = array('assets/css/admin.css' => 'all');
-		$template->meta = array();
-	
-		if (substr($_SERVER['HTTP_HOST'], 0, 5) == 'admin')
-		{
-			// Ensure the admin panel is never indexed on site subdomains
-			$template->meta = array('robots' => 'noindex');
-		}
-
-
-		$template->body = View::factory('admin/login');
-
-		$this->response->body($template);
 	}
 
 } // END class controller_admin extends controller

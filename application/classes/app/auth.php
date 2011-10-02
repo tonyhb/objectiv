@@ -42,6 +42,11 @@ class App_Auth
 	 */
 	public static function authenticate($options = NULL)
 	{
+		if ( ! $options)
+		{
+			$options = array();
+		}
+
 		// Remove any empty values from the array
 		$options = array_filter($options);
 

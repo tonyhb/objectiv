@@ -8,7 +8,7 @@
  **/
 class Controller_Admin extends Controller_Template
 {
-	public $template = 'templates/html5';
+	public $template = 'templates/admin';
 
 	public function before()
 	{
@@ -39,6 +39,7 @@ class Controller_Admin extends Controller_Template
 
 			$this->template->styles = array('assets/css/admin.css' => 'all');
 			$this->template->meta = array();
+			$this->template->base = (substr($_SERVER['HTTP_HOST'], 0, 5) == 'admin') ? '' : '/admin/'.App::$site->get('_id');
 		}
 
 		// Check authentication and authorisation
@@ -57,12 +58,13 @@ class Controller_Admin extends Controller_Template
 	{
 		if (App_Auth::authenticate($this->request->post()) AND (App::$site AND ! App_Auth::authorise_user(array('login', 'admin'))))
 		{
-			// Call the base action
+			// Call the default action
 			$this->action_index();
 		}
 
 		if (App::$site)
 		{
+			// Show a noindex tag for subdomains on people's sites
 			$this->template->meta = array('robots' => 'noindex');
 		}
 

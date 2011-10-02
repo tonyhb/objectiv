@@ -105,13 +105,15 @@ class Controller_Admin extends Controller_Template
 		// Create a new controller which accesses our current request and response object
 		$controller = new $controller($this->request, $this->response);
 
-		if ( ! is_callable(array($controller, $this->_action)))
+		$action = 'action_'.$this->_action;
+
+		if ( ! is_callable(array($controller, $action)))
 		{
 			// We also need to ensure the action exists
 			throw new HTTP_Exception_404("The requested action :action was not found in :controller", array(":action" => $this->_action, ":controller" => $this->_controller));
 		}
 
-		$controller->{$this->_action}($this->_params);
+		$controller->$action($this->_params);
 
 		// Ensure our templating doesn't run
 		$this->auto_render = FALSE;

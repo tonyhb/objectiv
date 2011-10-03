@@ -42,7 +42,15 @@ class Controller_Admin extends Controller_Template
 
 			$this->template->styles = array('assets/css/admin.css' => 'all');
 			$this->template->meta = array();
-			$this->template->base = (substr($_SERVER['HTTP_HOST'], 0, 5) == 'admin') ? '' : '/admin/'.App::$site->get('_id');
+
+			if (App::$site)
+			{
+				$this->template->base = (substr($_SERVER['HTTP_HOST'], 0, 5) == 'admin') ? '' : '/admin/'.App::$site->get('_id');
+			}
+			else
+			{
+				$this->template->base = '';
+			}
 		}
 
 		// Check authentication and authorisation
@@ -57,12 +65,22 @@ class Controller_Admin extends Controller_Template
 		App_Auth::set_cookie( (string) App::$user->_id);
 	}
 
+	/**
+	 * This method handles login logic for the admin panel.
+	 *
+	 * If a user is already logged in we call the index function by default.
+	 *
+	 * @return void
+	 */
 	public function action_login()
 	{
-		if (App_Auth::authenticate($this->request->post()) AND (App::$site AND ! App_Auth::authorise_user(array('login', 'admin'))))
+		if (App_Auth::authenticate($this->request->post()) AND (App::$site AND App_Auth::authorise_user(array('login', 'admin'))))
 		{
 			// Call the default action
 			$this->action_index();
+
+			// Halt processing
+			return;
 		}
 
 		if (App::$site)
@@ -89,6 +107,19 @@ class Controller_Admin extends Controller_Template
 	{
 		// Show the list of sites
 		$this->template->body = View::factory('admin/site_list');
+	}
+
+	/**
+	 * This is executed after all main controller logic
+	 *
+	 */
+	public function after()
+	{
+		// Ensure that if we use the $base variable in the main content it still works
+		$this->template->body->base = $this->template->base;
+
+		// Call the standard template rendering process
+		parent::after();
 	}
 
 } // END class controller_admin extends controller

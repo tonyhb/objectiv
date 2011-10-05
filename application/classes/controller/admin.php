@@ -115,8 +115,11 @@ class Controller_Admin extends Controller_Template
 	 */
 	public function after()
 	{
-		// Ensure that if we use the $base variable in the main content it still works
-		$this->template->body->base = $this->template->base;
+		if (is_object($this->template->body))
+		{
+			// Ensure that if we use the $base variable in the main content it still works
+			$this->template->body->base = $this->template->base;
+		}
 
 		// Call the standard template rendering process
 		parent::after();

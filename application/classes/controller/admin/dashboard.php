@@ -8,7 +8,7 @@ class Controller_Admin_Dashboard extends Controller_Admin
 
 	public function action_index()
 	{
-		$this->template->body = "Site dashboard";
+		$this->template->body = View::factory('admin/dashboard');
 	}
 
 }

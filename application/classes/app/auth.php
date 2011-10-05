@@ -98,7 +98,7 @@ class App_Auth
 					$key = hash_hmac('sha224', $expiration.$user_id, self::COOKIE_KEY);
 
 					// Generate the hash for cookie authentication
-					$hash = hash_hmac('sha224', $expiration.$user_id.$_SERVER['SSL_SESSION_ID'], $key);
+					$hash = hash_hmac('sha224', $expiration.$user_id, $key);
 
 					if ($hash != $hmac)
 						return FALSE;
@@ -202,7 +202,7 @@ class App_Auth
 		$key = hash_hmac('sha224', $expiration.$user_id, self::COOKIE_KEY);
 
 		// Generate the hash for cookie authentication
-		$hash = hash_hmac('sha224', $expiration.$user_id.$_SERVER['SSL_SESSION_ID'], $key);
+		$hash = hash_hmac('sha224', $expiration.$user_id, $key);
 
 		// Set the cookie
 		Cookie::set("auth", $user_id."|".$expiration."|".$hash, $expires);

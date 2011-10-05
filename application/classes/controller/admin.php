@@ -49,7 +49,7 @@ class Controller_Admin extends Controller_Template
 			}
 			else
 			{
-				$this->template->base = '';
+				$this->template->base = (substr($_SERVER['HTTP_HOST'], 0, 5) == 'admin') ? '' : '/admin/';
 			}
 		}
 

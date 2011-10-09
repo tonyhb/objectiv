@@ -34,6 +34,7 @@ class Model_Object extends Mundo_Object
 		'n', // Object name
 		'd', // Object data
 		'h', // Data history
+		's', // Site
 	);
 
 	protected $_rules = array(
@@ -46,6 +47,10 @@ class Model_Object extends Mundo_Object
 		),
 		'd' => array(
 			array('not_empty'),
+		),
+		's' => array(
+			array('not_empty'),
+			array('Mundo::instance_of', array(':value', 'MongoId'))
 		),
 	);
 

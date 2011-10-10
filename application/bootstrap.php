@@ -241,6 +241,7 @@ Route::set('admin', function($uri)
 		return array(
 			'controller' => 'admin_'.$controller,
 			'action' => $action,
+			'params' => $params,
 		);
 
 	});

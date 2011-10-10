@@ -112,10 +112,22 @@ class App_API
 			// Generate the 404 error.
 			return self::http_404($segmented_uri[1], $format[1], $uri);
 		}
+		catch(Validation_Exception $e)
+		{
+			// ! NOTE: Validation errors should be caught in each action for custom validation help messages
+
+			// Add validation errors to the help key in the error
+			self::$error_content = array(
+				'help' => $e->array->errors(''),
+			);
+
+			// Throw a 400 Bad Request 
+			return self::error("Could not validate data", 400);
+		}
 		catch(Exception $e)
 		{
 			// Server error?
-			if (Kohana::$environment === Kohana::DEVELOPMENT.'1')
+			if (Kohana::$environment === Kohana::DEVELOPMENT)
 			{
 				throw $e;
 			}
@@ -146,7 +158,8 @@ class App_API
 		{
 			// Give us some basic information for prognosis
 			self::$error_metadata = array(
-				'uri' => Request::$current->uri()
+				'uri' => Request::$current->uri(),
+				'date' => gmdate("Y-m-d\TH:i:s\Z"),
 			);
 		}
 

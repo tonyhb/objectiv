@@ -66,9 +66,9 @@ class App_Auth
 				if ( ! $user->loaded())
 					return FALSE;
 
-				$hash = Model_User::hash($options['password'], substr($user->pw, 0, 21));
+				$hash = Model_User::hash($options['password'], substr($user->original('pw'), 0, 21));
 
-				if ($hash != $user->pw)
+				if ($hash != $user->original('pw'))
 				{
 					return FALSE;
 				}
@@ -148,11 +148,11 @@ class App_Auth
 
 		if (Mundo::instance_of($parameters['site'], 'Mundo_Object'))
 		{
-			// We only need the ID of the site.
-			$parameters['site'] = $parameters['site']->_id;
+			// We only need the ID of the site. Use the original() method to reduce memory usage.
+			$parameters['site'] = $parameters['site']->original('_id');
 		}
 
-		foreach($parameters['user']->sites as $site)
+		foreach($parameters['user']->original('sites') as $site)
 		{
 			// If this isn't the site we're authorising skip it
 			if($site['id'] != $parameters['site'])

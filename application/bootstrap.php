@@ -131,38 +131,45 @@ Kohana::modules(array(
 Route::set('api', function($uri)
 	{
 		// Compile the regex
-		$regex = Route::compile('api(.<format>)/<version>(/<object>(/<id>))');
+		$regex = Route::compile('api(.<format>)/<version>(/<collection>(/<collection_id>))(/<resource>(/<resource_id>))');
 
 		if ( ! preg_match($regex, $uri, $matches))
 			return FALSE;
 
-		// If the format wasn't provided use format from Accept headers or JSON as default
+		// Remove our index array keys
+		foreach ($matches as $key => $value)
+		{
+			if (is_int($key))
+			{
+				unset($matches[$key]);
+			}
+		}
+
 		if (empty($matches['format']))
 		{
+			// If the format wasn't provided use format from Accept headers or JSON as default
 			$matches['format'] = (strpos($_SERVER['HTTP_ACCEPT'], 'application/xml')) ? 'xml' : 'json';
 		}
 
-		// Add other defaults to the route
+		// Add defaults and other return parameters to the route
 		$matches += array(
 			'version' => '1',
-			'object' => 'accounts',
-			'id' => ''
+			'directory' => 'api/'.$matches['version'],
+			'controller' => isset($matches['resource']) ? $matches['resource'] : $matches['collection'],
+			'action' => $_SERVER['REQUEST_METHOD'],
+			'collection' => 'sites',
+			'collection_id' => NULL,
+			'resource' => NULL,
+			'resource_id' => NULL,
 		);
 
-		if ($matches['object'] == 'base')
+		if ($matches['controller'] == 'base')
 		{
-			// Ensure no-one can access the base class
-			unset($matches['object']);
+			// Ensure no-one can access the base class: this will (eventually) throw a 404
+			$matches['controller'] = '';
 		}
 
-		return array(
-			'directory' => 'api/'.$matches['version'],
-			'controller' => $matches['object'],
-			'action' => $_SERVER['REQUEST_METHOD'],
-			'id' => $matches['id'],
-			'format' => $matches['format'],
-			'version' => $matches['version'],
-		);
+		return $matches;
 	},
 	'api(.<format>)/<version>(/<object>(/<id>))');
 
@@ -234,6 +241,7 @@ Route::set('admin', function($uri)
 		return array(
 			'controller' => 'admin_'.$controller,
 			'action' => $action,
+			'params' => $params,
 		);
 
 	});

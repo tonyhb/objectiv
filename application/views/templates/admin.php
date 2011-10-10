@@ -19,6 +19,9 @@
 	<nav>
 		<ul>
 			<li><a href="<?php echo $base ?>/pages">Pages</a></li>
+			<?php if (App_Auth::authorise_user(array('view layouts', 'admin'))): ?>
+				<li><a href="<?php echo $base?>/layouts">Layouts</a></li>
+			<?php endif; ?>
 		</ul>
 	</nav>
 </header>

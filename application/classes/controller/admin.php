@@ -54,11 +54,19 @@ class Controller_Admin extends Controller_Template
 		}
 
 		// Check authentication and authorisation
-		if ( ! App_Auth::authenticate($this->request->post()) OR (App::$site AND ! App_Auth::authorise_user(array('login', 'admin'))))
+		if ( ! App_Auth::authenticate() OR (App::$site AND ! App_Auth::authorise_user(array('login', 'admin'))))
 		{
-			$this->request->action('login');
-
-			return;
+			if ( ! App_Auth::authenticate($this->request->post()))
+			{
+				$this->request->action('login');
+				return;
+			}
+			else
+			{
+				// Create a new CSRF token for the user upon valid logins
+				App::$user->set('csrf', UUID::v4())
+					->update();
+			}
 		}
 
 		// Ensure the cookie's expiry is set from this hit

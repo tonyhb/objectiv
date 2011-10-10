@@ -10,11 +10,25 @@
 class Controller_API_1_Base extends Controller
 {
 	/**
-	 * The response from the API call
+	 * The main content in the API response
 	 *
 	 * @var mixed
 	 */
-	public $output;
+	public $content;
+
+	/**
+	 * Metadata included in the API response
+	 *
+	 * @var array
+	 */
+	public $metadata;
+
+	/**
+	 * The content type of the response
+	 *
+	 * @var string
+	 */
+	public $content_type;
 
 	/**
 	 * Ran before every API call
@@ -35,6 +49,33 @@ class Controller_API_1_Base extends Controller
 			App_API::$format = 'json';
 			throw new App_API_Exception("Unknown encoding type '".$this->request->param('format')."'. Supported response encoding types are JSON and XML.", NULL, 400);
 		}
+
+		// In development, no OAuth2 server so just say it's the dev user. Sort this shit out!
+
+		if (Kohana::$environment === Kohana::DEVELOPMENT AND ! App::$user)
+		{
+			App::$user = Mundo::factory('user')
+				->set('_id', new MongoId('4e7fa54fef966fd75d000007'))
+				->load();
+		}
+
+		if ($this->request->param('collection') == 'sites')
+		{
+			App::$site = Mundo::factory('site')
+				->set('_id', new MongoId($this->request->param('collection_id')))
+				->load();
+
+			if ( ! App::$site->loaded() OR ! App_auth::authorise_user(array('admin')))
+			{
+				// We couldn't find the site or don't have privileges, so add a help message and throw an error
+				App_API::$error_content = array('help' => 'Double check the site ID and ensure you have sufficient privileges for this operation.');
+				throw new App_API_Exception("Could not load requested site ':id'", array(':id' => $this->request->param('collection_id')), 404);
+			}
+		}
+
+		$this->metadata = array(
+			'date' => gmdate("Y-m-d\TH:i:s\Z"),
+		);
 	}
 
 	/**
@@ -49,7 +90,11 @@ class Controller_API_1_Base extends Controller
 	public function after()
 	{
 		// Encode our response body according to the requested format
-		App_API::encode_response($this->output, $this->response);
+		App_API::encode_response(array(
+			'contentType' => $this->content_type,
+			'metadata' => $this->metadata,
+			'content' => $this->content,
+		), $this->response);
 	}
 
 } // END class API_1_Base

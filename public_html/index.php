@@ -118,14 +118,14 @@ catch(Exception $e)
 	{
 		if ($e instanceof HTTP_Exception_404)
 		{
-			$response = App_API::http_404($request->param('version'), $request->param('format'), $request->uri());
+			$response = App::$api->http_404($request->param('version'), $request->param('format'), $request->uri());
 		}
 		else
 		{
 			/**
 			 * @todo Postmark/SendGrid integration to send an email with 50x server errors
 			 */
-			$response = App_API::error($e->getMessage(), $e->getCode());
+			$response = App::$api->error($e->getMessage(), $e->getCode());
 		}
 
 		echo $response->send_headers()->body();

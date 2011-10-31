@@ -35,6 +35,13 @@ class App_Core
 	public static $language;
 
 	/**
+	 * Stores the API instance used in the request
+	 *
+	 * @var App_API_vX
+	 */
+	public static $api;
+
+	/**
 	 * Attempts to register a user and account with the CMS.
 	 *
 	 * Note the use of Arr::get($array, 'key') instead of $array['key'] so

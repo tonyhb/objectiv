@@ -34,14 +34,14 @@ class Controller_API extends Controller
 		$api_method = $this->request->method();
 
 		// Ensure the request method is one we expect and can handle.
-		if ( ! in_array($api_method, array('PUT', 'POST', 'GET', 'DELETE')) OR ! is_callable(array($this->_api, $api_method)))
+		if ( ! in_array($api_method, array('PUT', 'POST', 'GET', 'DELETE')) OR ! $this->api->call($api_method)) // POTENTIAL HACK VECTOR: MAKE HTTP REQUEST METHOD AN API METHOD NAME!
 		{
 			// We only handle PUT, POST, GET and DELETE methods
 			throw new App_API_Exception("Accepted HTTP Methods are PUT, POST, GET and DELETE", NULL, 400);
 		}
 
-		// Call the AIP method specified in the request method
-		$response = $this->_api->$api_method();
+		// Call the API method specified in the request method
+		$response = $this->_api->call($api_method);
 
 		echo Debug::vars($response);
 	}

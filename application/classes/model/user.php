@@ -23,7 +23,6 @@ class Model_User extends Mundo_Object
 		'sites.$.id',
 		'sites.$.name',
 		'sites.$.roles.$',
-		'csrf',
 	);
 
 	protected $_rules = array(

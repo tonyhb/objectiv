@@ -64,8 +64,7 @@ class Controller_Admin extends Controller_Template
 			else
 			{
 				// Create a new CSRF token for the user upon valid logins
-				App::$user->set('csrf', UUID::v4())
-					->update();
+				Cookie::set('csrf', UUID::v4());
 			}
 		}
 

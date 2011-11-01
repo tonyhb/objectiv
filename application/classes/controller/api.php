@@ -28,7 +28,7 @@ class Controller_API extends Controller
 		$api_method = $this->request->method();
 
 		// Ensure the request method is one we expect and can handle.
-		if ( ! in_array($api_method, array('PUT', 'POST', 'GET', 'DELETE')) OR ! $response = $this->api->call($api_method))
+		if ( ! in_array($api_method, array('PUT', 'POST', 'GET', 'DELETE')) OR ! $response = App::$api->call($api_method))
 		{
 			// We only handle PUT, POST, GET and DELETE methods
 			throw new App_API_Exception("Accepted HTTP Methods are PUT, POST, GET and DELETE", NULL, 400);

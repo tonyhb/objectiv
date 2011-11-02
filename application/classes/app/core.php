@@ -13,6 +13,8 @@ class App_Core
 
 	const VERSION = "0.0.1";
 
+	const LATEST_API_VERSION = 'v1';
+
 	/**
 	 * Stores the currently loaded site
 	 *

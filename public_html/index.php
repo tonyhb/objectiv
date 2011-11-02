@@ -104,8 +104,6 @@ require APPPATH.'bootstrap'.EXT;
 // Store the request so we can try/catch errors and show relevant pages
 $request = Request::factory();
 
-
-
 try
 {
 	echo $request->execute()
@@ -114,8 +112,12 @@ try
 }
 catch(Exception $e)
 {
+
 	if ($request->route() AND Route::name($request->route()) == 'api')
 	{
+		if (isset($_GET['debug']))
+			throw $e;
+
 		if ($e instanceof HTTP_Exception_404)
 		{
 			$response = App::$api->http_404($request->param('version'), $request->param('format'), $request->uri());

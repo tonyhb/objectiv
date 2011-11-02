@@ -12,6 +12,17 @@ class Controller_API extends Controller
 		// Store the name of the requested API class with the version number in a string for instatiation.
 		$api = 'App_API_'.$this->request->param('version');
 
+		if( ! Kohana::find_file('classes/app/api', $this->request->param('version')))
+		{
+			// The requested version doesn't exist. Load the latest version of the API
+			$api = 'App_API_'.App::LATEST_API_VERSION;
+
+			App::$api = new $api;
+
+			// Throw an error with the new API
+			throw new App_API_Exception("The requested API version '{$this->request->param('version')}' does not exist.", null, 400);
+		}
+
 		// Instantiate the API in its static variable - this allows us to use the same 
 		// API version as the one requested to throw error messages in index.php
 		App::$api = new $api;

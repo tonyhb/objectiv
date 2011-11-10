@@ -29,7 +29,7 @@
 	</nav>
 </header>
 
-<div class='container' style='padding-top: 40px'>
+<div class='container' style='padding: 60px 0 0 0'>
 	<div class='content'>
 		<?php echo $body ?>
 	</div>

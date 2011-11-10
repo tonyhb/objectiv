@@ -2,13 +2,28 @@
 
 <form action="" method="post">
 
-	<label for="page[n]">Page name</label>
-	<input type="text" placeholder="Page name" name="page[n]" />
+	<div class="clearfix">
+		<label for="page[n]">Page name</label>
+		<div class="input">
+			<input class="xlarge" name="page[n]" placeholder="Page name" id="page[n]" size="30" type="text">
+		</div>
+	</div>
 
-	<label for="page[s]">Page slug</label>
-	<input type="text" placeholder="Page slug" name="page[s]" />
+	<div class="clearfix">
+		<label for="page[s]">Page slug</label>
+		<div class="input">
+			<input class="xlarge" name="page[s]" placeholder="Page slug" id="page[s]" size="30" type="text">
+		</div>
+	</div>
 
-	<input type="checkbox" name="page[o][sitemap]" /><label for="page[o][sitemap]">Show in sitemap?</label>
+	<div class="clearfix">
+		<label for="page[o][sitemap]">Show in sitemap?</label>
+		<div class="input">
+			<input type="checkbox" name="page[o][sitemap]" id="page[o][sitemap]" />
+		</div>
+	</div>
 
-	<button type="submit">Create page</button>
+
+
+	<input type="submit" class="btn primary" value="Create page">
 </form>

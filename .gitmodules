@@ -10,3 +10,6 @@
 [submodule "modules/uuid"]
 	path = modules/uuid
 	url = https://github.com/shadowhand/uuid.git
+[submodule "public_html/css/bootstrap"]
+	path = public_html/css/bootstrap
+	url = git://github.com/twitter/bootstrap.git

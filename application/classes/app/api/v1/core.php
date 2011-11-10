@@ -22,32 +22,21 @@ class App_API_V1_Core
 	private $_response;
 
 	/**
-	 * This is set before throwing an API error to set any metadata
-	 * necessary. 
-	 *
-	 * This allows us to provide error information over and above
-	 * a single error message from getMessage()
-	 */
-	private $_error_metadata = array();
-
-	/**
-	 * This is set before throwing an API error to set content within the
-	 * response.
-	 *
-	 * This allows us to provide error information over and above
-	 * a single error message from getMessage()
-	 */
-	private $_error_content = array();
-
-	/**
 	 * Sets the format of the API response.
 	 *
 	 * @param string
 	 * @return $this
 	 */
-	public function set_format($format)
+	public function set_format($format = NULL)
 	{
+		// This specifies the only formats this API will accept.
 		$valid_formats = array('json', 'xml');
+
+		if ($format === NULL)
+		{
+			// If a format hasn't been specified, use the HTTP Accept parameter by default
+			$format = (strpos($_SERVER['HTTP_ACCEPT'], 'application/xml')) ? 'xml' : 'json';
+		}
 
 		if ( ! in_array(strtolower($format), $valid_formats))
 		{
@@ -70,10 +59,21 @@ class App_API_V1_Core
 	 * Calls the appropriate method to handle logic from the request method
 	 *
 	 * @param  string  PUT, POST, GET or DELETE, as required
+	 * @param  string  URI of the API call to make.
 	 * @return mixed
 	 */
-	public function call($method)
+	public function call($method, $uri)
 	{
+		// Store the name of the requested API class with the version number in a string for instatiation.
+		$class = 'App_API_V1_Method_'.$method;
+
+		$class = new $class($uri);
+
+		/**
+		 * @todo make models a member of the API
+		 */
+
+		return TRUE;
 	}
 
 	/**
@@ -91,6 +91,12 @@ class App_API_V1_Core
 	 */
 	public function error($message, $status, $uri = NULL)
 	{
+		// Ensure that a response object has been set to handle the API response. If not, set one.
+		if ($this->_response === NULL)
+		{
+			$this->set_format();
+		}
+
 		// Create a new response
 		$response = new Response;
 

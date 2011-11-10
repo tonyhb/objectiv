@@ -115,12 +115,15 @@ catch(Exception $e)
 
 	if ($request->route() AND Route::name($request->route()) == 'api')
 	{
-		if (isset($_GET['debug']))
+		if (isset($_GET['debug']) AND Kohana::$environment === Kohana::DEVELOPMENT)
+		{
+			echo Debug::vars(App::$api);
 			throw $e;
+		}
 
 		if ($e instanceof HTTP_Exception_404)
 		{
-			$response = App::$api->http_404($request->param('version'), $request->param('format'), $request->uri());
+			$response = App::$api->error("The requested URI '".$_SERVER['REQUEST_URI']."' was not found", 404);
 		}
 		else
 		{

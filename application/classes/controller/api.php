@@ -19,6 +19,9 @@ class Controller_API extends Controller
 
 			App::$api = new $api;
 
+			// Ensure we set the requested response format for this error.
+			App::$api->set_format($this->request->param('format'));
+
 			// Throw an error with the new API
 			throw new App_API_Exception("The requested API version '{$this->request->param('version')}' does not exist.", null, 400);
 		}
@@ -39,14 +42,11 @@ class Controller_API extends Controller
 		$api_method = $this->request->method();
 
 		// Ensure the request method is one we expect and can handle.
-		if ( ! in_array($api_method, array('PUT', 'POST', 'GET', 'DELETE')) OR ! $response = App::$api->call($api_method))
+		if ( ! in_array($api_method, array('PUT', 'POST', 'GET', 'DELETE')) OR ! $response = App::$api->call($api_method, $this->request->param('parameters')))
 		{
 			// We only handle PUT, POST, GET and DELETE methods
 			throw new App_API_Exception("Accepted HTTP Methods are PUT, POST, GET and DELETE", NULL, 400);
 		}
-
-		// Call the API method specified in the request method
-		$response = App::$api->call($api_method);
 
 		echo Debug::vars($response);
 	}

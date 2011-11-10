@@ -40,7 +40,7 @@ class Controller_Admin extends Controller_Template
 			$this->template->title =
 			$this->template->body = '';
 
-			$this->template->styles = array('assets/css/admin.css' => 'all');
+			$this->template->styles = array('css/bootstrap/bootstrap.css' => 'all');
 			$this->template->meta = array();
 
 			if (App::$site)

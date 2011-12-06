@@ -12,7 +12,7 @@ abstract class App_API_V1_Response
 	 *
 	 * @param string
 	 */
-	protected $_content_type;
+	protected $_encoding;
 
 	/**
 	 * The type of data returned with the body of the response. This
@@ -58,19 +58,9 @@ abstract class App_API_V1_Response
 	 *
 	 * @return string
 	 */
-	public function get_content_type()
+	public function encoding()
 	{
-		return $this->_content_type;
-	}
-
-	/**
-	 * Returns the HTTP status code to be sent with the API response
-	 *
-	 * @return int
-	 */
-	public function get_status_code()
-	{
-		return $this->_status_code;
+		return $this->_encoding;
 	}
 
 	/**
@@ -78,8 +68,11 @@ abstract class App_API_V1_Response
 	 *
 	 * @param int  HTTP Status code number to return
 	 */
-	public function set_status_code($status) 
+	public function code($status = NULL) 
 	{
+		if ($status === NULL)
+			return $this->_status_code;
+
 		if (array_key_exists($status, Response::$messages))
 		{
 			// Set the status only if it is a valid status code.
@@ -90,44 +83,31 @@ abstract class App_API_V1_Response
 	}
 
 	/**
-	 * Describes the data type in $_response_content
-	 *
-	 * @return string
-	 */
-	public function get_response_type()
-	{
-		return $this->_response_type;
-	}
-
-	/**
 	 * Sets the response type for the current API call.
 	 *
 	 * @param string
 	 */
-	public function set_response_type($type)
+	public function type($type = NULL)
 	{
+		if ($type === NULL)
+			return $this->_response_type;
+
 		$this->_response_type = (string) $type;
 
 		return $this;
 	}
 
 	/**
-	 * Returns the response to be returned from the API call
-	 *
-	 * @return array
-	 */
-	public function get_response_content()
-	{
-		return $this->_response_content;
-	}
-
-	/**
 	 * Sets the response content for the current API call.
 	 *
 	 * @param array
+	 * @return mixed The content, if none was supplied, or $this if setting
 	 */
-	public function set_response_content($content)
+	public function content($content = NULL)
 	{
+		if ($content === NULL)
+			return $this->_response_content;
+
 		if ( ! is_array($content))
 		{
 			// Normalise every piece of content, even if singular, to be in an array of content items for continuity.
@@ -140,22 +120,15 @@ abstract class App_API_V1_Response
 	}
 
 	/**
-	 * Returns the response metadata to be returned from the API call
-	 *
-	 * @return array
-	 */
-	public function get_response_metadata()
-	{
-		return $this->_response_metadata;
-	}
-
-	/**
 	 * Sets the response metadata for the current API call.
 	 *
 	 * @param array
 	 */
-	public function set_response_metadata($metadata)
+	public function metadata($metadata = NULL)
 	{
+		if ($metadata === NULL)
+			return $this->_response_metadata;
+
 		if ( ! is_array($metadata))
 		{
 			// Response metadata is an array of values.

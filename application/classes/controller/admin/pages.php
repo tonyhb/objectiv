@@ -24,8 +24,13 @@ class Controller_Admin_Pages extends Controller_Admin
 
 		if ($this->request->post())
 		{
+			/**
+			 * False API call
+			 */
+			$return = App::$API->post('page', $this->request->post());
 			echo Debug::vars($this->request->post());
 		}
+
 		$this->template->body = View::factory("admin/new_page");
 	}
 

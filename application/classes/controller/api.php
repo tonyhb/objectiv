@@ -9,6 +9,18 @@ class Controller_API extends Controller
 
 	public function before()
 	{
+		if ( ! isset($_SERVER['HTTPS']))
+		{
+			// Ensure we always use HTTPS
+			$this->request->redirect('https://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']);
+		}
+
+		// Set salt for admin cookies
+		Cookie::$salt = 'D^FKoHhBfbjksJ7L7p{aBcc3]ou#yB';
+
+		// Ensure our cookies are set on only secure connections
+		Cookie::$secure = TRUE;
+
 		// Store the name of the requested API class with the version number in a string for instatiation.
 		$api = 'App_API_'.$this->request->param('version');
 
@@ -33,7 +45,13 @@ class Controller_API extends Controller
 		// Set the response format for this API call.
 		App::$api->set_format($this->request->param('format'));
 
+		$this->response->headers('Content-type', File::mime_by_ext($this->request->param('format')));
+
 		// @todo: Run some authentication methods here.
+		if ( ! App_Auth::authenticate())
+		{
+			throw new App_API_Exception("You must authenticate before making API requests", NULL, 401);
+		}
 	}
 
 	public function action_index()
@@ -48,7 +66,7 @@ class Controller_API extends Controller
 			throw new App_API_Exception("Accepted HTTP Methods are PUT, POST, GET and DELETE", NULL, 400);
 		}
 
-		echo Debug::vars($response);
+		$this->response->body($response);
 	}
 
 } // END class Controller_API

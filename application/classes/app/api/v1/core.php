@@ -32,6 +32,11 @@ class App_API_V1_Core
 		// This specifies the only formats this API will accept.
 		$valid_formats = array('json', 'xml');
 
+		if (Request::$current->is_external() === false)
+		{
+			$valid_formats += array('internal');
+		}
+
 		if ($format === NULL)
 		{
 			// If a format hasn't been specified, use the HTTP Accept parameter by default
@@ -52,11 +57,27 @@ class App_API_V1_Core
 		// Instantiate the API response class which handles the requested format
 		$this->_response = new $response;
 
+		// Give us some basic information for prognosis
+		$this->_response->metadata(array(
+			'uri' => Request::$current->uri(),
+			'request_time' => gmdate("Y-m-d\TH:i:s\Z", $_SERVER['REQUEST_TIME']),
+			'response_time' => gmdate("Y-m-d\TH:i:s\Z"),
+		));
+
 		return $this;
 	}
 
 	/**
-	 * Calls the appropriate method to handle logic from the request method
+	 * Calls the appropriate method to handle logic from the request method.
+	 *
+	 * The $uri parameter must be passed in the form of 
+	 * /parent_coll/id/coll/id, therefore uri parts are grouped in twos and 
+	 * formatted accordingly. For example:
+	 *
+	 * /sites/{$site_id}/pages/{$page_id}
+	 *
+	 * This URL points to the page object within the specified site. URIs can 
+	 * only be two objects deep (the maximum URI segments are shown above).
 	 *
 	 * @param  string  PUT, POST, GET or DELETE, as required
 	 * @param  string  URI of the API call to make.
@@ -64,16 +85,52 @@ class App_API_V1_Core
 	 */
 	public function call($method, $uri)
 	{
-		// Store the name of the requested API class with the version number in a string for instatiation.
-		$class = 'App_API_V1_Method_'.$method;
+		if (empty($uri))
+		{
+			// @todo Discoverability: show which objects a user can currently 
+			// access and manipulate
+			return TRUE;
+		}
 
-		$class = new $class($uri);
+		// The + array('', ..) is a quick hack to get around an empty/non max 
+		// length $uri parameter
+		list($collection['name'], $collection['id'], $object['name'], $object['id']) = explode('/', $uri, 4) + array('', '', '', '');
 
-		/**
-		 * @todo make models a member of the API
-		 */
+		if (empty($object['name']))
+		{
+			// We're accessing a collection (ie. a site) as an object directly, 
+			// as opposed to something like /site/$id/page/$page
+			$object = $collection;
+			unset($collection);
+		}
 
-		return TRUE;
+		$model = Mundo::factory($object['name']);
+
+		if (empty($object['id']) AND $method != 'GET')
+		{
+			throw new App_API_Exception("GET is the only valid HTTP method to collections", NULL, 400);
+		}
+
+		if ( ! empty($object['id']))
+		{
+			$model->set('_id', new MongoId($object['id']));
+		}
+
+		if (isset($collection))
+		{
+			$model->set_parent($collection);
+		}
+
+		$method = 'API_'.$method;
+
+		$response = $model->$method();
+
+		$metadata = $this->_response->metadata();
+		$this->_response->metadata($metadata + $response['metadata']);
+		$this->_response->content($response['content']);
+		$this->_response->type($object['name']);
+
+		return $this->_response->encode_response();
 	}
 
 	/**
@@ -100,17 +157,10 @@ class App_API_V1_Core
 		// Create a new response
 		$response = new Response;
 
-		$this->_response->set_response_type('error');
-
-		// Give us some basic information for prognosis
-		$this->_response->set_response_metadata(array(
-			'uri' => Request::$current->uri(),
-			'request_time' => gmdate("Y-m-d\TH:i:s\Z", $_SERVER['REQUEST_TIME']),
-			'response_time' => gmdate("Y-m-d\TH:i:s\Z"),
-		));
+		$this->_response->type('error');
 
 		// Add the status and description by default
-		$this->_response->set_response_content(array(
+		$this->_response->content(array(
 			'status' => $status,
 			'description' => $message,
 		));
@@ -118,155 +168,19 @@ class App_API_V1_Core
 		if (array_key_exists($status, Response::$messages))
 		{
 			// Set the status
-			$this->_response->set_status_code($status);
+			$this->_response->code($status);
 		}
 		else
 		{
 			// This was an internal PHP error which has a status of something like '8'. This isn't a HTTP status code; throw a 500 server error.
-			$this->_response->set_status_code(500);
+			$this->_response->code(500);
 		}
 
 		$response->body($this->_response->encode_response());
-		$response->status($this->_response->get_status_code());
-		$response->headers('Content-Type', $this->_response->get_content_type());
+		$response->status($this->_response->code());
+		$response->headers('Content-Type', $this->_response->type());
 
 		return $response;
 	}
-
-
-	/**
-	 * This function checks Kohana 404 errors agains incorrect versions and
-	 * resources.
-	 *
-	 * It is called in index.php and App_API::call when an
-	 * HTTP_Exception_404 is called.
-	public static function http_404($version, $format, $uri)
-	{
-		$status = 404;
-
-		// Did this 404 occured because of an incorrect version number in the URI?
-		if ( ! in_array($version, self::$api_versions))
-		{
-			// Requesting an incorrect verison of the API
-			$message = "Unknown API version '".$version."'. Supported versions are: ";
-
-			// Show supported API versions
-			$message .= implode(', ', App_API::$api_versions);
-
-			// Override Kohana's "Controller Not Found" and 500 internal with our own 400
-			$status = 400;
-		}
-		else
-		{
-			// If not, there was an incorrect resource in the URI
-			$object = str_replace('api.'.$format.'/'.$version.'/', '', $uri);
-
-			// Write our error message
-			$message = "The requested resource '".$object."' was not found.";
-		}
-
-		// Overwritten because the error() method wouldn't detect API URI from internal call
-		self::$error_metadata = array(
-			'uri' => $uri,
-		);
-
-		// There was an incorrect version number or resource supplied
-		return self::error($message, $status);
-	}
-
-	public function __construct($data = NULL)
-	{
-		if ($data !== NULL)
-		{
-			// Load our array keys from the empty request object
-			$keys = array_keys($this->_request);
-
-			// Explode the request URI 
-			$data = explode('/', $data, 4);
-
-			// Empty the data for REST discoverability
-			$data = array_filter($data);
-
-			if (empty($data))
-			{
-				// @todo A user hasn't passed a collection or object so run the discoverable API method to inform the user of their options
-				throw new App_API_Exception("You must pass a resource or object in the API request", NULL, 400);
-				return;
-			}
-
-			foreach ($data as $key => $value)
-			{
-				// Add values to our $keys from the URI
-				$this->_request[$keys[$key]] = $value;
-			}
-
-
-			// This manages our discoverable API
-			if ( ! $this->_request['collection'])
-			{
-			}
-
-			// Add defaults from site keys to collection/object keys for site manipulation
-			if ( ! $this->_request['object'])
-			{
-				$this->_request['object'] = 'sites';
-
-				// Similarly, for manipulation we need the ID of the site in the object_id, not site_id
-				if ( ! $this->_request['object_id'] AND $this->_request['collection_id'])
-				{
-					// If we haven't rqeuested a
-					$this->_request['object_id'] = $this->_request['collection_id'];
-				}
-			}
-			// Authorisation here ?
-		}
-	}
-
-	/**
-	 * Returns information about a specific collection or object
-	 *
-	public function get($object = NULL, $object_id = NULL)
-	{
-		if ( ! $object)
-		{
-			// Use the collection given in the URI
-			$object = $this->_request['object'];
-		}
-
-		if ( ! $object_id)
-		{
-			// Use the object ID given in the request URI
-			$object_id = $this->_request['object_id'];
-		}
-
-		$object = Inflector::singular($object);
-
-		if ( ! $object_id)
-		{
-			// We're asking for a whole collection
-			$model = NULL;
-		}
-		else
-		{
-			$model = Mundo::factory($object)
-				->set('_id', new MongoId($object_id));
-
-			if ($this->_request['collection'] == 'sites' AND $object != 'site')
-			{
-				// If the object we are after belongs to a site specifiy it.
-				$model->set('s', new MongoId($this->_['collection_id']));
-			}
-
-			$model->load();
-
-			if ( ! $model->loaded())
-			{
-				throw new App_API_Exception("Could not find requested resource", NULL, 404);
-			}
-		}
-
-		return $model;
-	}
-	 */
 
 } // end App_API_1

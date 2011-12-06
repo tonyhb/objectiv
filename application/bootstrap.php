@@ -185,7 +185,7 @@ Route::set('admin', function($uri)
 		$uri_segments = array_filter($uri_segments);
 
 		// Load an initial Mundo site object
-		$site = Mundo::factory('site');
+		$site = Mundo::factory('sites');
 
 		// Try and find out if we're accessing a specific site
 		if (substr($_SERVER['HTTP_HOST'], 0, 5) == 'admin')

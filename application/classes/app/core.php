@@ -62,18 +62,18 @@ class App_Core
 		// Purge empty fields just in case
 		$data = array_filter($data);
 
-		$account = Mundo::factory('account', array(
+		$account = Mundo::factory('accounts', array(
 			'contact' => Arr::get($data, 'contact_name'),
 			'company.name' => Arr::get($data, 'company_name'),
 		));
 
-		$user = Mundo::factory('user', array(
+		$user = Mundo::factory('users', array(
 			'name' => Arr::get($data, 'contact_name'),
 			'email' => Arr::get($data, 'contact_email'),
 			'pw' => Arr::get($data, 'password')
 		));
 
-		$site = Mundo::factory('site', array(
+		$site = Mundo::factory('sites', array(
 			'name' => Arr::get($data, 'site_name'),
 
 			// Default language

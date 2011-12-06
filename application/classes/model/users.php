@@ -6,10 +6,15 @@
  * @packaged App
  * @author Tony Holdstock-Brown
  **/
-class Model_User extends Mundo_Object
+class Model_Users extends App_Model
 {
 
 	protected $_collection = 'user';
+
+	protected $_parent_coll = array(
+		'uri' => 'accounts',
+		'mongo' => 'acct'
+	);
 
 	protected $_fields = array(
 		'_id',

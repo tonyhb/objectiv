@@ -19,9 +19,14 @@
  * @package App
  * @author Tony Holdstock-Brown
  **/
-class Model_Page extends Mundo_Object
+class Model_Pages extends App_Model
 {
 	protected $_collection = 'page';
+
+	protected $_parent_coll = array(
+		'uri' => 'sites',
+		'mongo' => 'site'
+	);
 
 	protected $_schemaless = array(
 		'd'
@@ -43,12 +48,13 @@ class Model_Page extends Mundo_Object
 	 */
 	protected $_fields = array(
 		'_id',
-		'n', // Page name
-		's', // Page slug
-		'o', // Array of key => values of page options (show in sitemap, visibility etc.)
-		'd', // Array of objects used as data, in the form of ObjectId => Data
-		'c', // Cached 
-		'l', // Language (reserved for future use). 
+		'name', // Page name
+		'slug', // Page slug
+		'objs', // Array of key => values of page options (show in sitemap, visibility etc.)
+		'data', // Array of objects used as data, in the form of ObjectId => Data
+		'cache', // Cached 
+		'lang', // Language (reserved for future use). 
+		'site'
 	);
 
 	protected $_rules = array(

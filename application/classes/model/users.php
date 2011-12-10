@@ -105,4 +105,49 @@ class Model_Users extends App_Model
 		return preg_replace('#\.#', '', $hash, 1);
 	}
 
+	public function API_Get()
+	{
+		if ($this->get('_id') !== NULL)
+		{
+			$this->load(array('pw' => 0, 'csrf' => 0));
+
+			if ( ! $this->loaded())
+			{
+				throw new App_API_Exception("We could not load the requested account. Please check your request and ensure you are authorised to access this account.", NULL, 400);
+			}
+
+			return array(
+				'content' => $this->get(),
+				'metadata' => array(
+					'read_only' => array(
+						'_id',
+						'acct',
+						'sites.$.roles',
+					)
+				)
+			);
+		}
+
+		$cursor = $this->find(array('pw' => 0, 'csrf' => 0))->limit(20);
+
+		$return = array(
+			'content' => array(),
+			'metadata' => array(
+				'read_only' => array(
+					'_id',
+					'acct',
+					'sites.$.roles'
+				),
+				'results' => $cursor->count()
+			)
+		);
+
+		foreach($cursor as $item)
+		{
+			$return['content'][] = $item->get();
+		}
+
+		return $return;
+	}
+
 } // END class Model_User

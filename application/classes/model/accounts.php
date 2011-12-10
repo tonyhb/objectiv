@@ -63,25 +63,53 @@ class Model_Accounts extends App_Model
 
 	public function API_Get()
 	{
-
 		$this->set('usr', array(array('id' => App::$user->get('_id'))));
 
-		$this->load();
-
-		if ( ! $this->loaded())
+		if ($this->get('_id') !== NULL)
 		{
-			throw new App_API_Exception("We could not load the requested account. Please check your request and ensure you are authorised to access this account.", NULL, 400);
+			$this->load();
+
+			if ( ! $this->loaded())
+			{
+				throw new App_API_Exception("We could not load the requested account. Please check your request and ensure you are authorised to access this account.", NULL, 400);
+			}
+
+			return array(
+				'content' => $this->get(),
+				'metadata' => array(
+					'read_only' => array(
+						'_id',
+						'usr'
+					),
+					'children' => array(
+						'users'
+					)
+				)
+			);
 		}
 
-		return array(
-			'content' => $this->get(),
+		$cursor = $this->find()->limit(20);
+
+		$return = array(
+			'content' => array(),
 			'metadata' => array(
 				'read_only' => array(
 					'_id',
 					'usr'
-				)
+				),
+				'children' => array(
+					'users'
+				),
+				'results' => $cursor->count()
 			)
 		);
+
+		foreach($cursor as $item)
+		{
+			$return['content'][] = $item->get();
+		}
+
+		return $return;
 	}
 
 } // END class Model_Account

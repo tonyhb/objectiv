@@ -19,21 +19,18 @@ class Controller_Admin_Layouts extends Controller_Admin
 		}
 
 		// Get all of the layouts
-		$response = App::$api->call('GET', 'sites/'.App::$site->original('_id').'/objects?fields=id,name&search=types:layouts');
+		$response = App::$api->call('GET', 'sites/'.App::$site->original('_id').'/objects?fields=id,name&search=type:layout');
 
-		echo Debug::vars($response);
-		exit;
-
-		if ($response->status() != 200)
+		if ($response['contentType'] == 'error')
 		{
 			// Show the error status and return
-			$this->template->body = $body->content[0]->description;
+			$this->template->body = $response['content'];
 			return;
 		}
 
 		// List all layouts
 		$this->template->body = View::factory("admin/layouts/list")
-			->set('layouts', $body->content);
+			->set('layouts', $response['content']);
 	}
 
 	/**

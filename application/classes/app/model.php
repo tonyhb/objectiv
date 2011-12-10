@@ -61,11 +61,53 @@ class App_Model extends Mundo_Object
 	 *
 	 * @return array array of content/metadata for API response
 	 */
-	public function API_Get()
+	public function API_Get($params = array())
 	{
+		if ( ! isset($params['fields']))
+		{
+			$params['fields'] = $this->_hidden_fields;
+		}
+		else
+		{
+			// Ensure we get only a subset of fields
+			$params['fields'] = explode(',', $params['fields']);
+
+			if ( ! is_array($params['fields']))
+			{
+				$params['fields'] = array($params['fields']);
+			}
+
+			// We need to ensure the fields are array keys and the values are 
+			// '1' to show them through Mongo
+			$fields = array();
+			foreach($params['fields'] as $value)
+			{
+				$fields[$value] = 1;
+			}
+
+			// Ensure that by explicitly stating we want hidden fields they 
+			// don't get them.
+			$params['fields'] = array_merge($fields, $this->_hidden_fields);
+		}
+
+		if (isset($params['search']))
+		{
+			// Searching is done in the format of 'field:value,field:value'
+			// IE. a comma splits search terms
+
+			$searched_fields = explode(',', $params['search']);
+
+			foreach ($searched_fields as $item)
+			{
+				list($field, $term) = explode(':', $item);
+				$this->set($field, $term);
+			}
+		}
+
 		if ($this->get('_id') !== NULL)
 		{
-			$this->load($this->_hidden_fields);
+			// If the ID is set we only want 1 result.
+			$this->load($params['fields']);
 
 			if ( ! $this->loaded())
 			{
@@ -78,7 +120,9 @@ class App_Model extends Mundo_Object
 			);
 		}
 
-		$cursor = $this->find($this->_hidden_fields)->limit(20);
+		// No ID is set so we return an array of results, even if there is only 
+		// one result
+		$cursor = $this->find($params['fields'])->limit(20);
 
 		$return = array(
 			'content' => array(),

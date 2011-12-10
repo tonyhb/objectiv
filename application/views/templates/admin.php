@@ -17,6 +17,7 @@
 <header class='topbar'>
 	<nav class='fill'>
 		<div class='container'>
+			<a class='brand' href='/admin/'>Epithet</a>
 			<ul class='nav' style='height: 40px'>
 			<?php if (App::$user AND App_Auth::authorise_user(array('login', 'admin'))): ?>
 				<li><a href="<?php echo $base ?>/pages">Pages</a></li>
@@ -30,9 +31,7 @@
 </header>
 
 <div class='container' style='padding: 60px 0 0 0'>
-	<div class='content'>
-		<?php echo $body ?>
-	</div>
+	<?php echo $body ?>
 </div>
 
 </body>

@@ -29,7 +29,7 @@ class Controller_API extends Controller
 			// The requested version doesn't exist. Load the latest version of the API
 			$api = 'App_API_'.App::LATEST_API_VERSION;
 
-			App::$api = new $api;
+			App::$api = new $api($this->request->param('format'));
 
 			// Ensure we set the requested response format for this error.
 			App::$api->set_format($this->request->param('format'));
@@ -40,10 +40,7 @@ class Controller_API extends Controller
 
 		// Instantiate the API in its static variable - this allows us to use the same 
 		// API version as the one requested to throw error messages in index.php
-		App::$api = new $api;
-
-		// Set the response format for this API call.
-		App::$api->set_format($this->request->param('format'));
+		App::$api = new $api($this->request->param('format'));
 
 		$this->response->headers('Content-type', File::mime_by_ext($this->request->param('format')));
 

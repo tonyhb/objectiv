@@ -40,7 +40,7 @@ class Controller_Admin extends Controller_Template
 			$this->template->title =
 			$this->template->body = '';
 
-			$this->template->styles = array('css/bootstrap/bootstrap.css' => 'all');
+			$this->template->styles = array('css/bootstrap/bootstrap.css' => 'all', 'css/admin.css' => 'all');
 			$this->template->meta = array();
 
 			if (App::$site)
@@ -70,6 +70,9 @@ class Controller_Admin extends Controller_Template
 
 		// Ensure the cookie's expiry is set from this hit
 		App_Auth::set_cookie( (string) App::$user->_id);
+
+		$api = 'App_API_'.App::LATEST_API_VERSION;
+		App::$api = new $api;
 	}
 
 	/**
@@ -113,7 +116,7 @@ class Controller_Admin extends Controller_Template
 	public function action_index()
 	{
 		// Show the list of sites
-		$this->template->body = View::factory('admin/site_list');
+		$this->template->body = View::factory('admin/sites/list');
 	}
 
 	/**

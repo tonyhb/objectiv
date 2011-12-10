@@ -8,12 +8,19 @@
 class Controller_Admin_Pages extends Controller_Admin
 {
 
+	/**
+	 * List all pages in the current site
+	 *
+	 */
 	public function action_index()
 	{
-		// List all pages...
-		$this->template->body = View::factory("admin/list_pages");
+		$this->template->body = View::factory("admin/pages/list");
 	}
 
+	/**
+	 * Create a new page in the current site
+	 *
+	 */
 	public function action_new()
 	{
 		if ( ! App_Auth::authorise_user(array('np', 'admin')))
@@ -31,7 +38,7 @@ class Controller_Admin_Pages extends Controller_Admin
 			echo Debug::vars($this->request->post());
 		}
 
-		$this->template->body = View::factory("admin/new_page");
+		$this->template->body = View::factory("admin/pages/new");
 	}
 
 } // END class Controller_Admin_Pages extends Controller_Admin

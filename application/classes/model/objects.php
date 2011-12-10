@@ -24,31 +24,32 @@ class Model_Objects extends App_Model
 	 * @var array
 	 */
 	protected $_schemaless = array(
-		'd',
-		'h',
+		'data',
+		'hist',
 	);
 
 	protected $_fields = array(
 		'_id',
-		't', // Object type
-		'n', // Object name
-		'd', // Object data
-		'h', // Data history
-		's', // Site
+		'mod', // Last modified
+		'type', // Object type
+		'name', // Object name
+		'data', // Object data
+		'hist', // Data history
+		'site', // Site
 	);
 
 	protected $_rules = array(
-		't' => array(
+		'type' => array(
 			array('not_empty'),
 			array('regex', array(':value', '#^[\w\s]+$#')),
 		),
-		'n' => array(
+		'name' => array(
 			array('not_empty'),
 		),
-		'd' => array(
+		'data' => array(
 			array('not_empty'),
 		),
-		's' => array(
+		'site' => array(
 			array('not_empty'),
 			array('Mundo::instance_of', array(':value', 'MongoId'))
 		),

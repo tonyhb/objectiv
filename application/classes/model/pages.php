@@ -29,7 +29,7 @@ class Model_Pages extends App_Model
 	);
 
 	protected $_schemaless = array(
-		'd'
+		'data'
 	);
 
 	/**
@@ -58,12 +58,9 @@ class Model_Pages extends App_Model
 	);
 
 	protected $_rules = array(
-		't' => array(
+		'name' => array(
 			array('not_empty'),
 			array('regex', array(':value', '#^[\w\s]+$#')),
-		),
-		'n' => array(
-			array('not_empty'),
 		),
 	);
 

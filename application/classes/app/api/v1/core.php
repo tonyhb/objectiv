@@ -61,7 +61,6 @@ class App_API_V1_Core
 		$this->_response->metadata(array(
 			'uri' => Request::$current->uri(),
 			'request_time' => gmdate("Y-m-d\TH:i:s\Z", $_SERVER['REQUEST_TIME']),
-			'response_time' => gmdate("Y-m-d\TH:i:s\Z"),
 		));
 
 		return $this;
@@ -104,6 +103,11 @@ class App_API_V1_Core
 			unset($collection);
 		}
 
+		if( ! Kohana::find_file('classes/model', $object['name']))
+		{
+			throw new App_Exception("The requested collection ':model' could not be found", array(':model' => $object['name']), 404);
+		}
+
 		$model = Mundo::factory($object['name']);
 
 		if (empty($object['id']) AND $method != 'GET')
@@ -126,6 +130,8 @@ class App_API_V1_Core
 		$response = $model->$method();
 
 		$metadata = $this->_response->metadata();
+		$metadata['response_time'] = gmdate("Y-m-d\TH:i:s\Z");
+
 		$this->_response->metadata($metadata + $response['metadata']);
 		$this->_response->content($response['content']);
 		$this->_response->type($object['name']);

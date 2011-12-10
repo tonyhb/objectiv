@@ -146,7 +146,7 @@ catch(Exception $e)
 	throw $e;
 }
 
-if (Kohana::$environment === Kohana::DEVELOPMENT)
+if (Kohana::$environment === Kohana::DEVELOPMENT && (Route::name($request->route()) !== 'api' OR isset($_GET['debug'])))
 {
 	if (extension_loaded('xhprof')) {
 

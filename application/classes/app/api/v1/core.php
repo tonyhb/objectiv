@@ -21,6 +21,18 @@ class App_API_V1_Core
 	 */
 	private $_response;
 
+	public function __construct($format = NULL)
+	{
+		if (Route::name(Request::$current->route()) !== 'api')
+		{
+			$this->set_format('internal');
+		}
+		elseif ($format !== NULL)
+		{
+			$this->set_format($format);
+		}
+	}
+
 	/**
 	 * Sets the format of the API response.
 	 *
@@ -32,9 +44,9 @@ class App_API_V1_Core
 		// This specifies the only formats this API will accept.
 		$valid_formats = array('json', 'xml');
 
-		if (Request::$current->is_external() === false)
+		if (Route::name(Request::$current->route()) !== 'api')
 		{
-			$valid_formats += array('internal');
+			array_push($valid_formats, 'internal');
 		}
 
 		if ($format === NULL)
@@ -103,9 +115,19 @@ class App_API_V1_Core
 			unset($collection);
 		}
 
+		$params = $_GET;
+
+		if (strpos($object['name'], '?') !== FALSE)
+		{
+			// Find out if there are any query strings in the model name, from 
+			// internal requests. If so, parse them as GET query parameters
+			list($object['name'], $params) = explode('?', $object['name']);
+			parse_str($params, $params);
+		}
+
 		if( ! Kohana::find_file('classes/model', $object['name']))
 		{
-			throw new App_Exception("The requested collection ':model' could not be found", array(':model' => $object['name']), 404);
+			throw new App_API_Exception("The requested collection ':model' could not be found", array(':model' => $object['name']), 404);
 		}
 
 		$model = Mundo::factory($object['name']);
@@ -127,7 +149,7 @@ class App_API_V1_Core
 
 		$method = 'API_'.$method;
 
-		$response = $model->$method();
+		$response = $model->$method($params);
 
 		$metadata = $this->_response->metadata();
 		$metadata['response_time'] = gmdate("Y-m-d\TH:i:s\Z");

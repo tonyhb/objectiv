@@ -40,7 +40,7 @@ class Controller_Admin extends Controller_Template
 			$this->template->title =
 			$this->template->body = '';
 
-			$this->template->styles = array('assets/css/admin.css' => 'all');
+			$this->template->styles = array('css/bootstrap/bootstrap.css' => 'all');
 			$this->template->meta = array();
 
 			if (App::$site)
@@ -64,8 +64,7 @@ class Controller_Admin extends Controller_Template
 			else
 			{
 				// Create a new CSRF token for the user upon valid logins
-				App::$user->set('csrf', UUID::v4())
-					->update();
+				Cookie::set('csrf', UUID::v4());
 			}
 		}
 

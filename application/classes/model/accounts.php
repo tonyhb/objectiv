@@ -6,7 +6,7 @@
  * @packaged App
  * @author Tony Holdstock-Brown
  **/
-class Model_Account extends Mundo_Object
+class Model_Accounts extends App_Model
 {
 
 	protected $_collection = 'account';
@@ -60,5 +60,21 @@ class Model_Account extends Mundo_Object
 			array('numeric')
 		),
 	);
-	
+
+	protected $_metadata = array(
+		'read_only' => array(
+			'_id',
+			'usr'
+		),
+		'children' => array(
+			'users'
+		));
+
+	public function API_Get()
+	{
+		$this->set('usr', array(array('id' => App::$user->get('_id'))));
+
+		return parent::API_Get();
+	}
+
 } // END class Model_Account

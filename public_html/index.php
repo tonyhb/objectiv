@@ -104,8 +104,6 @@ require APPPATH.'bootstrap'.EXT;
 // Store the request so we can try/catch errors and show relevant pages
 $request = Request::factory();
 
-
-
 try
 {
 	echo $request->execute()
@@ -114,18 +112,25 @@ try
 }
 catch(Exception $e)
 {
+
 	if ($request->route() AND Route::name($request->route()) == 'api')
 	{
+		if (isset($_GET['debug']) AND Kohana::$environment === Kohana::DEVELOPMENT)
+		{
+			echo Debug::vars(App::$api);
+			throw $e;
+		}
+
 		if ($e instanceof HTTP_Exception_404)
 		{
-			$response = App_API::http_404($request->param('version'), $request->param('format'), $request->uri());
+			$response = App::$api->error("The requested URI '".$_SERVER['REQUEST_URI']."' was not found", 404);
 		}
 		else
 		{
 			/**
 			 * @todo Postmark/SendGrid integration to send an email with 50x server errors
 			 */
-			$response = App_API::error($e->getMessage(), $e->getCode());
+			$response = App::$api->error($e->getMessage(), $e->getCode());
 		}
 
 		echo $response->send_headers()->body();
@@ -141,7 +146,7 @@ catch(Exception $e)
 	throw $e;
 }
 
-if (Kohana::$environment === Kohana::DEVELOPMENT)
+if (Kohana::$environment === Kohana::DEVELOPMENT && (Route::name($request->route()) !== 'api' OR isset($_GET['debug'])))
 {
 	if (extension_loaded('xhprof')) {
 

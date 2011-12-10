@@ -6,10 +6,15 @@
  * @packaged App
  * @author Tony Holdstock-Brown
  **/
-class Model_User extends Mundo_Object
+class Model_Users extends App_Model
 {
 
 	protected $_collection = 'user';
+
+	protected $_parent_coll = array(
+		'uri' => 'accounts',
+		'mongo' => 'acct'
+	);
 
 	protected $_fields = array(
 		'_id',
@@ -23,7 +28,6 @@ class Model_User extends Mundo_Object
 		'sites.$.id',
 		'sites.$.name',
 		'sites.$.roles.$',
-		'csrf',
 	);
 
 	protected $_rules = array(
@@ -61,6 +65,19 @@ class Model_User extends Mundo_Object
 		'sites.$.roles' => array(
 			array('alpha'),
 		),
+	);
+
+	protected $_hidden_fields = array(
+		'pw' => 0, 
+		'csrf' => 0
+	);
+
+	protected $_metadata = array(
+		'read_only' => array(
+			'_id',
+			'acct',
+			'sites.$.roles',
+		)
 	);
 
 	/**

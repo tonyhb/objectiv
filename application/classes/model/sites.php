@@ -6,7 +6,7 @@
  * @packaged App
  * @author Tony Holdstock-Brown
  **/
-class Model_Site extends Mundo_Object
+class Model_Sites extends App_Model
 {
 
 	protected $_collection = 'site';
@@ -81,5 +81,11 @@ class Model_Site extends Mundo_Object
 			array('Mundo::instance_of', array(':value', 'MongoId')),
 		),
 	);
+
+	protected $_metadata = array(
+		'children' => array(
+			'pages',
+			'objects'
+		));
 
 }

@@ -13,6 +13,8 @@ class App_Core
 
 	const VERSION = "0.0.1";
 
+	const LATEST_API_VERSION = 'v1';
+
 	/**
 	 * Stores the currently loaded site
 	 *
@@ -35,6 +37,13 @@ class App_Core
 	public static $language;
 
 	/**
+	 * Stores the API instance used in the request
+	 *
+	 * @var App_API_vX
+	 */
+	public static $api;
+
+	/**
 	 * Attempts to register a user and account with the CMS.
 	 *
 	 * Note the use of Arr::get($array, 'key') instead of $array['key'] so
@@ -53,18 +62,18 @@ class App_Core
 		// Purge empty fields just in case
 		$data = array_filter($data);
 
-		$account = Mundo::factory('account', array(
+		$account = Mundo::factory('accounts', array(
 			'contact' => Arr::get($data, 'contact_name'),
 			'company.name' => Arr::get($data, 'company_name'),
 		));
 
-		$user = Mundo::factory('user', array(
+		$user = Mundo::factory('users', array(
 			'name' => Arr::get($data, 'contact_name'),
 			'email' => Arr::get($data, 'contact_email'),
 			'pw' => Arr::get($data, 'password')
 		));
 
-		$site = Mundo::factory('site', array(
+		$site = Mundo::factory('sites', array(
 			'name' => Arr::get($data, 'site_name'),
 
 			// Default language

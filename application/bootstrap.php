@@ -130,48 +130,41 @@ Kohana::modules(array(
  **/
 Route::set('api', function($uri)
 	{
-		// Compile the regex
-		$regex = Route::compile('api(.<format>)/<version>(/<collection>(/<collection_id>))(/<resource>(/<resource_id>))');
+		// Compile the regex to ensure the API is called only with a valid URI
+		$regex = Route::compile(
+			'api(.<format>)/<version>(/<parameters>)',
+			array(
+				'version' => '(v[0-9]+)',
+				'parameters' => '.*'
+			)
+		);
 
 		if ( ! preg_match($regex, $uri, $matches))
 			return FALSE;
 
-		// Remove our index array keys
 		foreach ($matches as $key => $value)
 		{
+			// Remove the numerically indexed array keys created by preg_match, and instead keep the 
+			// string keys 'format', 'version' and 'parameters' to keep our controller code tidier.
 			if (is_int($key))
-			{
 				unset($matches[$key]);
-			}
 		}
 
 		if (empty($matches['format']))
 		{
-			// If the format wasn't provided use format from Accept headers or JSON as default
+			// If the format wasn't set in the URI set it from the HTTP Accept header.
 			$matches['format'] = (strpos($_SERVER['HTTP_ACCEPT'], 'application/xml')) ? 'xml' : 'json';
 		}
 
-		// Add defaults and other return parameters to the route
+		// Add defaults to the returned parameters, and finish up.
 		$matches += array(
-			'version' => '1',
-			'directory' => 'api/'.$matches['version'],
-			'controller' => isset($matches['resource']) ? $matches['resource'] : $matches['collection'],
-			'action' => $_SERVER['REQUEST_METHOD'],
-			'collection' => 'sites',
-			'collection_id' => NULL,
-			'resource' => NULL,
-			'resource_id' => NULL,
+			'parameters' => '',
+			'controller' => 'api',
+			'action' => 'index',
 		);
 
-		if ($matches['controller'] == 'base')
-		{
-			// Ensure no-one can access the base class: this will (eventually) throw a 404
-			$matches['controller'] = '';
-		}
-
 		return $matches;
-	},
-	'api(.<format>)/<version>(/<object>(/<id>))');
+	});
 
 Route::set('admin', function($uri)
 	{
@@ -192,7 +185,7 @@ Route::set('admin', function($uri)
 		$uri_segments = array_filter($uri_segments);
 
 		// Load an initial Mundo site object
-		$site = Mundo::factory('site');
+		$site = Mundo::factory('sites');
 
 		// Try and find out if we're accessing a specific site
 		if (substr($_SERVER['HTTP_HOST'], 0, 5) == 'admin')

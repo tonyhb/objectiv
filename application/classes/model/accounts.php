@@ -11,6 +11,11 @@ class Model_Accounts extends App_Model
 
 	protected $_collection = 'account';
 
+	protected $_parent_coll = array(
+		'uri' => NULL,
+		'mongo' => NULL
+	);
+
 	protected $_fields = array(
 		'_id',
 		'contact',
@@ -70,7 +75,7 @@ class Model_Accounts extends App_Model
 			'users'
 		));
 
-	public function API_Get()
+	public function API_Get($params = array())
 	{
 		$this->set('usr', array(array('id' => App::$user->get('_id'))));
 

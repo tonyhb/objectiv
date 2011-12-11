@@ -7,9 +7,13 @@
 
 <?php if (empty($layouts)): ?>
 	
-	<div class='alert-message info'>
+	<div class='alert-message block-message info'>
 		<a class='close' href='#'>x</a>
-		<p><a href='<?php echo $base ?>/layouts/new'>You have no layouts. Create one now?</a></p>
+		<p>You have no layouts at the moment. To create pages and content on your website you need to create a HTML layout.</p>
+
+		<div class='alert-actions'>
+			<a class='btn small' href='<?php echo $base ?>/layouts/new'>Create a layout now</a>
+		</div>
 	</div>
 <?php else: ?>
 	<ul class='unstyled'>

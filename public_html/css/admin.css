@@ -1,1 +1,10 @@
-.white { color: #fff }
+.white { color: #fff; }
+.form-stacked {
+	padding: 0;
+}
+.form-stacked .actions {
+	padding-right: 20px;
+}
+.alert-message.block-message .alert-actions {
+    margin-top: 10px;
+}

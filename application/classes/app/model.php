@@ -45,7 +45,7 @@ class App_Model extends Mundo_Object
 
 		if (empty($parent) OR ! isset($parent['id']) OR $parent['name'] !== $this->_parent_coll['uri'])
 		{
-			throw new App_Exception('The parent object for "user" was not supplied or was invalid');
+			throw new App_Exception('The parent resource was not supplied or was invalid');
 		}
 
 		if ( ! $parent['id'] instanceof MongoId)

@@ -117,11 +117,15 @@ class App_API_V1_Core
 
 		$params = $_GET;
 
-		if (strpos($object['name'], '?') !== FALSE)
+		// Was the last URI segment a resource name or ID? We use this for 
+		// internal query string parsing when $_GET isn't set
+		$last_item = (empty($object['id'])) ? array('key' => 'name', 'data' => $object['name']) : array('key' => 'id', 'data' => $object['id']);
+
+		if (strpos($last_item['data'], '?') !== FALSE)
 		{
 			// Find out if there are any query strings in the model name, from 
 			// internal requests. If so, parse them as GET query parameters
-			list($object['name'], $params) = explode('?', $object['name']);
+			list($object[$last_item['key']], $params) = explode('?', $last_item['data']);
 			parse_str($params, $params);
 		}
 
@@ -132,7 +136,7 @@ class App_API_V1_Core
 
 		$model = Mundo::factory($object['name']);
 
-		if (empty($object['id']) AND $method != 'GET')
+		if (empty($object['name']) AND $method != 'GET')
 		{
 			throw new App_API_Exception("GET is the only valid HTTP method to collections", NULL, 400);
 		}
@@ -151,13 +155,24 @@ class App_API_V1_Core
 
 		$response = $model->$method($params);
 
+		// Get the current response metadata to add the response time
 		$metadata = $this->_response->metadata();
 		$metadata['response_time'] = gmdate("Y-m-d\TH:i:s\Z");
 
-		$this->_response->metadata($metadata + $response['metadata']);
 		$this->_response->content($response['content']);
 		$this->_response->type($object['name']);
 
+		if (isset($response['status']))
+		{
+			$this->_response->code($response['status']);
+			$metadata['status'] = (int) $response['status'];
+		}
+		else
+		{
+			$metadata['status'] = 200;
+		}
+
+		$this->_response->metadata($metadata + $response['metadata']);
 		return $this->_response->encode_response();
 	}
 

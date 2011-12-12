@@ -18,7 +18,7 @@
 <?php else: ?>
 	<ul class='unstyled'>
 	<?php foreach($layouts as $layout): ?>
-		<li><a href="<?php echo $base ?>/layouts/edit/<?php echo $layout->_id->{'$id'} ?>"><?php echo $layout->n ?></a></li>
+		<li><h3><a href="<?php echo $base ?>/layouts/edit/<?php echo $layout['_id'] ?>"><?php echo $layout['name'] ?></a></h3></li>
 	<?php endforeach; ?>
 	</ul>
 <?php endif; ?>

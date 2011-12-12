@@ -55,4 +55,16 @@ class Model_Objects extends App_Model
 		),
 	);
 
+	protected $_metadata = array(
+		'read_only' => array(
+			'_id',
+			'hist',
+			'site'
+		)
+	);
+
+	protected $_hidden_fields = array(
+		'hist' => 0
+	);
+
 } // END class Model_Object

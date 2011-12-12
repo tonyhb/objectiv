@@ -8,3 +8,6 @@
 .alert-message.block-message .alert-actions {
     margin-top: 10px;
 }
+.alert-message.block-message p + ul {
+	margin-top: 10px;
+}

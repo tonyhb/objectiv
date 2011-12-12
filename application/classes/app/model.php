@@ -34,7 +34,6 @@ class App_Model extends Mundo_Object
 	 * Used in API requests to ensure that models are only loaded according to 
 	 * the parent specified in the URI
 	 *
-	 *
 	 */
 	public function set_parent($parent = array())
 	{
@@ -59,7 +58,9 @@ class App_Model extends Mundo_Object
 	/**
 	 * Default scaffolding for the GET API call
 	 *
-	 * @return array array of content/metadata for API response
+	 * @param  array  An array of modifiers to the API call, such as 'search' to
+	 *                search for resources or 'fields' to load certain fields
+	 * @return array  array of content/metadata for API response
 	 */
 	public function API_Get($params = array())
 	{
@@ -90,6 +91,18 @@ class App_Model extends Mundo_Object
 			$params['fields'] = array_merge($fields, $this->_hidden_fields);
 		}
 
+		// Ensure that we're not mixing including and excluding fields
+		if (in_array(1, $params['fields']) && in_array(0, $params['fields']))
+		{
+			foreach ($params['fields'] as $field => $value)
+			{
+				if ($value == 0)
+				{
+					unset($params['fields'][$field]);
+				}
+			}
+		}
+
 		if (isset($params['search']))
 		{
 			// Searching is done in the format of 'field:value,field:value'
@@ -115,7 +128,7 @@ class App_Model extends Mundo_Object
 			}
 
 			return array(
-				'content' => $this->get(),
+				'content' => $this->original(),
 				'metadata' => $this->_metadata
 			);
 		}
@@ -133,9 +146,76 @@ class App_Model extends Mundo_Object
 
 		foreach($cursor as $item)
 		{
-			$return['content'][] = $item->get();
+			$return['content'][] = $item->original();
 		}
 
 		return $return;
+	}
+
+	/**
+	 * Default scaffolding for the PUT API call.
+	 *
+	 * Creates resources from given postdata and returns the newly-loaded model 
+	 * data
+	 *
+	 * @return array array of content and metadata for the API response
+	 */
+	public function API_Put()
+	{
+		$this->set($_POST);
+		$this->save($_POST);
+
+		return array(
+			'status' => 201,
+			'content' => $this->original(),
+			'metadata' => $this->_metadata
+		);
+	}
+
+	/**
+	 * Default scaffolding for the POST API call, used when updating an object
+	 *
+	 */
+	public function API_Post()
+	{
+		$this->set('_id', new MongoId($_POST['_id']));
+		$this->load();
+
+		if ( ! $this->loaded())
+		{
+			throw new HTTP_Exception_404("Could not load the requested resource", NULL, 404);
+		}
+
+		if (isset($this->_metadata['read_only']))
+		{
+			foreach ($this->_metadata['read_only'] as $field)
+			{
+				if (isset($_POST[$field]))
+				{
+					unset($_POST[$field]);
+				}
+			}
+		}
+
+		if (isset($_POST['_id']))
+		{
+			unset($_POST['_id']);
+		}
+
+		// Revision history
+		if (in_array('hist', $this->_fields))
+		{
+			$compressed = gzdeflate($this->original('data'), 7);
+			$this->push('hist', array(new MongoDate(), new MongoBinData($compressed)));
+		}
+
+		$this->set($_POST);
+		$this->save();
+
+		return array(
+			'status' => 200,
+			'content' => $this->original(),
+			'metadata' => $this->_metadata
+		);
 	}
 }

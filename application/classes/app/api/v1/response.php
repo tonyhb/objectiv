@@ -141,4 +141,47 @@ abstract class App_API_V1_Response
 	}
 
 	abstract public function encode_response();
+
+	/**
+	 * This properly serializes and base64 encodes binary data in MongoBinData
+	 *
+	 * @param array   an array of model data
+	 * @return array  array of model data with encoded binary fields
+	 */
+	protected function serialize_binary($model)
+	{
+		if ( ! array_key_exists('binary', $this->metadata()))
+			return $model;
+
+		$binary_fields = $this->_response_metadata['binary'];
+
+		foreach ($model as $field => &$data)
+		{
+			if ( ! in_array($field, $binary_fields))
+				continue;
+
+			// Quick test: is the first element in this array a timestamp? 
+			// If not, this is an array of bindatas (for example, the 
+			// 'hist' field in an object
+			if ($data[0] instanceof MongoDate)
+			{
+				$data = array(
+					$data[0], // This is the mongo timestamp
+					base64_encode($data[1]->bin)
+				);
+			}
+			else
+			{
+				foreach ($data as $key => $element)
+				{
+					$data[$key] = array(
+						$element[0], // This is the mongo timestamp
+						base64_encode($element[1]->bin)
+					);
+				}
+			}
+		}
+
+		return $model;
+	}
 }

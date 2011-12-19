@@ -28,6 +28,11 @@ class Model_Objects extends App_Model
 		'hist',
 	);
 
+	protected $_parent_coll = array(
+		'uri' => 'sites',
+		'mongo' => 'site'
+	);
+
 	protected $_fields = array(
 		'_id',
 		'mod', // Last modified
@@ -60,11 +65,8 @@ class Model_Objects extends App_Model
 			'_id',
 			'hist',
 			'site'
-		)
-	);
-
-	protected $_hidden_fields = array(
-		'hist' => 0
+		),
+		'binary' => array('hist')
 	);
 
 } // END class Model_Object

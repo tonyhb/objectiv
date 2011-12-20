@@ -42,6 +42,7 @@ class Model_Objects extends App_Model
 	protected $_fields = array(
 		'_id',
 		'csm',  // Was this a custom object?
+		'lmod', // Last modified (used for revision history date modifications)
 		'type', // Object type
 		'name', // Object name
 		'data', // Object data
@@ -53,6 +54,9 @@ class Model_Objects extends App_Model
 		'type' => array(
 			array('not_empty'),
 			array('regex', array(':value', '#^[\w\s]+$#')),
+		),
+		'lmod' => array(
+			array('Mundo::instance_of', array(':value', 'MongoDate'))
 		),
 		'name' => array(
 			array('not_empty'),
@@ -69,6 +73,7 @@ class Model_Objects extends App_Model
 	protected $_metadata = array(
 		'read_only' => array(
 			'_id',
+			'lmod',
 			'hist',
 			'site'
 		),

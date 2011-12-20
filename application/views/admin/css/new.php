@@ -1,11 +1,11 @@
 <div class='span16'>
 	<div class='page-header'>
-		<h1>New layout</h1>
+		<h1>New stylesheet</h1>
 	</div>
 
 	<?php if ( ! empty($errors)): ?>
 		<div class='alert-message block-message error'>
-			<p><strong>Hey!</strong> Something wen't wrong when making your layout. Please fix the following errors: </p>
+			<p><strong>Hey!</strong> Something wen't wrong when making your CSS. Please fix the following errors: </p>
 			<ul>
 				<?php foreach($errors as $field => $error): ?>
 					<li><?php echo $error ?></li>
@@ -26,7 +26,7 @@
 			<div class='input'><textarea name="data" class='span16' style='height: 600px; font: 12px monospace;' ><?php if (isset($data['data']) )echo $data['data'] ?></textarea></div>
 		</div>
 
-		<input type='hidden' name='token' value="<?php echo Cookie::get('csrf') ?>" />
+		<input type='hidden' name='token' value='<?php echo Cookie::get('csrf') ?>' />
 
 		<div class='actions span16' >
 			<a class='btn small' href='<?php echo $base ?>/layouts/'>Cancel</a>

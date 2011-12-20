@@ -24,6 +24,9 @@
 					<?php if (App_Auth::authorise_user(array('view layouts', 'admin'))): ?>
 						<li><a href="<?php echo $base?>/layouts">Layouts</a></li>
 					<?php endif; ?>
+					<?php if (App_Auth::authorise_user(array('view css', 'admin'))): ?>
+						<li><a href="<?php echo $base?>/css">CSS</a></li>
+					<?php endif; ?>
 			<?php endif; ?>
 			</ul>
 		</div>

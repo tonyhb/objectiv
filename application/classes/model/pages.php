@@ -29,7 +29,8 @@ class Model_Pages extends App_Model
 	);
 
 	protected $_schemaless = array(
-		'data'
+		'page.data',
+		'hist'
 	);
 
 	/**
@@ -48,12 +49,11 @@ class Model_Pages extends App_Model
 	 */
 	protected $_fields = array(
 		'_id',
-		'name', // Page name
-		'slug', // Page slug
-		'objs', // Array of key => values of page options (show in sitemap, visibility etc.)
-		'data', // Array of objects used as data, in the form of ObjectId => Data
-		'cache', // Cached 
-		'lang', // Language (reserved for future use). 
+		'page.slug', // Despite data being schema-less this is here for clarification
+		'page.name', // Despite data being schema-less this is here for clarification
+		'page.data', // Page content
+		'hist', // Data history
+		'cche', // Cached 
 		'site'
 	);
 
@@ -62,6 +62,15 @@ class Model_Pages extends App_Model
 			array('not_empty'),
 			array('regex', array(':value', '#^[\w\s]+$#')),
 		),
+	);
+
+	protected $_metadata = array(
+		'read_only' => array(
+			'_id',
+			'hist',
+			'site'
+		),
+		'binary' => array('hist')
 	);
 
 } // END class Model_Object

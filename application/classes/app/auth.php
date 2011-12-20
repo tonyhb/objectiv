@@ -193,7 +193,7 @@ class App_Auth
 	 *
 	 * @return void
 	 */
-	public static function set_cookie($user_id, $expires = 1200)
+	public static function set_cookie($user_id, $expires = 3600)
 	{
 		// Work out expiration timestamp
 		$expiration = time() + $expires;

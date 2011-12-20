@@ -226,4 +226,34 @@ class App_API_V1_Core
 		return $response;
 	}
 
+
+	/**
+	 * Compresses data using the 'deflate' algorithm.
+	 *
+	 * @see http://www.php.net/manual/en/function.gzdeflate.php
+	 * @param string  data to compress
+	 * @return array  array containing a mongodate of the current timestamp and 
+	 *                compressed data.
+	 */
+	public function deflate_bindata($data)
+	{
+		$compressed = gzdeflate($data, 7);
+		return array(new MongoDate(), new MongoBinData($compressed));
+	}
+
+	/**
+	 * Inflates (uncompresses) data compressed using {@link deflate_bindata}
+	 *
+	 * @param string   Binary data compressed with the 'deflate' algorithm
+	 * @return string  Uncompressed data
+	 */
+	public function inflate_bindata($data)
+	{
+		if ($data instanceof MongoBinData)
+		{
+			$data = $data->bin;
+		}
+
+		return gzinflate($data);
+	}
 } // end App_API_1

@@ -11,12 +11,16 @@
 
 	<?php if ( ! empty($errors)): ?>
 		<div class='alert-message block-message error'>
-			<p><strong>Hey!</strong> Something wen't wrong when making your layout. Please fix the following errors: </p>
-			<ul>
-				<?php foreach($errors as $field => $error): ?>
-					<li><?php echo $error ?></li>
-				<?php endforeach; ?>
-			</ul>
+			<?php if (is_array($errors)): ?>
+				<p><strong>Hey!</strong> Something wen't wrong when making your layout. Please fix the following errors: </p>
+				<ul>
+					<?php foreach($errors as $field => $error): ?>
+						<li><?php echo $error ?></li>
+					<?php endforeach; ?>
+				</ul>
+			<?php else: ?>
+				<p><b><?php echo $errors; ?></b></p>
+			<?php endif; ?>
 		</div>
 	<?php endif; ?>
 

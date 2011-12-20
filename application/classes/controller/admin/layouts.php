@@ -19,7 +19,7 @@ class Controller_Admin_Layouts extends Controller_Admin
 		}
 
 		// Get all of the layouts
-		$response = App::$api->call('GET', 'sites/'.App::$site->original('_id').'/objects?fields=id,name&search=type:layout');
+		$response = App::$api->call('GET', 'sites/'.App::$site->original('_id').'/layouts?fields=id,name');
 
 		if ($response['contentType'] == 'error')
 		{
@@ -58,7 +58,7 @@ class Controller_Admin_Layouts extends Controller_Admin
 
 			try
 			{
-				$response = App::$api->call('PUT', 'sites/'.App::$site->original('_id').'/objects');
+				$response = App::$api->call('PUT', 'sites/'.App::$site->original('_id').'/layouts');
 			}
 			catch (Validation_Exception $e)
 			{
@@ -120,7 +120,7 @@ class Controller_Admin_Layouts extends Controller_Admin
 			// Valid CSRF token and the form has been posted. Run the API call to edit the layout
 			try
 			{
-				$response = App::$api->call('POST', 'sites/'.App::$site->original('_id').'/objects/'.$this->request->param('params'));
+				$response = App::$api->call('POST', 'sites/'.App::$site->original('_id').'/layouts/'.$this->request->param('params'));
 				$data = $response['content'];
 				$notices = 'The layout has been saved';
 			}
@@ -132,9 +132,24 @@ class Controller_Admin_Layouts extends Controller_Admin
 		else
 		{
 			// Get the layout
-			$response = App::$api->call('GET', 'sites/'.App::$site->original('_id').'/objects/'.$this->request->param('params').'?search=type:layout');
+			$response = App::$api->call('GET', 'sites/'.App::$site->original('_id').'/layouts/'.$this->request->param('params'));
 			$data = $response['content'];
 		}
+
+		// Are we looking at past data?
+		if (isset($_GET['history']))
+		{
+			if (isset($data['hist']) && array_key_exists($_GET['history'], $data['hist']))
+			{
+				$history_key = $_GET['history'];
+				$data['data'] = App::$api->inflate_bindata($data['hist'][$history_key][1]);
+			}
+			else
+			{
+				$errors = 'The requested history item could not be loaded';
+			}
+		}
+
 
 		$this->template->body = View::factory("admin/layouts/edit")
 			->set('data', $data)

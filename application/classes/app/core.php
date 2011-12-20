@@ -132,7 +132,7 @@ class App_Core
 		}
 
 		// Hash the password
-		$user->pw = Model_User::hash($user->pw);
+		$user->pw = Model_Users::hash($user->pw);
 
 		try
 		{

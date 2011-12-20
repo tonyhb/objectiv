@@ -56,7 +56,12 @@ class App_Model extends Mundo_Object
 	}
 
 	/**
-	 * Default scaffolding for the GET API call
+	 * Default scaffolding for the GET API call. This loads a model (or 
+	 * collection of models) based on the request URI. 
+	 *
+	 * Note that a subset of fields can be returned via the $_GET['fields'] 
+	 * parameter and one can search for models using the $_GET['search'] 
+	 * parameter.
 	 *
 	 * @param  array  An array of modifiers to the API call, such as 'search' to
 	 *                search for resources or 'fields' to load certain fields
@@ -113,6 +118,12 @@ class App_Model extends Mundo_Object
 			foreach ($searched_fields as $item)
 			{
 				list($field, $term) = explode(':', $item);
+
+				// Ensure these aren't hidden fields which, by default, aren't accessible 
+				// through the API, so disregard them even in a GET call.
+				if (array_key_exists($field, $this->_hidden_fields))
+					continue;
+
 				$this->set($field, $term);
 			}
 		}
@@ -186,14 +197,20 @@ class App_Model extends Mundo_Object
 			throw new HTTP_Exception_404("Could not load the requested resource", NULL, 404);
 		}
 
+		// Ignore hidden fields. To amend these use raw mundo objects.
+		$fields_to_ignore = array_keys($this->_hidden_fields);
+
 		if (isset($this->_metadata['read_only']))
 		{
-			foreach ($this->_metadata['read_only'] as $field)
+			// Also ignore read only fields...
+			$fields_to_ignore = array_merge($fields_to_ignore, $this->_metadata['read_only']);
+		}
+
+		foreach ($fields_to_ignore as $field)
+		{
+			if (isset($_POST[$field]))
 			{
-				if (isset($_POST[$field]))
-				{
-					unset($_POST[$field]);
-				}
+				unset($_POST[$field]);
 			}
 		}
 
@@ -205,8 +222,7 @@ class App_Model extends Mundo_Object
 		// Revision history
 		if (in_array('hist', $this->_fields))
 		{
-			$compressed = gzdeflate($this->original('data'), 7);
-			$this->push('hist', array(new MongoDate(), new MongoBinData($compressed)));
+			$this->push('hist', App::$api->deflate_bindata($this->original('data')));
 		}
 
 		$this->set($_POST);
@@ -218,4 +234,5 @@ class App_Model extends Mundo_Object
 			'metadata' => $this->_metadata
 		);
 	}
+
 }

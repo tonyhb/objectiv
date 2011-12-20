@@ -61,11 +61,13 @@ class Controller_Admin extends Controller_Template
 				$this->request->action('login');
 				return;
 			}
-			else
-			{
-				// Create a new CSRF token for the user upon valid logins
-				Cookie::set('csrf', UUID::v4());
-			}
+		}
+
+		if ( ! Cookie::get('csrf'))
+		{
+			// Create a new CSRF token for the user upon valid logins and token 
+			// refreshes.
+			Cookie::set('csrf', UUID::v4());
 		}
 
 		// Ensure the cookie's expiry is set from this hit

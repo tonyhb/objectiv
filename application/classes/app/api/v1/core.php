@@ -235,10 +235,10 @@ class App_API_V1_Core
 	 * @return array  array containing a mongodate of the current timestamp and 
 	 *                compressed data.
 	 */
-	public function deflate_bindata($data)
+	public function deflate_bindata($data, $date)
 	{
 		$compressed = gzdeflate($data, 7);
-		return array(new MongoDate(), new MongoBinData($compressed));
+		return array($date, new MongoBinData($compressed));
 	}
 
 	/**

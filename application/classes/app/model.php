@@ -173,6 +173,12 @@ class App_Model extends Mundo_Object
 	 */
 	public function API_Put()
 	{
+		if (in_array('lmod', $this->_fields))
+		{
+			// Ensure last modified is set with the creation data
+			$this->set('lmod', new MongoDate());
+		}
+
 		$this->set($_POST);
 		$this->save($_POST);
 
@@ -222,7 +228,12 @@ class App_Model extends Mundo_Object
 		// Revision history
 		if (in_array('hist', $this->_fields))
 		{
-			$this->push('hist', App::$api->deflate_bindata($this->original('data')));
+			$deflated_data = App::$api->deflate_bindata($this->original('data'), $this->original('lmod'));
+			$this->push('hist', $deflated_data);
+
+			// Revision history always has a last modified field for revision 
+			// history dates.
+			$this->set('lmod', new MongoDate());
 		}
 
 		$this->set($_POST);

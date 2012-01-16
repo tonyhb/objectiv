@@ -51,6 +51,7 @@ class App_API_V1_Core
 
 		if ($format === NULL)
 		{
+			/* @TODO Parse HTTP Accept header and respect priority parameters */
 			// If a format hasn't been specified, use the HTTP Accept parameter by default
 			$format = (strpos($_SERVER['HTTP_ACCEPT'], 'application/xml')) ? 'xml' : 'json';
 		}
@@ -69,7 +70,7 @@ class App_API_V1_Core
 		// Instantiate the API response class which handles the requested format
 		$this->_response = new $response;
 
-		// Give us some basic information for prognosis
+		// Give us some basic information
 		$this->_response->metadata(array(
 			'uri' => Request::$current->uri(),
 			'request_time' => gmdate("Y-m-d\TH:i:s\Z", $_SERVER['REQUEST_TIME']),

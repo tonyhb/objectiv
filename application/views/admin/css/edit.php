@@ -1,6 +1,6 @@
 <div class='span16'>
 	<div class='page-header'>
-		<h1>Edit layout <small><?php echo $data['name'] ?></small></h1>
+		<h1>Edit stylesheet <small><?php echo $data['name'] ?></small></h1>
 	</div>
 
 	<?php if ( ! empty($notices)): ?>
@@ -12,7 +12,7 @@
 	<?php if ( ! empty($errors)): ?>
 		<div class='alert-message block-message error'>
 			<?php if (is_array($errors)): ?>
-				<p><strong>Hey!</strong> Something wen't wrong when making your layout. Please fix the following errors: </p>
+				<p><strong>Hey!</strong> Something wen't wrong when making your stylesheet. Please fix the following errors: </p>
 				<ul>
 					<?php foreach($errors as $field => $error): ?>
 						<li><?php echo $error ?></li>
@@ -27,8 +27,8 @@
 	<form action="" method="post" class='form-stacked'>
 
 		<div class='clearfix'>
-			<label for="name">Layout name</label>
-			<div class='input'><input type="text" placeholder="Layout name" name="name" value="<?php echo $data['name'] ?>" class='span16' /></div>
+			<label for="name">CSS name</label>
+			<div class='input'><input type="text" placeholder="Stylesheet name" name="name" value="<?php echo $data['name'] ?>" class='span16' /></div>
 		</div>
 
 		<div class='clearfix'>
@@ -39,8 +39,8 @@
 		<input type='hidden' name='token' value='<?php echo Cookie::get('csrf') ?>' />
 
 		<div class='actions span16' >
-			<a class='btn small' href='<?php echo $base ?>/layouts/'>Cancel</a>
-			<button type="submit" class='btn primary pull-right'>Edit layout</button>
+			<a class='btn small' href='<?php echo $base ?>/css/'>Cancel</a>
+			<button type="submit" class='btn primary pull-right'>Edit CSS</button>
 		</div>
 	</form>
 </div>

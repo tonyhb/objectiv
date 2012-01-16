@@ -101,7 +101,7 @@ class Controller_Admin_Objects extends Controller_Admin {
 			}
 		}
 
-		if ($this->request->post() && $this->request->post('token') == App::$user->original('csrf'))
+		if ($this->request->post() && $this->request->post('token') == Cookie::get('csrf'))
 		{
 			$_POST['_id'] = $this->request->param('params');
 			$_POST['type'] = $this->_object;
@@ -122,6 +122,12 @@ class Controller_Admin_Objects extends Controller_Admin {
 		}
 		else
 		{
+			if ($this->request->post())
+			{
+				// CSRF forgery.
+				$errors = 'There was a security error with your provided information. Please try again, and if the problem persists clear browser data and try again.';
+			}
+
 			// Get the layout
 			$response = App::$api->call('GET', 'sites/'.App::$site->original('_id').'/'.$this->_object.'/'.$this->request->param('params'));
 			$data = $response['content'];

@@ -55,6 +55,7 @@ class App_Model extends Mundo_Object
 		$this->set($this->_parent_coll['mongo'], $parent['id']);
 	}
 
+
 	/**
 	 * Default scaffolding for the GET API call. This loads a model (or 
 	 * collection of models) based on the request URI. 
@@ -63,80 +64,51 @@ class App_Model extends Mundo_Object
 	 * parameter and one can search for models using the $_GET['search'] 
 	 * parameter.
 	 *
+	 *
+	 * ## Searching using the API
+	 *
+	 * Externally, searches are made using the 'search' GET parameter. An 
+	 * example is as follows:
+	 *
+	 * /api.json/v1/sites/?search=url.dom:example.com,name:Example+Site
+	 *
+	 * Note that these are NOT full text searches: they are exact text searches 
+	 * only.
+	 *
+	 *
+	 * ## Retrieving a subset of fields using the API
+	 *
+	 * To retrieve a subset of fields use the 'fields' query parameter as shown:
+	 * 
+	 * /api.json/v1/sites/?fields=_id,name
+	 *
+	 * This will return only the _id and name field. This can be matched with 
+	 * searching.
+	 *
+	 *
 	 * @param  array  An array of modifiers to the API call, such as 'search' to
 	 *                search for resources or 'fields' to load certain fields
 	 * @return array  array of content/metadata for API response
 	 */
 	public function API_Get($params = array())
 	{
-		if ( ! isset($params['fields']))
-		{
-			$params['fields'] = $this->_hidden_fields;
-		}
-		else
-		{
-			// Ensure we get only a subset of fields
-			$params['fields'] = explode(',', $params['fields']);
 
-			if ( ! is_array($params['fields']))
-			{
-				$params['fields'] = array($params['fields']);
-			}
-
-			// We need to ensure the fields are array keys and the values are 
-			// '1' to show them through Mongo
-			$fields = array();
-			foreach($params['fields'] as $value)
-			{
-				$fields[$value] = 1;
-			}
-
-			// Ensure that by explicitly stating we want hidden fields they 
-			// don't get them.
-			$params['fields'] = array_merge($fields, $this->_hidden_fields);
-		}
-
-		// Ensure that we're not mixing including and excluding fields
-		if (in_array(1, $params['fields']) && in_array(0, $params['fields']))
-		{
-			foreach ($params['fields'] as $field => $value)
-			{
-				if ($value == 0)
-				{
-					unset($params['fields'][$field]);
-				}
-			}
-		}
+		// Run the helper method to determine which fields to pass as return 
+		// values to MongoDB.
+		$fields = $this->_initialise_subsets(Arr::get($params, 'fields'));
 
 		if (isset($params['search']))
 		{
-			// Searching is done in the format of 'field:value,field:value'
-			// IE. a comma splits search terms
-
-			$searched_fields = explode(',', $params['search']);
-
-			foreach ($searched_fields as $item)
-			{
-				list($field, $term) = explode(':', $item);
-
-				// Ensure these aren't hidden fields which, by default, aren't accessible 
-				// through the API, so disregard them even in a GET call.
-				if (array_key_exists($field, $this->_hidden_fields))
-					continue;
-
-				$this->set($field, $term);
-			}
+			$this->_initialise_search($params['search']);
 		}
 
 		if ($this->get('_id') !== NULL)
 		{
 			// If the ID is set we only want 1 result.
-			$this->load($params['fields']);
+			$this->load($fields);
 
 			if ( ! $this->loaded())
-			{
 				throw new App_API_Exception("We could not load the requested resource. Please check the request parameters to ensure the resource exists or ensure you are authorised to access the resource.", NULL, 404);
-			}
 
 			return array(
 				'content' => $this->original(),
@@ -146,7 +118,7 @@ class App_Model extends Mundo_Object
 
 		// No ID is set so we return an array of results, even if there is only 
 		// one result
-		$cursor = $this->find($params['fields'])->limit(20);
+		$cursor = $this->find($fields)->limit(20);
 
 		$return = array(
 			'content' => array(),
@@ -161,6 +133,95 @@ class App_Model extends Mundo_Object
 		}
 
 		return $return;
+	}
+
+	/**
+	 * Returns a $fields array instructing MongoDB which fields to return from 
+	 * the database query.
+	 *
+	 * With null or an empty array passed to this method we return all visible 
+	 * fields.
+	 *
+	 * @param string  String of fields such as "_id,name,desc"
+	 * @return array  Array for the Mundo::find() method
+	 */
+	protected function _initialise_subsets($fields)
+	{
+		if ( ! $fields)
+		{
+			// We're getting all fields, so just return the hidden fields 
+			// property which tells mongo to return all but these.
+			return $this->_hidden_fields;
+		}
+		else
+		{
+			// Ensure we get only a subset of fields. To do this we need to loop 
+			// through each field, add it to an array and ensure hidden fields 
+			// aren't in there.
+
+			// Get each individual field
+			$fields = explode(',', $fields);
+
+			if ( ! is_array($fields))
+			{
+				// If there's only one treat it like multiple anyway, to reduce 
+				// code multiplication.
+				$fields = array($fields);
+			}
+
+			// We need to ensure the fields are array keys and the values are 
+			// '1' to show them through Mongo
+			$matched_fields = array();
+			foreach($fields as $value)
+			{
+				$matched_fields[$value] = 1;
+			}
+
+			// Add in our hidden fields, too, which will overwrite any explicit 
+			// calls for them with a '0', instructing MongoDB to hide them
+			$fields = array_merge($fields, $this->_hidden_fields);
+		}
+
+		// Ensure that we're not mixing including and excluding fields - MongoDB 
+		// can't handle this. If there are mixes remove all hidden fields, as 
+		// MongoDB is only going to return the ones we ask for
+		if (in_array(1, $fields) && in_array(0, $fields))
+		{
+			foreach ($fields as $item => $value)
+			{
+				if ($value == 0)
+					unset($fields[$item]);
+			}
+		}
+
+		return $fields;
+	}
+
+	/**
+	 * Helper method for API_Get which traverses all search parameters and sets 
+	 * the respective data ready for the find/load methods.
+	 *
+	 * @param string  Search parameters in the formmat of 
+	 *                'field1:value1,field2:value2'
+	 * @return void
+	 */
+	protected function _initialise_search($terms)
+	{
+		// Searching is done in the format of 'field:value,field:value'
+		// IE. a comma splits search terms
+		$searched_fields = explode(',', $terms);
+
+		foreach ($searched_fields as $item)
+		{
+			list($field, $term) = explode(':', $item);
+
+			// Ensure these aren't hidden fields which, by default, aren't accessible 
+			// through the API, so disregard them even in a GET call.
+			if (array_key_exists($field, $this->_hidden_fields))
+				continue;
+
+			$this->set($field, $term);
+		}
 	}
 
 	/**

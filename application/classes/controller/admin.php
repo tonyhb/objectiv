@@ -53,9 +53,11 @@ class Controller_Admin extends Controller_Template
 			}
 		}
 
-		// Check authentication and authorisation
+		// Check for pre-existing authentication and authorisation
 		if ( ! App_Auth::authenticate() OR (App::$site AND ! App_Auth::authorise_user(array('login', 'admin'))))
 		{
+			// Check for a submitted login form, and if we haven't just received 
+			// a successful login post show the login form.
 			if ( ! App_Auth::authenticate($this->request->post()))
 			{
 				$this->request->action('login');

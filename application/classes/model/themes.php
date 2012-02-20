@@ -18,6 +18,12 @@
  *
  *    This will allow us to (eventually) package and possibly themes on a store.
  *
+ * @TODO One day I'd like each theme to have an 'activity' field, loggin each 
+ *       event (editing or adding an object etc.) in a theme with the user, time 
+ *       and object ID. This may be suited more to an activity collection/model, 
+ *       though, because when a user changes their name it's easier to search 
+ *       one collection than many.
+ *
  * @package App
  * @subpackage Theme
  *

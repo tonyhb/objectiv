@@ -69,21 +69,13 @@ class Model_Accounts_Users extends App_Model
 
 	protected $_hidden_fields = array(
 		'pw' => 0, 
-		'csrf' => 0
 	);
 
-	public function metadata()
-	{
-		return array(
-			'schema' => array(
-				'read_only' => array(
-					'_id',
-					'acct',
-					'sites.$.roles',
-				)
-			)
-		);
-	}
+	protected $_read_only_fields = array(
+		'_id',
+		'acct',
+		'sites.$.roles',
+	);
 
 	/**
 	 * Hashes the password

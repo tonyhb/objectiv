@@ -66,19 +66,20 @@ class Model_Accounts extends App_Model
 		),
 	);
 
+	protected $_read_only_fields = array(
+		'_id',
+		'usr'
+	);
+
 	public function metadata()
 	{
-		return array(
-			'schema' => array(
-				'read_only' => array(
-					'_id',
-					'usr'
-				),
-			),
+		$metadata = parent::metadata();
+
+		return array_merge($metadata, array(
 			'children' => array(
 				'users'
 			)
-		);
+		));
 	}
 
 	public function API_Get($params = array())

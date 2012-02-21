@@ -24,16 +24,6 @@ class Model_Sites_Objects extends App_Model
 {
 	protected $_collection = 'object';
 
-	/** 
-	 * Allow overrides in the data field only
-	 *
-	 * @var array
-	 */
-	protected $_schemaless = array(
-		'data',
-		'hist',
-	);
-
 	protected $_parent_coll = array(
 		'uri' => 'sites',
 		'mongo' => 'site'
@@ -48,6 +38,11 @@ class Model_Sites_Objects extends App_Model
 		'data', // Object data
 		'hist', // Data history
 		'site', // Site
+	);
+
+	protected $_schemaless = array(
+		'data',
+		'hist',
 	);
 
 	protected $_rules = array(
@@ -70,20 +65,24 @@ class Model_Sites_Objects extends App_Model
 		),
 	);
 
+	protected $_read_only_fields = array(
+		'_id',
+		'lmod',
+		'hist',
+		'site'
+	);
+
+	protected $_binary_fields = array(
+		'hist'
+	);
+
 	public function metadata()
 	{
-		return array(
-			'schema' => array(
-				'read_only' => array(
-					'_id',
-					'lmod',
-					'hist',
-					'site'
-				),
-				'binary' => array('hist'),
-			),
+		$metadata = parent::metadata();
+
+		return array_merge($metadata, array(
 			'help'   => 'Objects allow you to create custom items in the CMS. To create a new object POST to this URI with the object name and field structure. The objects will be visible under /sites/{site_id}/{object_name}. This resource will only list object names and their structure.'
-		);
+		));
 	}
 
 } // END class Model_Object

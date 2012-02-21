@@ -68,19 +68,25 @@ class Model_Sites_Themes extends App_Model
 		'mongo' => 'site'
 	);
 
+	protected $_binary_fields = array(
+		'img'
+	);
+
+	protected $_read_only_fields = array(
+		'lmod'
+	);
+
 	public function metadata()
 	{
-		return array(
-			'schema' => array(
-				'binary' => array('img'),
-				'read_only' => array('lmod'),
-			),
+		$metadata = parent::metadata();
+
+		return array_merge($metadata, array(
 			'children' => array(
 				'css',
 				'html',
 				'js',
 			),
-		);
+		));
 	}
 
 }

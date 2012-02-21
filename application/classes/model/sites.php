@@ -82,15 +82,22 @@ class Model_Sites extends App_Model
 		),
 	);
 
+	protected $_read_only_fields = array(
+		'_id',
+		'acct', // Sites cannot be moved between accounts through the API.
+	);
+
 	public function metadata()
 	{
-		return array(
+		$metadata = parent::metadata();
+
+		return array_merge($metadata, array(
 			'children' => array(
 				'pages',
 				'objects',
 				'themes'
-			)
-		);
+			),
+		));
 	}
 
 }

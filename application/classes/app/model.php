@@ -24,6 +24,53 @@ abstract class App_Model extends Mundo_Object
 	protected $_hidden_fields = array();
 
 	/**
+	 * A list of field names in the $_fields property which are stored as binary 
+	 * data.
+	 *
+	 * @var array
+	 */
+	protected $_binary_fields = array();
+
+	/**
+	 * A list of field names in the $_fields property which are read only, ie.
+	 * non writable to the outside world.
+	 *
+	 * These are writable through internal requests.
+	 *
+	 * @var array
+	 */
+	protected $_read_only_fields = array();
+
+	/**
+	 * Returns an array of metadata about this model. This metadata includes:
+	 *  - A list of fields in the model
+	 *  - Which fields are read only or binary
+	 *  - Help or information about the model
+	 *
+	 * @return array
+	 */
+	public function metadata()
+	{
+		// Remove our hidden fields from the list of fields returned in the 
+		// metadata
+		$hidden = array_keys($this->_hidden_fields);
+		$fields = array_diff($this->_fields, $hidden);
+
+		// When JSON encoding a diffed array the numerical indexes are also 
+		// encoded. We only want a basic object such as {'id','name'}, not 
+		// {'0':'id','1':'name'}. This stops that.
+		$fields = array_values($fields);
+
+		return array(
+			'schema' => array(
+				'fields' => $fields,
+				'binary' => $this->_binary_fields,
+				'read_only' => $this->_read_only_fields,
+			)
+		);
+	}
+
+	/**
 	 * Used in API requests to ensure that models are only loaded according to 
 	 * the parent specified in the URI.
 	 *
@@ -290,10 +337,12 @@ abstract class App_Model extends Mundo_Object
 		// Ignore hidden fields. To amend these use raw mundo objects.
 		$fields_to_ignore = array_keys($this->_hidden_fields);
 
-		if (isset($this->_metadata['read_only']))
+		$metadata = $this->metadata();
+
+		if (isset($metadata['schema']['read_only']))
 		{
 			// Also ignore read only fields...
-			$fields_to_ignore = array_merge($fields_to_ignore, $this->_metadata['read_only']);
+			$fields_to_ignore = array_merge($fields_to_ignore, $metadata['schema']['read_only']);
 		}
 
 		foreach ($fields_to_ignore as $field)
@@ -330,13 +379,4 @@ abstract class App_Model extends Mundo_Object
 		);
 	}
 
-	/**
-	 * Returns an array of metadata about this model. This metadata includes:
-	 *  - A list of fields in the model
-	 *  - Which fields are read only or binary
-	 *  - Help or information about the model
-	 *
-	 * @return array
-	 */
-	abstract public function metadata();
 }

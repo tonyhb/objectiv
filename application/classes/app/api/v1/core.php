@@ -137,6 +137,14 @@ class App_API_V1_Core
 		// Remove the trailing underscore
 		$model_name = rtrim($model_name, '/');
 
+		// We parse the request URI for internal GET query strings below, but we 
+		// need to check to see if the model name has any now for the tests 
+		// below.
+		if (($position = strpos($model_name, '?')) !== FALSE)
+		{
+			$model_name = substr($model_name, 0, $position);
+		}
+
 		if (empty($model_name) AND $method != 'GET')
 			throw new App_API_Exception("GET is the only valid HTTP method to collections", NULL, 400);
 

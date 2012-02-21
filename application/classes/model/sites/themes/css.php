@@ -10,7 +10,7 @@
  * @subpackage Theme
  * @author Tony Holdstock-Brown
  */
-class Model_CSS extends Model_Objects {
+class Model_Sites_Themes_CSS extends Model_Sites_Objects {
 
 	protected $_collection = 'css';
 

@@ -6,7 +6,7 @@
  * @packaged App
  * @author Tony Holdstock-Brown
  **/
-class Model_Users extends App_Model
+class Model_Accounts_Users extends App_Model
 {
 
 	protected $_collection = 'user';

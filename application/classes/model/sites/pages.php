@@ -19,7 +19,7 @@
  * @package App
  * @author Tony Holdstock-Brown
  **/
-class Model_Pages extends App_Model
+class Model_Sites_Pages extends App_Model
 {
 	protected $_collection = 'page';
 

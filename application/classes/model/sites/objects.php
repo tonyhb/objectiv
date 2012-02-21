@@ -70,15 +70,20 @@ class Model_Sites_Objects extends App_Model
 		),
 	);
 
-	protected $_metadata = array(
-		'read_only' => array(
-			'_id',
-			'lmod',
-			'hist',
-			'site'
-		),
-		'binary' => array('hist'),
-		'help'   => 'Objects allow you to create custom items in the CMS. To create a new object POST to this URI with the object name and field structure. The objects will be visible under /sites/{site_id}/{object_name}. This resource will only list object names and their structure.'
-	);
+	public function metadata()
+	{
+		return array(
+			'schema' => array(
+				'read_only' => array(
+					'_id',
+					'lmod',
+					'hist',
+					'site'
+				),
+				'binary' => array('hist'),
+			),
+			'help'   => 'Objects allow you to create custom items in the CMS. To create a new object POST to this URI with the object name and field structure. The objects will be visible under /sites/{site_id}/{object_name}. This resource will only list object names and their structure.'
+		);
+	}
 
 } // END class Model_Object

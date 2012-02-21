@@ -72,13 +72,18 @@ class Model_Accounts_Users extends App_Model
 		'csrf' => 0
 	);
 
-	protected $_metadata = array(
-		'read_only' => array(
-			'_id',
-			'acct',
-			'sites.$.roles',
-		)
-	);
+	public function metadata()
+	{
+		return array(
+			'schema' => array(
+				'read_only' => array(
+					'_id',
+					'acct',
+					'sites.$.roles',
+				)
+			)
+		);
+	}
 
 	/**
 	 * Hashes the password

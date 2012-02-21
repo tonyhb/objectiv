@@ -1,6 +1,6 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
-class App_Model extends Mundo_Object
+abstract class App_Model extends Mundo_Object
 {
 
 	/**
@@ -22,13 +22,6 @@ class App_Model extends Mundo_Object
 	 * @var array
 	 */
 	protected $_hidden_fields = array();
-
-	/**
-	 * Metadata returned with an API request
-	 *
-	 * @var array
-	 */
-	protected $_metadata = array();
 
 	/**
 	 * Used in API requests to ensure that models are only loaded according to 
@@ -86,7 +79,6 @@ class App_Model extends Mundo_Object
 		return $this;
 	}
 
-
 	/**
 	 * Default scaffolding for the GET API call. This loads a model (or 
 	 * collection of models) based on the request URI. 
@@ -143,7 +135,7 @@ class App_Model extends Mundo_Object
 
 			return array(
 				'content' => $this->original(),
-				'metadata' => $this->_metadata
+				'metadata' => $this->metadata()
 			);
 		}
 
@@ -153,7 +145,7 @@ class App_Model extends Mundo_Object
 
 		$return = array(
 			'content' => array(),
-			'metadata' => $this->_metadata + array(
+			'metadata' => $this->metadata() + array(
 				'results' => $cursor->count()
 			)
 		);
@@ -277,7 +269,7 @@ class App_Model extends Mundo_Object
 		return array(
 			'status' => 201,
 			'content' => $this->original(),
-			'metadata' => $this->_metadata
+			'metadata' => $this->metadata()
 		);
 	}
 
@@ -334,8 +326,17 @@ class App_Model extends Mundo_Object
 		return array(
 			'status' => 200,
 			'content' => $this->original(),
-			'metadata' => $this->_metadata
+			'metadata' => $this->metadata()
 		);
 	}
 
+	/**
+	 * Returns an array of metadata about this model. This metadata includes:
+	 *  - A list of fields in the model
+	 *  - Which fields are read only or binary
+	 *  - Help or information about the model
+	 *
+	 * @return array
+	 */
+	abstract public function metadata();
 }

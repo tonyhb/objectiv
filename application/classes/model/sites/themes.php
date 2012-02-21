@@ -63,23 +63,24 @@ class Model_Sites_Themes extends App_Model
 		),
 	);
 
-	protected $_metadata = array(
-		'binary' => array(
-			'img'
-		),
-		'children' => array(
-			'css',
-			'html',
-			'js',
-		),
-		'read_only' => array(
-			'lmod',
-		),
-	);
-
 	protected $_parent_coll = array(
 		'uri' => 'sites',
 		'mongo' => 'site'
 	);
+
+	public function metadata()
+	{
+		return array(
+			'schema' => array(
+				'binary' => array('img'),
+				'read_only' => array('lmod'),
+			),
+			'children' => array(
+				'css',
+				'html',
+				'js',
+			),
+		);
+	}
 
 }

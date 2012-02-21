@@ -64,13 +64,18 @@ class Model_Sites_Pages extends App_Model
 		),
 	);
 
-	protected $_metadata = array(
-		'read_only' => array(
-			'_id',
-			'hist',
-			'site'
-		),
-		'binary' => array('hist')
-	);
+	public function metadata()
+	{
+		return array(
+			'schema' => array(
+				'read_only' => array(
+					'_id',
+					'hist',
+					'site'
+				),
+				'binary' => array('hist')
+			)
+		);
+	}
 
 } // END class Model_Object

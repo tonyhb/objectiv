@@ -52,4 +52,9 @@ class Model_Sites_Themes_CSS extends Model_Sites_Objects {
 			array('Mundo::instance_of', array(':value', 'MongoId'))
 		),
 	);
+
+	public function metadata()
+	{
+		return array();
+	}
 }

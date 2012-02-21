@@ -236,6 +236,7 @@ class App_API_V1_Core
 			$metadata['status'] = 200;
 		}
 
+		// Add the API method's metadata to our standard response metadata
 		$this->_response->metadata($metadata + $response['metadata']);
 
 		return $this->_response->encode_response();

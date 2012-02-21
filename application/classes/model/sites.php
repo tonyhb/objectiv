@@ -82,11 +82,15 @@ class Model_Sites extends App_Model
 		),
 	);
 
-	protected $_metadata = array(
-		'children' => array(
-			'pages',
-			'objects',
-			'themes'
-		));
+	public function metadata()
+	{
+		return array(
+			'children' => array(
+				'pages',
+				'objects',
+				'themes'
+			)
+		);
+	}
 
 }

@@ -58,7 +58,7 @@ class App_Auth
 			case array('email', 'password'):
 
 				// This is a email/password authentication check
-				$user = Mundo::factory('users')
+				$user = Mundo::factory('accounts/users')
 					->set('email', $options['email'])
 					->load();
 
@@ -66,7 +66,7 @@ class App_Auth
 				if ( ! $user->loaded())
 					return FALSE;
 
-				$hash = Model_Users::hash($options['password'], substr($user->original('pw'), 0, 21));
+				$hash = Model_Accounts_Users::hash($options['password'], substr($user->original('pw'), 0, 21));
 
 				if ($hash != $user->original('pw'))
 				{
@@ -103,7 +103,7 @@ class App_Auth
 					if ($hash != $hmac)
 						return FALSE;
 
-					$user = Mundo::factory('users')
+					$user = Mundo::factory('accounts/users')
 						->set('_id', new MongoId($user_id))
 						->load();
 

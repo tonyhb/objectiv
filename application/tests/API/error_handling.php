@@ -26,7 +26,7 @@ class API_Error_Handling extends PHPUnit_Framework_TestCase {
 		$this->assertEquals(400, $response->status());
 
 		$expected_message = array(
-			'contentType' => 'error',
+			'content_type' => 'error',
 			'metadata' => array(
 				'uri' => 'api.foobar/1',
 			),
@@ -54,7 +54,7 @@ class API_Error_Handling extends PHPUnit_Framework_TestCase {
 		$this->assertEquals(400, $response->status());
 
 		$expected_message = array(
-			'contentType' => 'error',
+			'content_type' => 'error',
 			'metadata' => array(
 				'uri' => 'api.json/foobar',
 			),
@@ -82,7 +82,7 @@ class API_Error_Handling extends PHPUnit_Framework_TestCase {
 		$this->assertEquals(404, $response->status());
 
 		$expected_message = array(
-			'contentType' => 'error',
+			'content_type' => 'error',
 			'metadata' => array(
 				'uri' => 'api.json/1/foobar',
 			),
@@ -114,7 +114,7 @@ class API_Error_Handling extends PHPUnit_Framework_TestCase {
 		$this->assertEquals(401, $response->status());
 
 		$expected_message = array(
-			'contentType' => 'error',
+			'content_type' => 'error',
 			'metadata' => array(
 				'uri' => 'api.json/1/accounts',
 				'headers' => array(

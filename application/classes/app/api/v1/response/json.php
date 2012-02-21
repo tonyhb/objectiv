@@ -27,7 +27,7 @@ class App_API_V1_Response_JSON extends App_API_V1_Response {
 		}
 
 		return json_encode(array(
-			'contentType' => $this->_response_type,
+			'content_type' => $this->_response_type,
 			'metadata' => $this->_response_metadata,
 			'content' => $content,
 		));

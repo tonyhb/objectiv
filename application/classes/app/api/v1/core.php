@@ -104,64 +104,119 @@ class App_API_V1_Core
 			return TRUE;
 		}
 
-		// The + array('', ..) is a quick hack to get around an empty/non max 
-		// length $uri parameter
-		list($collection['name'], $collection['id'], $object['name'], $object['id']) = explode('/', $uri, 4) + array('', '', '', '');
 
-		if (empty($object['name']))
+		/**
+		 * Parse the URI into model names and validate these.
+		 */
+
+		// Explode our URI into individual resources and IDs
+		$segments = explode('/', $uri, 6);
+
+		// This is a container which stores all resources called in the URI
+		$resources = array();
+
+		// This is a temporary variable to add all object names together to get 
+		// our requested object's model. For example, the user model is accessed 
+		// through accounts/{id}/users, so this ends up as accounts_users
+		$model_name = '';
+
+		foreach ($segments as $key => $value)
 		{
-			// We're accessing a collection (ie. a site) as an object directly, 
-			// as opposed to something like /site/$id/page/$page
-			$object = $collection;
-			unset($collection);
+			// Odd URI segments are always resource names
+			if (($key % 2) === 0)
+			{
+				array_push($resources, array(
+					'name' => $value,
+					'id'     => Arr::get($segments, $key + 1, '')
+				));
+
+				$model_name .= $value.'/';
+			}
 		}
 
+		// Remove the trailing underscore
+		$model_name = rtrim($model_name, '/');
+
+		if (empty($model_name) AND $method != 'GET')
+			throw new App_API_Exception("GET is the only valid HTTP method to collections", NULL, 400);
+
+		if ( ! Kohana::find_file('classes/model', $model_name))
+			throw new App_API_Exception("The requested collection ':model' could not be found", array(':model' => $model_name), 404);
+
+
+		/**
+		 * Parse internal query paramaters
+		 */
+
+		// For all external requests by default
 		$params = $_GET;
 
-		// Was the last URI segment a resource name or ID? We use this for 
-		// internal query string parsing when $_GET isn't set
-		$last_item = (empty($object['id'])) ? array('key' => 'name', 'data' => $object['name']) : array('key' => 'id', 'data' => $object['id']);
+		// Get the final segment of the API URI. We're not using $segments any 
+		// more so a destructive method is fine.
+		$last_segment = array_pop($segments);
 
-		if (strpos($last_item['data'], '?') !== FALSE)
+		// Get the last object from the parsed URI which has the get 
+		// parameter on.
+		$last_object = array_pop($resources);
+
+		if (strpos($last_segment, '?') !== FALSE)
 		{
+			// This was an internal request and the URI had an appended query 
+			// string simulating GET parameters. Remove this from the last URI 
+			// segment and parse as a standard GET request.
+
+			if (empty($last_object['id']))
+			{
+				list($last_object['name'], $params) = explode('?', $last_object['name']);
+			}
+			else
+			{
+				list($last_object['id'], $params) = explode('?', $last_object['id']);
+			}
+
 			// Find out if there are any query strings in the model name, from 
 			// internal requests. If so, parse them as GET query parameters
-			list($object[$last_item['key']], $params) = explode('?', $last_item['data']);
 			parse_str($params, $params);
 		}
 
-		if( ! Kohana::find_file('classes/model', $object['name']))
+
+		/**
+		 * Instantiate the requested resource (the last resource name) and set 
+		 * its parent resources, where necessary
+		 */
+		$model = Mundo::factory($model_name);
+
+		if ( ! empty($last_object['id']))
 		{
-			throw new App_API_Exception("The requested collection ':model' could not be found", array(':model' => $object['name']), 404);
+			$model->set('_id', new MongoId($last_object['id']));
 		}
 
-		$model = Mundo::factory($object['name']);
-
-		if (empty($object['name']) AND $method != 'GET')
+		// Because of the array_pop to get the $last_object above we are now 
+		// left with parent objects in $resources, so set the parent 
+		// accordingly.
+		if ( ! empty($resources))
 		{
-			throw new App_API_Exception("GET is the only valid HTTP method to collections", NULL, 400);
+			$model->set_parent($resources);
 		}
 
-		if ( ! empty($object['id']))
-		{
-			$model->set('_id', new MongoId($object['id']));
-		}
 
-		if (isset($collection))
-		{
-			$model->set_parent($collection);
-		}
-
+		/**
+		 * Execute the API call and get the response.
+		 */
 		$method = 'API_'.$method;
-
 		$response = $model->$method($params);
+
+
+		/**
+		 * Encode the response and add the necessary metadata.
+		 */
 
 		// Get the current response metadata to add the response time
 		$metadata = $this->_response->metadata();
 		$metadata['response_time'] = gmdate("Y-m-d\TH:i:s\Z");
 
 		$this->_response->content($response['content']);
-		$this->_response->type($object['name']);
+		$this->_response->type($last_object['name']);
 
 		if (isset($response['status']))
 		{
@@ -174,6 +229,7 @@ class App_API_V1_Core
 		}
 
 		$this->_response->metadata($metadata + $response['metadata']);
+
 		return $this->_response->encode_response();
 	}
 

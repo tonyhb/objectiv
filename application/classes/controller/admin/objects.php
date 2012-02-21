@@ -19,7 +19,7 @@ class Controller_Admin_Objects extends Controller_Admin {
 		// Get all of the objects
 		$response = App::$api->call('GET', 'sites/'.App::$site->original('_id').'/'.$this->_object.'?fields=id,name');
 
-		if ($response['contentType'] == 'error')
+		if ($response['content_type'] == 'error')
 		{
 			// Show the error status and return
 			$this->template->body = $response['content'];

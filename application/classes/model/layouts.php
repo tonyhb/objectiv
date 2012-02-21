@@ -7,4 +7,8 @@
  * @package App
  * @author Tony Holdstock-Brown
  */
-class Model_Layouts extends Model_Objects {}
+class Model_Layouts extends Model_CSS {
+
+	protected $_collection = 'layout';
+
+}

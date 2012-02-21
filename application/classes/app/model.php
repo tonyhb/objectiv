@@ -40,6 +40,7 @@ class App_Model extends Mundo_Object
 		if ($this->_parent_coll === NULL)
 			return;
 
+		// Remove any empties
 		$parent = array_filter($parent);
 
 		if (empty($parent) OR ! isset($parent['id']) OR $parent['name'] !== $this->_parent_coll['uri'])

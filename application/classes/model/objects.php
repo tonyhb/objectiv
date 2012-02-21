@@ -77,75 +77,8 @@ class Model_Objects extends App_Model
 			'hist',
 			'site'
 		),
-		'binary' => array('hist')
+		'binary' => array('hist'),
+		'help'   => 'Objects allow you to create custom items in the CMS. To create a new object POST to this URI with the object name and field structure. The objects will be visible under /sites/{site_id}/{object_name}. This resource will only list object names and their structure.'
 	);
-
-	protected $_hidden_fields = array(
-		'csm' => 0 // This is for internal use only.
-	);
-
-	/**
-	 * We extend the standard GET method to check whether we're accessing 
-	 * a default object (CSS, layouts, snippets etc.) or we're creating a new 
-	 * object.
-	 *
-	 * We could, realistically, make each default object its own model but we 
-	 * want the objects in the same mongo collection, which creates this problem 
-	 * for us.
-	 *
-	 */
-	public function API_Get($params = array())
-	{
-		if (get_class($this) != 'Model_Objects')
-		{
-			// This is a default object, for example CSS.
-			$this->set('csm', FALSE);
-
-			// Now we need to ensure we're searching for the correct default 
-			// object type.
-
-			$object_type = str_replace('Model_', '', get_class($this));
-			$object_type = strtolower($object_type);
-
-			if (array_key_exists('search', $params))
-			{
-				$position = strpos($params['search'], 'type:');
-
-				if ($position === FALSE)
-				{
-					$params['search'] .= ',type:'.$object_type;
-				}
-				else
-				{
-					// Get the position of the next item
-					$next_item_pos = strpos($params['search'], ',', $position);
-
-					$pre_type = substr($params['search'], 0, $position);
-
-					if ($next_item_pos !== FALSE)
-					{
-						$post_type = substr($params['search'], $next_item_pos);
-					}
-					else
-					{
-						$post_type = '';
-					}
-
-					$params['search'] = $pre_type.'type:'.$object_type.$post_type;
-				}
-			}
-			else
-			{
-				$params['search'] = 'type:'.$object_type;
-			}
-
-		}
-		else
-		{
-			$this->set('csm', TRUE);
-		}
-
-		return parent::API_Get($params);
-	}
 
 } // END class Model_Object

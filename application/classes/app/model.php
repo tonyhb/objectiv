@@ -32,8 +32,18 @@ class App_Model extends Mundo_Object
 
 	/**
 	 * Used in API requests to ensure that models are only loaded according to 
-	 * the parent specified in the URI
+	 * the parent specified in the URI.
 	 *
+	 * This allows us to chain relativity into the API URI. Take this example:
+	 *
+	 *   /sites/{id}/themes/{id}/css/{id}
+	 *
+	 * This loads a specific CSS file in a specific theme for a specific site. 
+	 * If either the theme ID or the site ID aren't a match the model returns 
+	 * a 404.
+	 *
+	 * @param array   Array of arrays containing the parent's model name and ID.
+	 * @return this
 	 */
 	public function set_parent($parent = array())
 	{
@@ -43,17 +53,37 @@ class App_Model extends Mundo_Object
 		// Remove any empties
 		$parent = array_filter($parent);
 
-		if (empty($parent) OR ! isset($parent['id']) OR $parent['name'] !== $this->_parent_coll['uri'])
+		if (Arr::is_assoc($this->_parent_coll))
 		{
-			throw new App_Exception('The parent resource was not supplied or was invalid');
+			// This is an associative array which means the parent coll property 
+			// only lists one parent, not an array of parents. Make this an 
+			// array so we only have to write code once.
+			$this->_parent_coll = array($this->_parent_coll);
 		}
 
-		if ( ! $parent['id'] instanceof MongoId)
+		foreach ($this->_parent_coll as $model_parent)
 		{
-			$parent['id'] = new MongoId($parent['id']);
+			// This is the first parent, which should be the last element in $parent, as
+			// this was in reverse order from the API URI
+			$supplied_parent = array_pop($parent);
+
+			if (empty($supplied_parent) OR ! isset($supplied_parent['id']) OR $supplied_parent['name'] !== $model_parent['uri'])
+			{
+				throw new App_Exception('The parent resource was not supplied or was invalid');
+			}
+
+			// Create a MongoID from the ID
+			if ( ! $supplied_parent['id'] instanceof MongoId)
+			{
+				$supplied_parent['id'] = new MongoId($supplied_parent['id']);
+			}
+
+			// Set the parent column with the ID of the parent model supplied 
+			// in the API URI and the field supplied by the model.
+			$this->set($model_parent['mongo'], $supplied_parent['id']);
 		}
 
-		$this->set($this->_parent_coll['mongo'], $parent['id']);
+		return $this;
 	}
 
 

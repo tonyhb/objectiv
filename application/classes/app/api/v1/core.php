@@ -236,11 +236,10 @@ class App_API_V1_Core
 		if (isset($response['status']))
 		{
 			$this->_response->code($response['status']);
-			$metadata['status'] = (int) $response['status'];
 		}
 		else
 		{
-			$metadata['status'] = 200;
+			$this->_response->code(200);
 		}
 
 		// Add the API method's metadata to our standard response metadata

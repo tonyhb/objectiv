@@ -249,7 +249,7 @@ abstract class App_Model extends Mundo_Object
 
 			// Add in our hidden fields, too, which will overwrite any explicit 
 			// calls for them with a '0', instructing MongoDB to hide them
-			$fields = array_merge($fields, $this->_hidden_fields);
+			$fields = array_merge($matched_fields, $this->_hidden_fields);
 		}
 
 		// Ensure that we're not mixing including and excluding fields - MongoDB 

@@ -26,6 +26,11 @@ class App_API_V1_Response_JSON extends App_API_V1_Response {
 			}
 		}
 
+		$this->_response_metadata['response_time'] = gmdate("Y-m-d\TH:i:s\Z");
+		$this->_response_metadata['status'] = $this->_status_code;
+
+		ksort($this->_response_metadata);
+
 		return json_encode(array(
 			'content_type' => $this->_response_type,
 			'metadata' => $this->_response_metadata,

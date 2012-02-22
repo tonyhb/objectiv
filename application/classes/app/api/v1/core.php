@@ -99,11 +99,19 @@ class App_API_V1_Core
 	{
 		if (empty($uri))
 		{
-			// @todo Discoverability: show which objects a user can currently 
+			// Discoverability: show which objects a user can currently 
 			// access and manipulate
-			return TRUE;
-		}
+			$metadata = $this->_response->metadata();
+			$metadata['children'] = array(
+				'accounts',
+				'sites'
+			);
 
+			$this->_response->code(204);  // 204 No Content
+
+			$this->_response->metadata($metadata);
+			return $this->_response->encode_response();
+		}
 
 		/**
 		 * Parse the URI into model names and validate these.
@@ -221,7 +229,6 @@ class App_API_V1_Core
 
 		// Get the current response metadata to add the response time
 		$metadata = $this->_response->metadata();
-		$metadata['response_time'] = gmdate("Y-m-d\TH:i:s\Z");
 
 		$this->_response->content($response['content']);
 		$this->_response->type($last_object['name']);

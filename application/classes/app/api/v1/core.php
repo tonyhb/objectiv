@@ -200,7 +200,7 @@ class App_API_V1_Core
 		 * Instantiate the requested resource (the last resource name) and set 
 		 * its parent resources, where necessary
 		 */
-		$model = Mundo::factory($model_name);
+		$model = App::model($model_name);
 
 		if ( ! empty($last_object['id']))
 		{

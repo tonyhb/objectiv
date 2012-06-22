@@ -6,15 +6,9 @@
  * @packaged App
  * @author Tony Holdstock-Brown
  **/
-class Model_Accounts extends App_Model
+class Model_Core_Accounts extends App_Model
 {
-
 	protected $_collection = 'account';
-
-	protected $_parent_coll = array(
-		'uri' => NULL,
-		'mongo' => NULL
-	);
 
 	protected $_fields = array(
 		'_id',
@@ -65,28 +59,5 @@ class Model_Accounts extends App_Model
 			array('numeric')
 		),
 	);
-
-	protected $_read_only_fields = array(
-		'_id',
-		'usr'
-	);
-
-	public function metadata()
-	{
-		$metadata = parent::metadata();
-
-		return array_merge($metadata, array(
-			'children' => array(
-				'users'
-			)
-		));
-	}
-
-	public function API_Get($params = array())
-	{
-		$this->set('usr', array(array('id' => App::$user->get('_id'))));
-
-		return parent::API_Get();
-	}
 
 } // END class Model_Account

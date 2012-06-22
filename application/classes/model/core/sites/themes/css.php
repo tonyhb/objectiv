@@ -10,12 +10,12 @@
  * @subpackage Theme
  * @author Tony Holdstock-Brown
  */
-class Model_Sites_Themes_CSS extends Model_Sites_Objects {
+class Model_Core_Sites_Themes_CSS extends Model_Sites_Objects {
 
 	protected $_collection = 'css';
 
 	protected $_parent_coll = array(
-		'uri' => 'themes',
+		'uri'   => 'themes',
 		'mongo' => 'theme'
 	);
 

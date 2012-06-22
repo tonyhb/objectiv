@@ -29,7 +29,7 @@
  *
  * @author Tony Holdstock-Brown
  */
-class Model_Sites_Themes extends App_Model
+class Model_Core_Sites_Themes extends App_Model
 {
 	protected $_collection = 'theme';
 

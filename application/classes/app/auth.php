@@ -40,13 +40,8 @@ class App_Auth
 	 * @param  array  Array of authentication arguments
 	 * @return bool   The status of authentication
 	 */
-	public static function authenticate($options = NULL)
+	public static function authenticate($options = array())
 	{
-		if ( ! $options)
-		{
-			$options = array();
-		}
-
 		// Remove any empty values from the array
 		$options = array_filter($options);
 
@@ -56,71 +51,87 @@ class App_Auth
 		switch($option_keys)
 		{
 			case array('email', 'password'):
-
-				// This is a email/password authentication check
-				$user = Mundo::factory('accounts/users')
-					->set('email', $options['email'])
-					->load();
-
-
-				if ( ! $user->loaded())
-					return FALSE;
-
-				$hash = Model_Accounts_Users::hash($options['password'], substr($user->original('pw'), 0, 21));
-
-				if ($hash != $user->original('pw'))
-				{
-					return FALSE;
-				}
-
-				// Set our app user
-				App::$user = $user;
-
+				App::$user = self::_authorise_via_password($options['email'], $options['password']);
 				break;
-
 			default:
-				// Try authenticating from cookie
-				if ($cookie = Cookie::get("auth"))
-				{
-					// Split the cookie into its comprised parts
-					list($user_id, $expiration, $hmac) = explode('|', $cookie);
-
-					if ($expiration < time())
-					{
-						// This could have been tampered with; ensure this cookie gets deleted!
-						Cookie::delete("auth");
-
-						// They aren't authorised
-						return FALSE;
-					}
-
-					// Generate the cookie key
-					$key = hash_hmac('sha224', $expiration.$user_id, self::COOKIE_KEY);
-
-					// Generate the hash for cookie authentication
-					$hash = hash_hmac('sha224', $expiration.$user_id, $key);
-
-					if ($hash != $hmac)
-						return FALSE;
-
-					$user = Mundo::factory('accounts/users')
-						->set('_id', new MongoId($user_id))
-						->load();
-
-					if ($user->loaded())
-					{
-						App::$user = $user;
-
-						return TRUE;
-					}
-				}
-
-				// Either necessary data was missing from our authentication method or the parameters were wrong
-				return FALSE;
+				App::$user = self::_authorise_via_cookie();
 		}
 
-		// If we got here everything is dandy.
+		if ( ! App::$user)
+			return FALSE;
+
 		return TRUE;
+	}
+
+	/**
+	 * Attempts to authorise a user based on a cookie set from other 
+	 * authorisation methods.
+	 *
+	 * Cookies are hashed using a key created from the COOKIE_KEY constant mixed 
+	 * with the cookie expiration and user ID. This creates a different, secure, 
+	 * cookie for each user every time they sign in.
+	 *
+	 * @return mixed  Boolean FALSE on failure, Mundo Object on success
+	 */
+	protected static function _authorise_via_cookie()
+	{
+		if ( ! $cookie = Cookie::get("auth"))
+			return FALSE;
+
+		// Split the cookie into its comprised parts
+		list($user_id, $expiration, $hmac) = explode('|', $cookie);
+
+		if ($expiration < time())
+		{
+			Cookie::delete("auth");
+			return FALSE;
+		}
+
+		// The cookie hash key is on a user-by-user basis for extra security
+		$key = hash_hmac('sha224', $expiration.$user_id, self::COOKIE_KEY);
+
+		// Generate the hash that this user should have
+		$hash = hash_hmac('sha224', $expiration.$user_id, $key);
+
+		if ($hash != $hmac)
+			return FALSE;
+
+		$user = App::model('accounts/users')
+			->set('_id', new MongoId($user_id))
+			->load();
+
+		if ( ! $user->loaded())
+			return FALSE;
+
+		return $user;
+	}
+
+	/**
+	 * Attempts to log a user in via their email address and password 
+	 * combination.
+	 *
+	 * This function is called from this class' authenticate function.
+	 *
+	 * @var string  The user's email address
+	 * @var string  The user's password
+	 * @return mixed  Boolean FALSE on failure or a Mundo_Object on success
+	 */
+	protected static function _authorise_via_password($email, $password)
+	{
+		// This is a email/password authentication check
+		$user = App::model('accounts/users')
+			->set('email', $email)
+			->load();
+
+		if ( ! $user->loaded())
+			return FALSE;
+
+		$hash = Model_Core_Accounts_Users::hash($password, substr($user->original('pw'), 0, 21));
+
+		if ($hash != $user->original('pw'))
+			return FALSE;
+
+		return $user;
 	}
 
 	/**
@@ -186,11 +197,16 @@ class App_Auth
 	}
 
 	/**
-	 * Sets a cookie for the admin panel/cookie based authentication
+	 * Sets a cookie for the admin panel/cookie based authentication.
 	 *
-	 * This uses theory from the following blog post:
-	 * http://raza.narfum.org/post/1/user-authentication-with-a-secure-cookie-protocol-in-php/
+	 * We use a key to sign the cookie based on the cookie's expiration, the 
+	 * user's ID and the class COOKIE_KEY constant. This creates a different 
+	 * cookie for each user every time they sign in; as secure as we can get it.
 	 *
+	 * @see http://raza.narfum.org/post/1/user-authentication-with-a-secure-cookie-protocol-in-php/
+	 *
+	 * @param int  The user's ID
+	 * @param int  Time until the cookie expires, in seconds.
 	 * @return void
 	 */
 	public static function set_cookie($user_id, $expires = 3600)
@@ -199,12 +215,11 @@ class App_Auth
 		$expiration = time() + $expires;
 
 		// Generate the cookie key
-		$key = hash_hmac('sha224', $expiration.$user_id, self::COOKIE_KEY);
-
-		// Generate the hash for cookie authentication
+		$key  = hash_hmac('sha224', $expiration.$user_id, self::COOKIE_KEY);
 		$hash = hash_hmac('sha224', $expiration.$user_id, $key);
 
-		// Set the cookie
+		// Set the cookie. Add the hashed expiration and ID so we can reverse 
+		// the process to test the cookie.
 		Cookie::set("auth", $user_id."|".$expiration."|".$hash, $expires);
 	}
 

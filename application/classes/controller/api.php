@@ -51,19 +51,5 @@ class Controller_API extends Controller
 		}
 	}
 
-	public function action_index()
-	{
-		// The request method is used in the next few lines, so store it in a convenience variable.
-		$api_method = $this->request->method();
-
-		// Ensure the request method is one we expect and can handle.
-		if ( ! in_array($api_method, array('PUT', 'POST', 'GET', 'DELETE')) OR ! $response = App::$api->call($api_method, $this->request->param('parameters')))
-		{
-			// We only handle PUT, POST, GET and DELETE methods
-			throw new App_API_Exception("Accepted HTTP Methods are PUT, POST, GET and DELETE", NULL, 400);
-		}
-
-		$this->response->body($response);
-	}
 
 } // END class Controller_API

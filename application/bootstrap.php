@@ -142,28 +142,49 @@ Route::set('api', function($uri)
 		if ( ! preg_match($regex, $uri, $matches))
 			return FALSE;
 
-		foreach ($matches as $key => $value)
-		{
-			// Remove the numerically indexed array keys created by preg_match, and instead keep the 
-			// string keys 'format', 'version' and 'parameters' to keep our controller code tidier.
-			if (is_int($key))
-				unset($matches[$key]);
-		}
+		$matches = array_filter($matches) + array(
+			'format'     => '',
+			'parameters' => '',
+			'controller' => 'api_'.$matches['version']
+		);
 
-		if (empty($matches['format']))
+		if ($matches['parameters'])
 		{
-			// If the format wasn't set in the URI set it from the HTTP Accept header.
-			$matches['format'] = (strpos($_SERVER['HTTP_ACCEPT'], 'application/xml')) ? 'xml' : 'json';
+			// We're accessing an object; find out whether it's a single 
+			// resource (odd number of API parameters) or a collection.
+			$action = (count($matches['parameters']) % 2 == 0) ? 'resource' : 'collection';
+
+			// We also want to loop through the parameters to put each requested 
+			// resource ID in an array with it's collection name
+			$matches['parameters'] = explode('/', $matches['parameters']); 
+			$resources = array();
+
+			for ($key = 0; $key < count($matches['parameters']); $key += 2)
+			{
+				if (isset($matches['parameters'][$key + 1]))
+				{
+					$resources += array($matches['parameters'][$key] => $matches['parameters'][$key + 1]);
+				}
+				else
+				{
+					$resources += array($matches['parameters'][$key] => NULL);
+				}
+			}
+		}
+		else
+		{
+			$resources = '';
+			$action    = 'index';
 		}
 
 		// Add defaults to the returned parameters, and finish up.
-		$matches += array(
-			'parameters' => '',
-			'controller' => 'api',
-			'action' => 'index',
+		return array(
+			'controller' => $matches['controller'],
+			'action'     => $action,
+			'format'     => $matches['format'],
+			'version'    => $matches['version'],
+			'resources'  => $resources,
 		);
-
-		return $matches;
 	});
 
 Route::set('admin', function($uri)
@@ -185,7 +206,7 @@ Route::set('admin', function($uri)
 		$uri_segments = array_filter($uri_segments);
 
 		// Load an initial Mundo site object
-		$site = Mundo::factory('sites');
+		$site = App::model('sites');
 
 		// Try and find out if we're accessing a specific site
 		if (substr($_SERVER['HTTP_HOST'], 0, 5) == 'admin')

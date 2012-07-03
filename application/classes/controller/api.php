@@ -15,23 +15,17 @@ class Controller_API extends Controller
 			$this->request->redirect('https://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']);
 		}
 
-		// Set salt for admin cookies
-		Cookie::$salt = 'D^FKoHhBfbjksJ7L7p{aBcc3]ou#yB';
-
-		// Ensure our cookies are set on only secure connections
-		Cookie::$secure = TRUE;
+		$this->response->headers('Content-type', File::mime_by_ext($this->request->param('format')));
 
 		// Store the name of the requested API class with the version number in a string for instatiation.
 		$api = 'App_API_'.$this->request->param('version');
 
 		if( ! Kohana::find_file('classes/app/api', $this->request->param('version')))
 		{
-			// The requested version doesn't exist. Load the latest version of the API
+			// Use the latest version
 			$api = 'App_API_'.App::LATEST_API_VERSION;
 
 			App::$api = new $api($this->request->param('format'));
-
-			// Ensure we set the requested response format for this error.
 			App::$api->set_format($this->request->param('format'));
 
 			// Throw an error with the new API
@@ -42,13 +36,8 @@ class Controller_API extends Controller
 		// API version as the one requested to throw error messages in index.php
 		App::$api = new $api($this->request->param('format'));
 
-		$this->response->headers('Content-type', File::mime_by_ext($this->request->param('format')));
-
-		// @todo: Run some authentication methods here.
 		if ( ! App_Auth::authenticate())
-		{
 			throw new App_API_Exception("You must authenticate before making API requests", NULL, 401);
-		}
 	}
 
 

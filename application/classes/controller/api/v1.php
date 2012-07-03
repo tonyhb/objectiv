@@ -1,9 +1,45 @@
 <?php defined('SYSPATH') or die('No direct script access');
 
-class Controller_Api_V1 extends Controller_API
+/**
+ * The base class for V1 controllers
+ *
+ * @category API
+ * @subcategry API Version 1
+ */
+class Controller_API_V1 extends Controller_API
 {
 
 	const VERSION = '1';
+
+	/**
+	 * Initialises the requested resource model
+	 *
+	 * @return void
+	 */
+	public function before()
+	{
+		parent::before();
+
+		if ($this->request->param('resources'))
+		{
+			$model_name = implode('_', array_keys($this->request->param('resources')));
+
+			try
+			{
+				$this->_model = App_API::model($model_name);
+			}
+			catch (App_API_Exception $e)
+			{
+				// This model couldn't be found; we must be loading a custom 
+				// resource collection from the Object model.
+
+				// @TODO: Load custom resources from the Object model
+				throw $e;
+			}
+
+			$this->_model->init($this->request->param('resources'));
+		}
+	}
 
 	/**
 	 * This action is called when a resource collection has not been supplied.
@@ -14,51 +50,9 @@ class Controller_Api_V1 extends Controller_API
 	 *
 	 * @return void
 	 */
-	public function action_index()
+	public function action_get()
 	{
 		echo 'discoverability';
-		return;
-		// The request method is used in the next few lines, so store it in a convenience variable.
-		$api_method = $this->request->method();
-
-		// Ensure the request method is one we expect and can handle.
-		if ( ! in_array($api_method, array('PUT', 'POST', 'GET', 'DELETE')) OR ! $response = App::$api->call($api_method, $this->request->param('parameters')))
-		{
-			// We only handle PUT, POST, GET and DELETE methods
-			throw new App_API_Exception("Accepted HTTP Methods are PUT, POST, GET and DELETE", NULL, 400);
-		}
-
-		$this->response->body($response);
 	}
 
-	/**
-	 * This action is called when a user requests a resource collection, such as 
-	 * `/api/v1/sites`.
-	 *
-	 */
-	public function action_collection()
-	{
-		$model = implode('_', array_keys($this->request->param('resources')));
-
-		try
-		{
-			$model = App_API::model($model);
-		}
-		catch (App_API_Exception $e)
-		{
-			// This model couldn't be found; we must be loading a custom 
-			// resource collection from the Object model.
-
-			// @TODO: Load custom resources from the Object model
-			throw $e;
-		}
-
-		print_r(get_class($model));
-	}
-
-	public function action_resource()
-	{
-		echo "Resource";
-		print_r($this->request->param());
-	}
 }

@@ -27,12 +27,6 @@ class Controller_Admin extends Controller_Template
 		// Call the standard template controller's before method
 		parent::before();
 
-		// Set salt for admin cookies
-		Cookie::$salt = 'D^FKoHhBfbjksJ7L7p{aBcc3]ou#yB';
-
-		// Ensure our cookies are set on only secure connections
-		Cookie::$secure = TRUE;
-
 		// Template stuff
 		if ($this->auto_render)
 		{

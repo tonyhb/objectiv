@@ -51,24 +51,4 @@ class Model_API_V1_Accounts extends Model_Core_Accounts
 		return $this;
 	}
 
-	/**
-	 * Returns metadata regarding the 'Accounts' collection or a loaded account 
-	 * resource
-	 *
-	 * @see Model_API_V1::metadata()
-	 * @return array
-	 */
-	/*
-	public function metadata()
-	{
-		$metadata = parent::metadata();
-
-		return array_merge($metadata, array(
-			'children' => array(
-				'users'
-			)
-		));
-	}
-	 */
-
 }

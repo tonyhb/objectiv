@@ -1,14 +1,9 @@
 <?php defined('SYSPATH') or die('No direct script access');
 
 /**
- * This class defines the methods an API model must provide.
- *
- * [!!] Note: We could use PHP 5.4's Traits to add multiple inheritance to API 
- * models, allowing them to extend Model_Core and use Model_API_V1 methods at 
- * the same time.
- * Using Traits would allow us to implement the TRACE http method once for all 
- * objects.
- *
+ * This provides common API methods for API models to use as a 'mixin', allowing 
+ * API models to extend Mundo for data manipulation whilst adding API-specific 
+ * properties and methods.
  *
  * @cateogry API
  * @subcategory API Version 1

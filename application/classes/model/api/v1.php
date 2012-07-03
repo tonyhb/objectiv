@@ -55,7 +55,7 @@ trait Model_API_V1
 
 			return array(
 				'content' => $this->original(),
-				'metadata' => $this->metadata()
+				'metadata' => array('status' => 200) + $this->metadata()
 			);
 		}
 
@@ -65,9 +65,7 @@ trait Model_API_V1
 
 		$return = array(
 			'content' => array(),
-			'metadata' => $this->metadata() + array(
-				'results' => $cursor->count()
-			)
+			'metadata' => array('status' => 200) + $this->metadata() + array('results' => $cursor->count())
 		);
 
 		foreach($cursor as $item)
@@ -156,12 +154,15 @@ trait Model_API_V1
 		$fields = array_values($fields);
 
 		return array(
-			'schema' => array(
-				'fields'    => $fields,
-				'binary'    => $this->_binary_fields,
-				'read_only' => $this->_read_only_fields,
+			'uri'           => Request::$current->uri(),
+			'request_time'  => gmdate("Y-m-d\TH:i:s\Z", $_SERVER['REQUEST_TIME']),
+			'response_time' => gmdate("Y-m-d\TH:i:s\Z", time()),
+			'schema'        => array(
+				'fields'      => $fields,
+				'binary'      => $this->_binary_fields,
+				'read_only'   => $this->_read_only_fields,
 			),
-			'children' => $this->_child_resources,
+			'children'      => $this->_child_resources,
 		);
 
 	}

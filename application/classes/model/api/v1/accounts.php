@@ -4,6 +4,13 @@ class Model_API_V1_Accounts extends Model_Core_Accounts
 {
 	use Model_API_V1; // Use our V1 API methods whilst still extending our main core models
 
+	/**
+	 * Fields that are not overwriteable through the public API.
+	 * These must be manipulated through the admin panel in the site, if we 
+	 * provide the option.
+	 *
+	 * @var array
+	 */
 	protected $_read_only_fields = array(
 		'_id',
 		'usr'
@@ -12,12 +19,22 @@ class Model_API_V1_Accounts extends Model_Core_Accounts
 	/**
 	 * Fields that are not visible to the public through our API
 	 *
-	 * @param array
+	 * @var array
 	 */
 	protected $_private_fields = array();
 
+	/**
+	 * Resources accessible using this account as a parent.
+	 *
+	 * @var array
+	 */
 	protected $_child_resources = array('users');
 
+	/**
+	 * Binary-encoded fields
+	 *
+	 * @var array
+	 */
 	protected $_binary_fields = array();
 
 	/**

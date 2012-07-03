@@ -32,7 +32,7 @@ class Controller_API_V1_Resource extends Controller_API_V1
 
 	public function action_get()
 	{
-		echo json_encode($this->_model->api_get($this->request->query()));
+		$this->data = $this->_model->api_get($this->request->query());
 	}
 
 }

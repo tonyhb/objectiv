@@ -12,6 +12,13 @@ class Controller_API_V1 extends Controller_API
 	const VERSION = '1';
 
 	/**
+	 * The result of the API call to be encoded and returned to the user
+	 *
+	 * @var mixed
+	 */
+	protected $data;
+
+	/**
 	 * Initialises the requested resource model
 	 *
 	 * @return void
@@ -53,6 +60,15 @@ class Controller_API_V1 extends Controller_API
 	public function action_get()
 	{
 		echo 'discoverability';
+	}
+
+	public function after()
+	{
+		$output = View::factory('api/'.$this->request->param('format'))
+			->set('data', $this->data)
+			->render();
+
+		$this->response->body($output);
 	}
 
 }

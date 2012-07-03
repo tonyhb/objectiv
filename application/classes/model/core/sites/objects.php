@@ -20,7 +20,7 @@
  * @package App
  * @author Tony Holdstock-Brown
  **/
-class Model_Core_Sites_Objects extends App_Model
+class Model_Core_Sites_Objects extends Mundo_Object
 {
 	protected $_collection = 'object';
 

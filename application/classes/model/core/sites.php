@@ -6,7 +6,7 @@
  * @packaged App
  * @author Tony Holdstock-Brown
  **/
-class Model_Core_Sites extends App_Model
+class Model_Core_Sites extends Mundo_Object
 {
 
 	protected $_collection = 'site';

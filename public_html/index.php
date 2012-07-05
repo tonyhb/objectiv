@@ -127,10 +127,29 @@ catch(Exception $e)
 		}
 		else
 		{
-			/**
-			 * @todo Postmark/SendGrid integration to send an email with 50x server errors
-			 */
-			$response = App::$api->error($e->getMessage(), $e->getCode());
+			if ( ! array_key_exists($e->getCode(), Response::$messages))
+			{
+				// This was a server error which has a status of something like '8'. This isn't a HTTP status code; throw a 500 server error.
+				$code = 500;
+				/**
+				* @todo Postmark/SendGrid integration to send an email with 50x server errors
+				*/
+			}
+			else
+			{
+				$code = $e->getCode();
+			}
+
+			$error_data = View::Factory('api/error/'.$request->param('format'))
+				->set(array(
+					'message' => $e->getMessage(),
+					'status'  => $code,
+				));
+
+			$response = Response::factory(array('status'  => $code))
+				->headers('Content-type', File::mime_by_ext($request->param('format')))
+				->status($code)
+				->body($error_data);
 		}
 
 		echo $response->send_headers()->body();

@@ -68,9 +68,6 @@ class Controller_Admin extends Controller_Template
 
 		// Ensure the cookie's expiry is set from this hit
 		App_Auth::set_cookie( (string) App::$user->_id);
-
-		$api = 'App_API_'.App::LATEST_API_VERSION;
-		App::$api = new $api;
 	}
 
 	/**

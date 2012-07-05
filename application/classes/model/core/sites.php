@@ -6,40 +6,40 @@
  * @packaged App
  * @author Tony Holdstock-Brown
  **/
-class Model_Sites extends App_Model
+class Model_Core_Sites extends Mundo_Object
 {
 
 	protected $_collection = 'site';
 
 	protected $_fields = array(
-		'_id',
-		'name',
+		'id'   => '_id',
+		'name' => 'name',
 
 		// Site URL settings
-		'url.can', // Canonical
-		'url.dom.$', // A list of domain names and the CMS subdomain (foobar.cms.com)
+		'url.canonical' => 'url.can', // Canonical
+		'url.domain.$'  => 'url.dom.$', // A list of domain names and the CMS subdomain (foobar.cms.com)
 
 		// Site settings 
-		'opt.lang', // Default language
-		'opt.ext', // Is there a file extension to add to all pages (.html)?
-		'opt.dev.ok', // Is this in preview mode?
-		'opt.dev.pass', // What's the psasword for preview?
+		'option.language'     => 'opt.lang', // Default language
+		'option.extension'    => 'opt.ext', // Is there a file extension to add to all pages (.html)?
+		'option.preview'      => 'opt.dev.ok', // Is this in preview mode?
+		'option.preview_pass' => 'opt.dev.pass', // What's the psasword for preview?
 
-		// Site meta
-		'meta.robots',
+		// Robots.txt
+		'robots',
 
 		// Redirects
-		'r.$.fr', // URL to redirect from
-		'r.$.to', // URL to redirect to
-		'r.$.p', // Permanent? True for 301, False for 302 (for storage space)
+		'redirect.$,from'      => 'r.$.fr', // URL to redirect from
+		'redirect.$,to'        => 'r.$.to', // URL to redirect to
+		'redirect.$,permanent' => 'r.$.p', // Permanent? True for 301, False for 302 (for storage space)
 
 		// Users
-		'usr.$.id', 
-		'usr.$.name',
-		'usr.$.roles.$',
+		'user.$.id'      => 'usr.$.id', 
+		'user.$.name'    => 'usr.$.name',
+		'user.$.roles.$' => 'usr.$.roles.$',
 
 		// Account
-		'acct',
+		'account' => 'acct',
 	);
 
 	protected $_rules = array(

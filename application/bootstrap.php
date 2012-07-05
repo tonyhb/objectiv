@@ -30,7 +30,7 @@ date_default_timezone_set('Europe/London');
  * @see  http://kohanaframework.org/guide/using.configuration
  * @see  http://php.net/setlocale
  */
-setlocale(LC_ALL, 'en_US.utf-8');
+setlocale(LC_ALL, 'en_GB.utf-8');
 
 /**
  * Enable the Kohana auto-loader.
@@ -53,7 +53,7 @@ ini_set('unserialize_callback_func', 'spl_autoload_call');
 /**
  * Set the default language
  */
-I18n::lang('en-uk');
+I18n::lang('en-gb');
 
 /**
  * Set Kohana::$environment if a 'KOHANA_ENV' environment variable has been supplied.
@@ -115,6 +115,12 @@ Kohana::modules(array(
 	'mundo'      => MODPATH.'mundo',
 	));
 
+// HTTPS only cookies and set salt for admin cookies only; not general site cookies.
+// Note that when loading the front of a site for a "random" visitor this will 
+// be overwritten.
+Cookie::$salt   = 'D^FKoHhBfbjksJ7L7p{aBcc3]ou#yB';
+Cookie::$secure = TRUE;
+
 /**
  * Set the routes. Each route must have a minimum of a name, a URI and a set of
  * defaults for the URI.
@@ -142,28 +148,53 @@ Route::set('api', function($uri)
 		if ( ! preg_match($regex, $uri, $matches))
 			return FALSE;
 
-		foreach ($matches as $key => $value)
-		{
-			// Remove the numerically indexed array keys created by preg_match, and instead keep the 
-			// string keys 'format', 'version' and 'parameters' to keep our controller code tidier.
-			if (is_int($key))
-				unset($matches[$key]);
-		}
+		$matches = array_filter($matches) + array(
+			'format'     => '',
+			'parameters' => '',
+			'controller' => 'api_'.$matches['version']
+		);
 
-		if (empty($matches['format']))
+		if ($matches['parameters'])
 		{
-			// If the format wasn't set in the URI set it from the HTTP Accept header.
-			$matches['format'] = (strpos($_SERVER['HTTP_ACCEPT'], 'application/xml')) ? 'xml' : 'json';
+			$matches['parameters'] = explode('/', $matches['parameters']); 
+
+			// We're accessing an object; find out whether it's a single 
+			// resource (odd number of API parameters) or a collection and route 
+			// to the correct controller.
+			$matches['controller'] .= (count($matches['parameters']) % 2 == 0) ? '_resource' : '_collection';
+
+			// We also want to loop through the parameters to put each requested 
+			// resource ID in an array with it's collection name
+			$resources = array();
+
+			for ($key = 0; $key < count($matches['parameters']); $key += 2)
+			{
+				if (isset($matches['parameters'][$key + 1]))
+				{
+					// This adds the requested ID to the collection name.
+					$resources += array($matches['parameters'][$key] => $matches['parameters'][$key + 1]);
+				}
+				else
+				{
+					// We're requesting a resource with no ID (ie. a collection)
+					$resources += array($matches['parameters'][$key] => NULL);
+				}
+			}
+		}
+		else
+		{
+			$resources = '';
+			$action    = 'index';
 		}
 
 		// Add defaults to the returned parameters, and finish up.
-		$matches += array(
-			'parameters' => '',
-			'controller' => 'api',
-			'action' => 'index',
+		return array(
+			'controller' => $matches['controller'],
+			'action'     => strtolower($_SERVER['REQUEST_METHOD']),
+			'format'     => $matches['format'],
+			'version'    => $matches['version'],
+			'resources'  => $resources,
 		);
-
-		return $matches;
 	});
 
 Route::set('admin', function($uri)
@@ -185,7 +216,7 @@ Route::set('admin', function($uri)
 		$uri_segments = array_filter($uri_segments);
 
 		// Load an initial Mundo site object
-		$site = Mundo::factory('sites');
+		$site = App::model('sites');
 
 		// Try and find out if we're accessing a specific site
 		if (substr($_SERVER['HTTP_HOST'], 0, 5) == 'admin')

@@ -44,6 +44,23 @@ class App_Core
 	public static $api;
 
 	/**
+	 * This is a factory method to return a new mundo model without having to type
+	 * the model name each time.
+	 *
+	 * For example, to create a new Model_Core_User you can call 
+	 * App::model('user') to return a class prepared for chainable calls.
+	 *
+	 * @param string  Name of the class to instantiate
+	 * @return mixed
+	 */
+	public static function model($model_name)
+	{
+		$model_name = 'Core_'.$model_name;
+
+		return Mundo::factory($model_name);
+	}
+
+	/**
 	 * Attempts to register a user and account with the CMS.
 	 *
 	 * Note the use of Arr::get($array, 'key') instead of $array['key'] so
@@ -62,18 +79,18 @@ class App_Core
 		// Purge empty fields just in case
 		$data = array_filter($data);
 
-		$account = Mundo::factory('accounts', array(
+		$account = App::model('accounts', array(
 			'contact' => Arr::get($data, 'contact_name'),
 			'company.name' => Arr::get($data, 'company_name'),
 		));
 
-		$user = Mundo::factory('users', array(
+		$user = App::model('users', array(
 			'name' => Arr::get($data, 'contact_name'),
 			'email' => Arr::get($data, 'contact_email'),
 			'pw' => Arr::get($data, 'password')
 		));
 
-		$site = Mundo::factory('sites', array(
+		$site = App::model('sites', array(
 			'name' => Arr::get($data, 'site_name'),
 
 			// Default language

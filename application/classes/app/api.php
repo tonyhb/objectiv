@@ -32,7 +32,7 @@ class App_API
 
 		if ( ! Kohana::find_file('classes', str_replace('_', '/', 'Model_'.$model)))
 		{
-			throw new App_API_Exception("Could not find the model file ':model'", array(':model' => $name));
+			throw new App_API_Exception("Could not find resource collection ':model'", array(':model' => $name), 404);
 		}
 
 		return Mundo::factory($model);

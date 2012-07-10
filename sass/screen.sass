@@ -1,0 +1,50 @@
+// ---------------------------------------------------------------------------
+// Imports
+
+@import frontend_grid
+@import common
+
+
+/* -------------------------------------------------------------------------
+/* Styles
+
+#logo
+  display: block
+  margin: 0 0 0 -13px
+  @include replace-text-with-dimensions('logo.png')
+
+#sign-in
+  @include background($green image-url('colour-line.png') 0 0 repeat-x)
+  @include span-columns(12 omega)
+  @include shadow
+  position: relative
+  margin-top: 150px
+  h1
+    @include hashing
+    @include adjust-font-size-to(24px)
+    @include padding-leader(1)
+    @include padding-trailer(0.5)
+    border-top: 1px solid #fff
+    margin-top: 5px
+    text-align: center
+    font-weight: 700
+  form
+    @include padding-leader(2)
+    @include padding-trailer(2)
+    @include clearfix
+  div
+    @include span-columns(5)
+    @include margin-trailer(.5)
+  input[type=email], input[type=password]
+  div:first-child
+    @include pre(1)
+  input[type=submit]
+    @include clearfix
+    @include pre(9)
+  a
+    @include adjust-font-size-to(12px)
+    position: absolute
+    top: 10px
+    right: 20px
+    color: $brown
+    text-decoration: none

@@ -90,9 +90,9 @@ html {
   -webkit-box-shadow: 0 0 5px rgba(0, 0, 0, 0.08), inset 0 0 2px white;
   -moz-box-shadow: 0 0 5px rgba(0, 0, 0, 0.08), inset 0 0 2px white;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.08), inset 0 0 2px white;
-  width: 7.726%;
+  width: 15.751%;
   float: left;
-  margin-right: 0.662%;
+  margin-right: 1.099%;
   display: inline;
   border: 1px solid rgba(0, 0, 0, 0.27);
   display: block;
@@ -140,8 +140,8 @@ input[type=text]:focus, input[type=password]:focus, input[type=email]:focus {
 /* line 74, ../../sass/_common.sass */
 .container {
   *zoom: 1;
-  max-width: 113.25em;
-  _width: 113.25em;
+  max-width: 68.25em;
+  _width: 68.25em;
   margin-left: auto;
   margin-right: auto;
   padding-left: 0.75em;
@@ -178,7 +178,7 @@ body {
 
 /* ------------------------------------------------------------------------- */
 /* Styles */
-/* line 11, sass/admin.sass */
+/* line 11, ../../sass/screen.sass */
 #logo {
   display: block;
   margin: 0 0 0 -13px;
@@ -192,10 +192,10 @@ body {
   height: 92px;
 }
 
-/* line 16, sass/admin.sass */
+/* line 16, ../../sass/screen.sass */
 #sign-in {
   background: #cce65e url('/css/img/colour-line.png?1341687197') 0 0 repeat-x;
-  width: 49.669%;
+  width: 100%;
   float: right;
   margin-right: 0;
   #margin-left: -0.75em;
@@ -206,7 +206,7 @@ body {
   position: relative;
   margin-top: 150px;
 }
-/* line 22, sass/admin.sass */
+/* line 22, ../../sass/screen.sass */
 #sign-in h1 {
   background: url('/css/img/line-hash.png?1341687206') 0 0 repeat;
   font-size: 1.5em;
@@ -218,32 +218,32 @@ body {
   text-align: center;
   font-weight: 700;
 }
-/* line 31, sass/admin.sass */
+/* line 31, ../../sass/screen.sass */
 #sign-in form {
   padding-top: 3em;
   padding-bottom: 3em;
   overflow: hidden;
   *zoom: 1;
 }
-/* line 35, sass/admin.sass */
+/* line 35, ../../sass/screen.sass */
 #sign-in div {
-  width: 20.309%;
+  width: 41.026%;
   float: left;
-  margin-right: 0.662%;
+  margin-right: 1.099%;
   display: inline;
   margin-bottom: 0.75em;
 }
-/* line 39, sass/admin.sass */
+/* line 39, ../../sass/screen.sass */
 #sign-in div:first-child {
-  margin-left: 4.194%;
+  margin-left: 8.425%;
 }
-/* line 41, sass/admin.sass */
+/* line 41, ../../sass/screen.sass */
 #sign-in input[type=submit] {
   overflow: hidden;
   *zoom: 1;
-  margin-left: 37.748%;
+  margin-left: 75.824%;
 }
-/* line 44, sass/admin.sass */
+/* line 44, ../../sass/screen.sass */
 #sign-in a {
   font-size: 0.75em;
   line-height: 2em;

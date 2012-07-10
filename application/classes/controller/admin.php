@@ -34,7 +34,7 @@ class Controller_Admin extends Controller_Template
 			$this->template->title =
 			$this->template->body = '';
 
-			$this->template->styles = array('css/bootstrap/bootstrap.css' => 'all', 'css/admin.css' => 'all');
+			$this->template->styles = array('css/admin.css' => 'screen');
 			$this->template->meta = array();
 
 			if (App::$site)
@@ -79,6 +79,9 @@ class Controller_Admin extends Controller_Template
 	 */
 	public function action_login()
 	{
+		// Use non-logged in styles
+		$this->template->styles = array('css/screen.css' => 'screen');
+
 		if (App_Auth::authenticate($this->request->post()) AND (App::$site AND App_Auth::authorise_user(array('login', 'admin'))))
 		{
 			// Call the default action

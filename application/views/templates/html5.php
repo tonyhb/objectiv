@@ -14,6 +14,8 @@
 
 </head>
 <body>
-	<?php echo $body ?>
+	<div class='container'>
+		<?php echo $body ?>
+	</div>
 </body>
 </html>

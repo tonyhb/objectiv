@@ -26,7 +26,7 @@ class Controller_Front extends Controller_Template
 			$this->template->title =
 			$this->template->body = '';
 
-			$this->template->styles = array('assets/css/front.css' => 'all');
+			$this->template->styles = array('css/screen.css' => 'screen');
 			$this->template->meta = array();
 		}
 	}

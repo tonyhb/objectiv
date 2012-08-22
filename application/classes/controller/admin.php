@@ -113,8 +113,19 @@ class Controller_Admin extends Controller_Template
 	 */
 	public function action_index()
 	{
-		// Show the list of sites
-		$this->template->body = View::factory('admin/sites/list');
+		if (count(App::$user->sites) == 1)
+		{
+			// We've only got one site, so don't auto-render the list and call 
+			// the dashboard controller through an HMVC request.
+			$this->auto_render = false;
+
+			$site_id = (string) App::$user->sites[0]['id'];
+			$this->response->body(Request::factory('admin/'.$site_id)->execute()->body());
+		}
+		else
+		{
+			$this->template->body = View::factory('admin/sites/list');
+		}
 	}
 
 	/**

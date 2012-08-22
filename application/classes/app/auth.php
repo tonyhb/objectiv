@@ -42,6 +42,10 @@ class App_Auth
 	 */
 	public static function authenticate($options = array())
 	{
+		// Already authenticated through perhaps a higher HMVC request.
+		if (App::$user)
+			return TRUE;
+
 		// Remove any empty values from the array
 		$options = array_filter($options);
 

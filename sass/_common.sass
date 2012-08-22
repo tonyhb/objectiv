@@ -5,8 +5,9 @@
 /* -------------------------------------------------------------------------
 /* Common colours
 
-$green: #cce65e
+$green: #cdf181
 $brown: #1c140d
+$orange: #ffcf7d
 
 /* -------------------------------------------------------------------------
 /* Mixins
@@ -33,8 +34,9 @@ $base-line-height: 24px
 @mixin button
   @include font
   @include adjust-font-size-to($base-font-size)
-  @include box-shadow(0 0 5px rgba(black,0.08), inset 0 0 2px white)
   @include span-columns(2)
+  // @include box-shadow(0 0 5px rgba(black,0.08), inset 0 0 2px white)
+  @include background($orange image-url('line-hash.png') 0 0 repeat)
   border: 1px solid rgba(black,0.27)
   display: block
   height: 43px
@@ -44,7 +46,7 @@ $base-line-height: 24px
 
 .grey-button
   @include button
-  @include background(image-url('button-grey-css3.png') 0 0)
+  //@include background(image-url('button-grey-css3.png') 0 0)
 
   &:hover
     @include background(image-url('button-grey-css3.png') 0 -43px)

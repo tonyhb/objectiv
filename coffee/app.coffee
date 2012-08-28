@@ -1,6 +1,8 @@
 # Defines our app.
 define(["jquery", "underscore", "backbone", "modernizr"], ($, _, Backbone, Modernizr) ->
 
-	app = {}
+	app = {
+		api : '/api.json/v1/'
+	}
 
 )

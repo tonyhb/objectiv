@@ -1,11 +1,15 @@
-require(["modernizr", "app", "router", "views/menu"], (Modernizr, app, router, Menu) ->
+require(["modernizr", "app", "router", "views/menu", "collections/sites"], (Modernizr, app, router, Menu, Sites) ->
 
 	# Add the router to our main App
-	app.router = new router.Router()
+	app.Router = new router.Router()
 
 	# Create the main menu before we begin our Router navigation.
-	app.menu = new Menu()
-	app.menu.render()
+	app.Menu = new Menu()
+	app.Menu.render()
+
+	# Find a list of sites we have access to
+	app.Sites = new Sites()
+	app.Sites.fetch()
 
 	if (Modernizr.history)
 		# Use HTML5 pushstate
@@ -15,7 +19,7 @@ require(["modernizr", "app", "router", "views/menu"], (Modernizr, app, router, M
 		$(document).on('click', 'a', (e) ->
 			# Remove /admin/ from the href and navigate
 			href = e.target.getAttribute('href').replace('/admin/', '')
-			app.router.navigate(href, { trigger: true })
+			app.Router.navigate(href, { trigger: true })
 
 			e.preventDefault()
 			false
@@ -23,5 +27,5 @@ require(["modernizr", "app", "router", "views/menu"], (Modernizr, app, router, M
 	else
 		Backbone.history.start({ root : "/admin/" })
 
-	app.router.navigate()
+	app.Router.navigate()
 )

@@ -3,7 +3,9 @@
 
   define(["jquery", "underscore", "backbone", "modernizr"], function($, _, Backbone, Modernizr) {
     var app;
-    return app = {};
+    return app = {
+      api: '/api.json/v1/'
+    };
   });
 
 }).call(this);

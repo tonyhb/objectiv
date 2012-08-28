@@ -12,36 +12,12 @@
 	<link href='https://fonts.googleapis.com/css?family=Open+Sans:400italic,800italic,400,700,800' rel='stylesheet' type='text/css'>
 </head>
 <body>
-<header>
-	<nav class='container'>
-		<ul>
-		<?php if (App::$site): ?>
-			<li id='site-list'>
-				<span><?= App::$site->name ?></span>
-				<?php if (App::$site->in_production): ?>
-					<small>Live at <?= App::$site->get('url.can') ?></small>
-				<?php else: ?>
-					<small>In development</small>
-				<?php endif; ?>
-			</li>
-		<?php endif; ?>
-
-		<?php if (App::$user AND App_Auth::authorise_user(array('login', 'admin'))): ?>
-			<li><a href="<?php echo $base ?>/pages">Pages</a></li>
-				<?php if (App_Auth::authorise_user(array('view layouts', 'admin'))): ?>
-					<li><a href="<?php echo $base?>/layouts">Layouts</a></li>
-				<?php endif; ?>
-				<?php if (App_Auth::authorise_user(array('view css', 'admin'))): ?>
-					<li><a href="<?php echo $base?>/css">CSS</a></li>
-				<?php endif; ?>
-		<?php endif; ?>
-		</ul>
-	</nav>
-</header>
+<header><div class='container' id='header-content'></div></header>
 
 <div class='container'>
 	<?php echo $body ?>
 </div>
 
+<script data-main="/assets/js/config" src="/assets/js/libs/require.min.js"></script>
 </body>
 </html>

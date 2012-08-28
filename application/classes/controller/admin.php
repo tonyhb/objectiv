@@ -8,7 +8,7 @@
  **/
 class Controller_Admin extends Controller_Template
 {
-	public $template = 'templates/admin';
+	public $template = 'admin/template';
 
 	public function before()
 	{
@@ -113,6 +113,7 @@ class Controller_Admin extends Controller_Template
 	 */
 	public function action_index()
 	{
+		/*
 		if (count(App::$user->sites) == 1)
 		{
 			// We've only got one site, so don't auto-render the list and call 
@@ -126,6 +127,7 @@ class Controller_Admin extends Controller_Template
 		{
 			$this->template->body = View::factory('admin/sites/list');
 		}
+		 */
 	}
 
 	/**

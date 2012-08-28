@@ -7,26 +7,30 @@
       Router: Backbone.Router.extend({
         routes: {
           "": "init",
-          ":site_id/dashboard": "showDashboard",
-          ":site_id/content": "showContent",
-          ":site_id/theme": "showTheme",
-          ":site_id/settings": "showSettings",
+          "dashboard": "showDashboard",
+          "content": "showContent",
+          "theme": "showTheme",
+          "settings": "showSettings",
           "*actions": "defaultRoute"
         },
         init: function() {
-          return console.log('init');
+          $('#menu .active').removeClass('active');
+          return $('#menu-dashboard').addClass('active');
         },
         showDashboard: function() {
+          $('#menu .active').removeClass('active');
           return console.log("Dashboard");
         },
         showContent: function() {
-          return console.log("Content");
+          $('#menu .active').removeClass('active');
+          return $('#menu-content').addClass('active');
         },
         showTheme: function() {
+          $('#menu .active').removeClass('active');
           return console.log("Theme");
         },
         showSettings: function() {
-          return console.log("Settings");
+          return $('#menu .active').removeClass('active');
         },
         defaultRoute: function(e) {
           console.log(e);

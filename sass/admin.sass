@@ -11,7 +11,27 @@
 nav
   background: #fff
 
+header, #menu li, #menu li a
+  height: 62px
+
 header
   background: #fcf9f7
-  height: 62px
   border-bottom: 1px solid #e0d7d0
+
+#menu
+  li.active
+    background: $green
+    a
+      @include hashing
+      color: #3d4826
+  li
+    float: left
+    line-height: 90px
+    font:
+      size: .7em
+      weight: bold
+    a
+      display: block
+      color: #7c8368
+      text-decoration: none
+      padding: 0 2em

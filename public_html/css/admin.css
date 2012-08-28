@@ -175,14 +175,42 @@ body {
 
 /* ------------------------------------------------------------------------- */
 /* Styles */
-/* line 11, sass/admin.sass */
+/* line 11, ../../sass/admin.sass */
 nav {
   background: white;
 }
 
-/* line 14, sass/admin.sass */
+/* line 14, ../../sass/admin.sass */
+header, #menu li, #menu li a {
+  height: 62px;
+}
+
+/* line 17, ../../sass/admin.sass */
 header {
   background: #fcf9f7;
-  height: 62px;
   border-bottom: 1px solid #e0d7d0;
+}
+
+/* line 22, ../../sass/admin.sass */
+#menu li.active {
+  background: #cdf181;
+}
+/* line 24, ../../sass/admin.sass */
+#menu li.active a {
+  background: url('/css/img/line-hash.png?1341949422') 0 0 repeat;
+  color: #3d4826;
+}
+/* line 27, ../../sass/admin.sass */
+#menu li {
+  float: left;
+  line-height: 90px;
+  font-size: 0.7em;
+  font-weight: bold;
+}
+/* line 33, ../../sass/admin.sass */
+#menu li a {
+  display: block;
+  color: #7c8368;
+  text-decoration: none;
+  padding: 0 2em;
 }

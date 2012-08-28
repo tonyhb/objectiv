@@ -3,9 +3,8 @@ require(["modernizr", "app", "router", "views/menu"], (Modernizr, app, router, M
 	# Add the router to our main App
 	app.router = new router.Router()
 
-	# Create the menu
+	# Create the main menu before we begin our Router navigation.
 	app.menu = new Menu()
-
 	app.menu.render()
 
 	if (Modernizr.history)

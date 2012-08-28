@@ -6,27 +6,31 @@ define(["app"], (app) ->
 		Router : Backbone.Router.extend({
 			routes: {
 				"" : "init",
-				":site_id/dashboard" : "showDashboard",
-				":site_id/content" : "showContent",
-				":site_id/theme" : "showTheme",
-				":site_id/settings" : "showSettings",
+				"dashboard" : "showDashboard",
+				"content" : "showContent",
+				"theme" : "showTheme",
+				"settings" : "showSettings",
 				"*actions" : "defaultRoute"
 			},
 
 			init : ->
-				console.log('init')
+				$('#menu .active').removeClass('active')
+				$('#menu-dashboard').addClass('active')
 
 			showDashboard : ->
+				$('#menu .active').removeClass('active')
 				console.log("Dashboard")
 
 			showContent : ->
-				console.log("Content")
+				$('#menu .active').removeClass('active')
+				$('#menu-content').addClass('active')
 
 			showTheme : ->
+				$('#menu .active').removeClass('active')
 				console.log("Theme")
 
 			showSettings : ->
-				console.log("Settings")
+				$('#menu .active').removeClass('active')
 
 			defaultRoute : (e) ->
 				console.log(e)

@@ -11,16 +11,16 @@ class Model_Core_Accounts extends Mundo_Object
 	protected $_collection = 'account';
 
 	protected $_fields = array(
-		'id'              => '_id',
-		'account_contact' => 'contact',
-		'user[id]'        => 'usr.$.id',
-		'user[name]'      => 'usr.$.name',
-		'company.name'    => 'company.name',
-		'company.reg_no'  => 'company.reg',
-		'company.vat_no'  => 'company.vat_no',
-		'company.address' => 'company.addr',
-		'sites[id]'       => 'sites.$.id',
-		'sites[name]'     => 'sites.$.name',
+		'id'               => '_id',
+		'account_contact'  => 'contact',
+		'user.$.id'        => 'usr.$.id',
+		'user.$.name'      => 'usr.$.name',
+		'company.name'     => 'company.name',
+		'company.reg_no'   => 'company.reg',
+		'company.vat_no'   => 'company.vat_no',
+		'company.address'  => 'company.addr',
+		'sites.$.id'       => 'sites.$.id',
+		'sites.$.name'     => 'sites.$.name',
 		/*
 		'p_sites', // Number of public sites
 		't_sites', // Number of sites in total

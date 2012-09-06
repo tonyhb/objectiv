@@ -1,31 +1,32 @@
-require(["modernizr", "app", "router", "views/menu", "collections/sites"], (Modernizr, app, router, Menu, Sites) ->
+require(["modernizr", "app", "router", "views/app", "collections/sites"], (Modernizr, app, router, AppView, Sites) ->
 
-	# Add the router to our main App
-	app.Router = new router.Router()
+  # Testing
+  window.app = app
 
-	# Create the main menu before we begin our Router navigation.
-	app.Menu = new Menu()
-	app.Menu.render()
+  # Add the router to our main App and start.
+  app.Router = new router.Router()
 
-	# Find a list of sites we have access to
-	app.Sites = new Sites()
-	app.Sites.fetch()
+  # Use sites from pre-generated HTML
+  app.Sites = new Sites()
+  app.Sites.reset(Seed.sites)
 
-	if (Modernizr.history)
-		# Use HTML5 pushstate
-		Backbone.history.start({ pushState : true, root : "/admin/"})
+  # Create our app
+  app.AppView = new AppView()
 
-		# And we now want to stop any proper links from working.
-		$(document).on('click', 'a', (e) ->
-			# Remove /admin/ from the href and navigate
-			href = e.target.getAttribute('href').replace('/admin/', '')
-			app.Router.navigate(href, { trigger: true })
+  if (Modernizr.history)
+    # Use HTML5 pushstate
+    Backbone.history.start({ pushState : true, root : "/admin/"})
+    # And we now want to stop any proper links from working.
+    $(document).on('click', 'a', (e) ->
+      # Remove /admin/ from the href and navigate
+      href = e.target.getAttribute('href').replace('/admin/', '')
+      app.Router.navigate(href, { trigger: true })
+      e.preventDefault()
+      false
+    )
+  else
+    Backbone.history.start({ root : "/admin/" })
 
-			e.preventDefault()
-			false
-		)
-	else
-		Backbone.history.start({ root : "/admin/" })
-
-	app.Router.navigate()
+  # Begin site navigation
+  app.Router.navigate()
 )

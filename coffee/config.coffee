@@ -20,6 +20,9 @@ require.config({
 			deps: ['jquery', 'underscore'],
 			exports: 'Backbone'
 		},
+		underscore: {
+			exports: '_'
+		},
 		modernizr: {
 			exports: 'Modernizr'
 		}

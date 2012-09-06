@@ -3,9 +3,19 @@
 
   define(["jquery", "underscore", "backbone", "modernizr"], function($, _, Backbone, Modernizr) {
     var app;
-    return app = {
-      api: '/api.json/v1/'
+    app = {
+      api: '/api.json/v1/',
+      currentSite: null
     };
+    _.extend(Backbone.Collection.prototype, {
+      parse: function(resp, xhr) {
+        if (resp.metadata.status !== 200) {
+          return {};
+        }
+        return resp.content;
+      }
+    });
+    return app;
   });
 
 }).call(this);

@@ -4,9 +4,7 @@
   define(["app"], function(app) {
     var Site;
     return Site = Backbone.Model.extend({
-      initialize: function() {
-        return console.log("A new site has been instantiated");
-      }
+      initialize: function() {}
     });
   });
 

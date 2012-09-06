@@ -2,13 +2,20 @@
 (function() {
 
   define(["app"], function(app) {
-    var Menu;
-    return Menu = Backbone.View.extend({
+    var MenuView;
+    return MenuView = Backbone.View.extend({
       tagName: 'ul',
       id: 'menu',
-      render: function(event) {
-        $(this.el).html("				<li id='menu-dashboard'><a href='/admin/'>Dashboard</a></li>				<li id='menu-content'><a href='/admin/content'>Content</a></li>				<li id='menu-theme'><a href='/admin/theme'>Theme</a></li>");
-        return $('#header-content').append(this.el);
+      initialize: function() {
+        return app.Sites.on('changeSite', function(site) {
+          return this.render();
+        }, this);
+      },
+      render: function() {
+        if (app.currentSite) {
+          $(this.el).html("          <li id='menu-dashboard'><a href='/admin/'>Dashboard</a></li>          <li id='menu-content'><a href='/admin/content'>Content</a></li>          <li id='menu-theme'><a href='/admin/theme'>Theme</a></li>");
+          return $('#header-content').append(this.el);
+        }
       }
     });
   });

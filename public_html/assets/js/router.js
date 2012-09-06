@@ -7,7 +7,6 @@
       Router: Backbone.Router.extend({
         routes: {
           "": "init",
-          "dashboard": "showDashboard",
           "content": "showContent",
           "theme": "showTheme",
           "settings": "showSettings",
@@ -16,10 +15,6 @@
         init: function() {
           $('#menu .active').removeClass('active');
           return $('#menu-dashboard').addClass('active');
-        },
-        showDashboard: function() {
-          $('#menu .active').removeClass('active');
-          return console.log("Dashboard");
         },
         showContent: function() {
           $('#menu .active').removeClass('active');

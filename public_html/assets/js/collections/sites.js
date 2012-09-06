@@ -5,7 +5,11 @@
     var Sites;
     return Sites = Backbone.Collection.extend({
       model: Site,
-      url: app.api + 'sites'
+      url: app.api + 'sites',
+      setCurrentSite: function(site) {
+        app.currentSite = site;
+        return this.trigger("changeSite", site);
+      }
     });
   });
 

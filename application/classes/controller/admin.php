@@ -6,63 +6,31 @@
  * @package CMS
  * @subpackage Admin
  **/
-class Controller_Admin extends Controller_Template
+class Controller_Admin extends Controller
 {
-	public $template = 'admin/template';
+
+	protected $_view;
 
 	public function before()
 	{
-		if (Request::$initial->is_ajax())
-		{
-			// Ensure that the template isn't rendered with asynchronous requests
-			$this->auto_render = FALSE;
-		}
-
-		if ( ! isset($_SERVER['HTTPS']))
-		{
+		if ( ! isset($_SERVER['HTTPS'])) {
 			// Ensure we always use HTTPS
 			$this->request->redirect('https://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']);
-		}
-
-		// Call the standard template controller's before method
-		parent::before();
-
-		// Template stuff
-		if ($this->auto_render)
-		{
-			// Initialise empty variables for the render process
-			$this->template->title =
-			$this->template->body = '';
-
-			$this->template->styles = array('css/admin.css' => 'screen');
-			$this->template->meta = array();
-
-			if (App::$site)
-			{
-				$this->template->base = (substr($_SERVER['HTTP_HOST'], 0, 5) == 'admin') ? '' : '/admin/'.App::$site->get('_id');
-			}
-			else
-			{
-				$this->template->base = (substr($_SERVER['HTTP_HOST'], 0, 5) == 'admin') ? '' : '/admin/';
-			}
 		}
 
 		// Check for pre-existing authentication and authorisation
 		if ( ! App_Auth::authenticate() OR (App::$site AND ! App_Auth::authorise_user(array('login', 'admin'))))
 		{
-			// Check for a submitted login form, and if we haven't just received 
-			// a successful login post show the login form.
-			if ( ! App_Auth::authenticate($this->request->post()))
-			{
-				$this->request->action('login');
-				return;
-			}
+			$this->request->action('login');
+			return;
 		}
 
 		if ( ! Cookie::get('csrf'))
 		{
 			// Create a new CSRF token for the user upon valid logins and token 
-			// refreshes.
+			// refreshes. Do NOT check for the cookie's existence in CSRF 
+			// checking because it doesn't prevent any clickjacking attacks. 
+			// Instead look for the token in the request.
 			Cookie::set('csrf', UUID::v4());
 		}
 
@@ -72,62 +40,45 @@ class Controller_Admin extends Controller_Template
 
 	/**
 	 * This method handles login logic for the admin panel.
-	 *
 	 * If a user is already logged in we call the index function by default.
 	 *
 	 * @return void
 	 */
 	public function action_login()
 	{
-		// Use non-logged in styles
-		$this->template->styles = array('css/screen.css' => 'screen');
-
 		if (App_Auth::authenticate($this->request->post()) AND (App::$site AND App_Auth::authorise_user(array('login', 'admin'))))
 		{
-			// Call the default action
+			// Successful login; run the default action and quit
 			$this->action_index();
-
-			// Halt processing
 			return;
 		}
 
-		if (App::$site)
-		{
+		$this->_view = View::factory('admin/login')->set(array(
+			'title'  => 'Log in',
+			'meta'   => array()
+		));
+
+		if (App::$site) {
 			// Show a noindex tag for subdomains on people's sites
-			$this->template->meta = array('robots' => 'noindex');
+			$this->_view->meta = array('robots' => 'noindex');
 		}
 
-		$this->template->body = View::factory('admin/login');
 	}
 
 	/**
-	 * This method handles admin panel routing. The admin routing logic in
-	 * the bootstrap uses lambda logic to account for both subdomains and
-	 * $cms.com/admin access routes.
-	 *
-	 * This is called after before() but before any administration logic.
-	 * For this reason, this method handles authentication, authorisation
-	 * and site loading.
 	 *
 	 * @return void
 	 */
 	public function action_index()
 	{
-		/*
-		if (count(App::$user->sites) == 1)
-		{
-			// We've only got one site, so don't auto-render the list and call 
-			// the dashboard controller through an HMVC request.
-			$this->auto_render = false;
+		$sites = Mundo::Factory('api/v1/sites')
+			->init()
+			->API_Get();
 
-			$site_id = (string) App::$user->sites[0]['id'];
-			$this->response->body(Request::factory('admin/'.$site_id)->execute()->body());
-		}
-		else
-		{
-			$this->template->body = View::factory('admin/sites/list');
-		}
-		 */
+		$this->_view = View::Factory('admin/template')->set(array(
+			'meta' => array('csrf' => Cookie::get('csrf')),
+			'sites' => $sites['content']
+		));
 	}
 
 	/**
@@ -136,14 +87,11 @@ class Controller_Admin extends Controller_Template
 	 */
 	public function after()
 	{
-		if (is_object($this->template->body))
-		{
-			// Ensure that if we use the $base variable in the main content it still works
-			$this->template->body->base = $this->template->base;
+		if ( ! $this->_view) {
+			$this->_view = View::Factory('admin/template');
 		}
 
-		// Call the standard template rendering process
-		parent::after();
+		$this->response->body($this->_view->render());
 	}
 
 } // END class controller_admin extends controller

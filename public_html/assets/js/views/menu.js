@@ -8,9 +8,17 @@
       id: 'menu',
       template: _.template(menuTemplate),
       initialize: function() {
-        return app.Sites.on('changeSite', function(site) {
+        app.Sites.on('changeSite', function(site) {
           return this.render();
         }, this);
+        return app.Router.on('all', function(name) {
+          var menu;
+          menu = name.replace('route:show', 'menu-').toLowerCase();
+          if (document.getElementById(menu)) {
+            $('#menu .active').removeClass('active');
+            return $('#' + menu).addClass('active');
+          }
+        });
       },
       render: function() {
         if (app.currentSite) {

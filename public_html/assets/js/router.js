@@ -6,28 +6,20 @@
     return Router = {
       Router: Backbone.Router.extend({
         routes: {
-          "": "init",
+          "": "showDashboard",
           "content": "showContent",
-          "theme": "showTheme",
+          "theme": "showheme",
           "settings": "showSettings",
           "*actions": "defaultRoute"
         },
-        init: function() {
-          $('#menu .active').removeClass('active');
-          return $('#menu-dashboard').addClass('active');
-        },
-        showContent: function() {
-          $('#menu .active').removeClass('active');
-          return $('#menu-content').addClass('active');
-        },
-        showTheme: function() {
-          $('#menu .active').removeClass('active');
-          return console.log("Theme");
-        },
-        showSettings: function() {
-          return $('#menu .active').removeClass('active');
-        },
+        showDashboard: function() {},
+        showContent: function() {},
+        showTheme: function() {},
+        showSettings: function() {},
         defaultRoute: function(e) {
+          if (e === "admin") {
+            return this.showDashboard();
+          }
           console.log(e);
           return console.log("default");
         }

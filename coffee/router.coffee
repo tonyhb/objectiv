@@ -5,30 +5,25 @@ define(["app"], (app) ->
   Router = {
     Router : Backbone.Router.extend({
       routes: {
-        "" : "init",
+        "" : "showDashboard",
         "content" : "showContent",
-        "theme" : "showTheme",
+        "theme" : "showheme",
         "settings" : "showSettings",
         "*actions" : "defaultRoute"
       },
 
-      init : ->
+      showDashboard : ->
         # Dashboard
-        $('#menu .active').removeClass('active')
-        $('#menu-dashboard').addClass('active')
 
       showContent : ->
-        $('#menu .active').removeClass('active')
-        $('#menu-content').addClass('active')
 
       showTheme : ->
-        $('#menu .active').removeClass('active')
-        console.log("Theme")
 
       showSettings : ->
-        $('#menu .active').removeClass('active')
 
       defaultRoute : (e) ->
+        return @.showDashboard() if e is "admin" # Admin without a forward slas (ie. /admin)
+
         console.log(e)
         console.log("default")
     })

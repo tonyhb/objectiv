@@ -7,6 +7,7 @@
     app.Sites = new Sites();
     app.Sites.reset(Seed.sites);
     app.AppView = new AppView();
+    app.AppView.render();
     if (Modernizr.history) {
       Backbone.history.start({
         pushState: true,

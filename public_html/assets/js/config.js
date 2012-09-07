@@ -8,7 +8,8 @@
       jquery: '/assets/js/libs/jquery-1.8.0.min',
       underscore: '/assets/js/libs/underscore-min',
       backbone: '/assets/js/libs/backbone-min',
-      modernizr: '/assets/js/libs/modernizr'
+      modernizr: '/assets/js/libs/modernizr',
+      text: '/assets/js/libs/text'
     },
     shim: {
       backbone: {

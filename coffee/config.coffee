@@ -12,6 +12,7 @@ require.config({
 		underscore: '/assets/js/libs/underscore-min',
 		backbone: '/assets/js/libs/backbone-min',
 		modernizr: '/assets/js/libs/modernizr',
+		text: '/assets/js/libs/text',
 	},
 
 	# These are non-AMD libraries.

@@ -12,6 +12,7 @@ require(["modernizr", "app", "router", "views/app", "collections/sites"], (Moder
 
   # Create our app
   app.AppView = new AppView()
+  app.AppView.render()
 
   if (Modernizr.history)
     # Use HTML5 pushstate

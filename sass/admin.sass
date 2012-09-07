@@ -36,3 +36,20 @@ header
       text-decoration: none
       padding: 0 2em
       outline: none
+
+#omnibox
+  height: 30px
+  width: 330px
+  border: 1px solid #e3dbd3
+  background: white
+  margin: 14px 0 0 0
+  @include box-shadow(0 0 5px rgba(black, 0.05))
+  float: right
+
+  input
+    border: 0 none
+    height: 30px
+    width: 330px
+    @include appearance('textfield')
+    &:focus
+      outline: 0 none

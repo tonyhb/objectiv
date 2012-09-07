@@ -215,3 +215,29 @@ header {
   padding: 0 2em;
   outline: none;
 }
+
+/* line 40, sass/admin.sass */
+#omnibox {
+  height: 30px;
+  width: 330px;
+  border: 1px solid #e3dbd3;
+  background: white;
+  margin: 14px 0 0 0;
+  -webkit-box-shadow: 0 0 5px rgba(0, 0, 0, 0.05);
+  -moz-box-shadow: 0 0 5px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.05);
+  float: right;
+}
+/* line 49, sass/admin.sass */
+#omnibox input {
+  border: 0 none;
+  height: 30px;
+  width: 330px;
+  -webkit-appearance: textfield;
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+/* line 54, sass/admin.sass */
+#omnibox input:focus {
+  outline: 0 none;
+}

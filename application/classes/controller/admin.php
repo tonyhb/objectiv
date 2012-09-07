@@ -19,7 +19,7 @@ class Controller_Admin extends Controller
 		}
 
 		// Check for pre-existing authentication and authorisation
-		if ( ! App_Auth::authenticate() OR (App::$site AND ! App_Auth::authorise_user(array('login', 'admin'))))
+		if ( ! App_Auth::authenticate($this->request->post()))
 		{
 			$this->request->action('login');
 			return;
@@ -46,7 +46,7 @@ class Controller_Admin extends Controller
 	 */
 	public function action_login()
 	{
-		if (App_Auth::authenticate($this->request->post()) AND (App::$site AND App_Auth::authorise_user(array('login', 'admin'))))
+		if (App_Auth::authenticate($this->request->post()))
 		{
 			// Successful login; run the default action and quit
 			$this->action_index();

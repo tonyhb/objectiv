@@ -20,7 +20,9 @@
 <body>
 	<div id="app">
 		<header><div class='container' id='header-content'></div></header>
-		<div class='container'><?php echo isset($body) ? $body : '' ?></div>
+		<section class='main'>
+			<div id='content' class='container'><?php echo isset($body) ? $body : '' ?></div>
+		</section>
 	</div>
 
 	<script data-main="/assets/js/config" src="/assets/js/libs/require.min.js"></script>

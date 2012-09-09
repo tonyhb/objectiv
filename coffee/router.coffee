@@ -7,15 +7,16 @@ define(["app", "views/dashboard/main", "views/content/view"], (app, DashboardVie
       routes: {
         "" : "showDashboard",
         "content" : "showContent",
-        "theme" : "showheme",
+        "theme" : "showTheme",
         "settings" : "showSettings",
         "*actions" : "defaultRoute"
       },
 
       showDashboard : ->
-        # Dashboard
+        app.AppView.showPage(new DashboardView())
 
       showContent : ->
+        app.AppView.showPage(new ContentView())
 
       showTheme : ->
 
@@ -25,7 +26,6 @@ define(["app", "views/dashboard/main", "views/content/view"], (app, DashboardVie
         return @.showDashboard() if e is "admin" # Admin without a forward slas (ie. /admin)
 
         console.log(e)
-        console.log("default")
     })
   }
 

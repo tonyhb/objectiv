@@ -12,13 +12,18 @@
         if (app.Sites.length === 1) {
           return app.Sites.setCurrentSite(app.Sites.models[0]);
         } else {
-
+          return console.log(app.Sites);
         }
       },
       render: function() {
         return _.each(this.innerViews, function(view, name) {
           return view.render();
         });
+      },
+      showPage: function(view) {
+        var data;
+        data = view.render();
+        return $('#content').html(data);
       }
     });
   });

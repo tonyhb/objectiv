@@ -17,11 +17,20 @@ define(["app", "views/menu", "views/search"], (app, MenuView, SearchView) ->
       else
         # @TODO Show a choice of sites
         # app.Sites.setCurrentSite(app.Sites.models[0])
+        console.log app.Sites
 
+    # Renders the initial app container. This is called at the start of app
+    # intiialisation, in main.js
     render: ->
       _.each(@.innerViews, (view, name) ->
         view.render()
       )
+
+    # Loads a CMS page.
+    showPage: (view) ->
+      # @TODO unbind current page's events etc.
+      data = view.render()
+      $('#content').html(data)
 
   })
 )

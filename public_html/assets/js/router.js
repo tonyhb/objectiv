@@ -8,20 +8,23 @@
         routes: {
           "": "showDashboard",
           "content": "showContent",
-          "theme": "showheme",
+          "theme": "showTheme",
           "settings": "showSettings",
           "*actions": "defaultRoute"
         },
-        showDashboard: function() {},
-        showContent: function() {},
+        showDashboard: function() {
+          return app.AppView.showPage(new DashboardView());
+        },
+        showContent: function() {
+          return app.AppView.showPage(new ContentView());
+        },
         showTheme: function() {},
         showSettings: function() {},
         defaultRoute: function(e) {
           if (e === "admin") {
             return this.showDashboard();
           }
-          console.log(e);
-          return console.log("default");
+          return console.log(e);
         }
       })
     };

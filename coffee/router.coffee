@@ -1,5 +1,5 @@
 # Define our router, requiring our App dependency.
-define(["app"], (app) ->
+define(["app", "views/dashboard/main", "views/content/view"], (app, DashboardView, ContentView) ->
 
   # Create the router
   Router = {

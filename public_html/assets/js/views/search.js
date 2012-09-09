@@ -2,8 +2,8 @@
 (function() {
 
   define(["app", "text!templates/search.html"], function(app, searchTemplate) {
-    var searchView;
-    return searchView = Backbone.View.extend({
+    var SearchView;
+    return SearchView = Backbone.View.extend({
       tagName: 'div',
       id: 'omnibox',
       template: _.template(searchTemplate),

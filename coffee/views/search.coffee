@@ -1,6 +1,6 @@
 define(["app", "text!templates/search.html"], (app, searchTemplate) ->
 
-  searchView = Backbone.View.extend({
+  SearchView = Backbone.View.extend({
     tagName: 'div',
     id: 'omnibox',
 

@@ -9,6 +9,7 @@ $green: #cdf181
 $black: #1c140d
 $brown: #4d3724
 $orange: #ffcf7d
+$input-borders: #e3dbd3
 
 /* -------------------------------------------------------------------------
 /* Mixins
@@ -16,8 +17,8 @@ $orange: #ffcf7d
 @mixin shadow
   @include box-shadow(0 0 15px rgba(black,0.12))
 
-@mixin hashing
-  @include background(image-url('line-hash.png') 0 0 repeat)
+@mixin hashing($color)
+  @include background($color image-url('line-hash.png') 0 0 repeat)
 
 /* -------------------------------------------------------------------------
 /* Typography

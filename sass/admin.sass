@@ -8,6 +8,9 @@
 /* -------------------------------------------------------------------------
 /* Styles
 
+html, body
+  height: 100%
+
 nav
   background: #fff
 
@@ -15,18 +18,25 @@ header, #menu li, #menu li a
   height: 62px
 
 header, #breadcrumbs
+  position: relative
+  z-index: 2
+  border-bottom: 1px solid #f2e9e1
+
+header
   background: #fcf9f7
-  border-bottom: 1px solid #e0d7d0
+  +background-image(linear-gradient(#fcf9f7, #fcf9f7 50%, #faf7f5 51%, #faf7f5))
 
 #menu
   li.active
     background: $green
     a
-      @include hashing
+      @include hashing(transparent)
       color: #3d4826
+      border-bottom: 1px solid #bfe373
   li
     float: left
     line-height: 90px
+    border-left: 1px solid #f2e9e1
     font:
       size: .7em
       weight: bold
@@ -36,14 +46,16 @@ header, #breadcrumbs
       text-decoration: none
       padding: 0 2em
       outline: none
+  li:last-child
+    border-right: 1px solid #f2e9e1
 
 #omnibox
   height: 30px
   width: 330px
-  border: 1px solid #e3dbd3
+  border: 1px solid $input-borders
   background: white
   margin: 14px 0 0 0
-  @include box-shadow(0 0 5px rgba(black, 0.05))
+  @include box-shadow(0 0 3px rgba(black, 0.05))
   float: right
 
   input
@@ -51,22 +63,26 @@ header, #breadcrumbs
     height: 30px
     width: 330px
     @include appearance('textfield')
+    @include font
     &:focus
       outline: 0 none
 
 #breadcrumbs
-  display: none /* temporarily disabled */
+  @include hashing(#fff)
+  border-bottom: 1px dashed #F2E9E1
   ol
-    height: 1.5em
-    line-height: 1.5em
+    height: 1.7em
+    line-height: 1.8em
     li 
       float: left
       margin: 0 .4em 0 0
       font:
         size: .7em
       a
-        color: #7c8368
+        color: #A8ADA2
         text-decoration: none
+        display: block
+        text-shadow: 0 0 3px white
         display: block
     li + li
       ::before
@@ -75,11 +91,18 @@ header, #breadcrumbs
       color: #3D4826
 
 section.main
+  position: relative
+  z-index: 1
   background: white
-  padding: 30px 0
+  padding: 2em 0 6em 0
+  border-bottom: 1px solid #f2f0ed
+  @include box-shadow(0 0 7px rgba(black, 0.06))
 
 h1
   color: $brown
   font-size: 1.2em
   font-weight: bold
   margin: 0 0 1em 0
+
+input[type=text], input[type=password], input[type=email]
+  border: 1px solid $input-borders

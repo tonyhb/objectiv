@@ -10,7 +10,8 @@ require(["modernizr", "app", "router", "views/app", "collections/sites"], (Moder
   app.Sites = new Sites()
   app.Sites.reset(Seed.sites)
 
-  # Create our app
+  # Create our app. This will automatically set the site if we have one site
+  # model in our collection.
   app.AppView = new AppView()
   app.AppView.render()
 
@@ -29,5 +30,6 @@ require(["modernizr", "app", "router", "views/app", "collections/sites"], (Moder
     Backbone.history.start({ root : "/admin/" })
 
   # Begin site navigation
-  app.Router.navigate()
+  # Note: commented out because this always renavigates to root
+  # app.Router.navigate()
 )

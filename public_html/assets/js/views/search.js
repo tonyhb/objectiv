@@ -14,6 +14,9 @@
           return this.rebuildCache(site);
         }, this);
       },
+      unbind: function() {
+        return app.Sites.off('changeSite', null, this);
+      },
       events: {
         'keydown #omnibox_search': 'filter',
         'click #omnibox_search': 'filter'

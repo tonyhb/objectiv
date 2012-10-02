@@ -19,7 +19,29 @@ class Controller_API_V1_Collection extends Controller_API_V1
 
 	public function action_get()
 	{
-		$this->data = $this->_model->api_get($this->request->query());
+		$this->response_data = $this->_model->api_get($this->request->query());
 	}
 
+	/**
+	 * This creates a new resource inside this collection.
+	 *
+	 * For example, by posting to /sites this will create a new site.
+	 */
+	public function action_post()
+	{
+		// Bootstrap.php will send JSON data as a request payload (into 
+		// the php://input wrapper), which is visible in the request body.
+		//
+		// Check for a standard POST first.
+		if ( ! $data = $this->request->post())
+		{
+			$data = $this->request->body();
+			if ( ! $data = json_decode($data))
+			{
+				throw new Exception("Incorrect data supplied", 402);
+			}
+		}
+
+		$this->response_data = $this->_model->api_post($data);
+	}
 }

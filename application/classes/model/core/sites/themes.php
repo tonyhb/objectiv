@@ -35,24 +35,24 @@ class Model_Core_Sites_Themes extends Mundo_Object
 
 	protected $_fields = array(
 		'_id',
-		'name', // Theme name
-		'desc', // Description, optional.
-		'img',  // Thumbnail preview of theme
-		'lmod', // Last modification date
+		'nme', // Theme name
+		'dsc', // Description, optional.
+		'img',  // Thumbnail preview of theme (links to the AWS S3 image file)
+		'lm', // Last modification date
 
-		'obj.$.id',   // ID of the object in this theme
-		'obj.$.type', // Stores the type of object in the theme (HTML, CSS, JS, Less etc.)
-		'obj.$.name', // Denormalisation, storing the names of each object in this theme 
+		'o.$.id',   // ID of the object in this theme
+		'o.$.typ', // Stores the type of object in the theme (HTML, CSS, JS, Less etc.)
+		'o.$.nme', // Denormalisation, storing the names of each object in this theme 
 
-		'site',
-		'acct'
+		'site', // Optional site
+		'acct'  // Optional account
 	);
 
 	protected $_rules = array(
-		'name' => array(
+		'nme' => array(
 			array('not_empty')
 		),
-		'lmod' => array(
+		'lm' => array(
 			array('Mundo::instance_of', array(':value', 'MongoDate')),
 		),
 		'site' => array(
@@ -62,31 +62,5 @@ class Model_Core_Sites_Themes extends Mundo_Object
 			array('Mundo::instance_of', array(':value', 'MongoId')),
 		),
 	);
-
-	protected $_parent_coll = array(
-		'uri' => 'sites',
-		'mongo' => 'site'
-	);
-
-	protected $_binary_fields = array(
-		'img'
-	);
-
-	protected $_read_only_fields = array(
-		'lmod'
-	);
-
-	public function metadata()
-	{
-		$metadata = parent::metadata();
-
-		return array_merge($metadata, array(
-			'children' => array(
-				'css',
-				'html',
-				'js',
-			),
-		));
-	}
 
 }

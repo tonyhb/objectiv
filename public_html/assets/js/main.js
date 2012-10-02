@@ -13,7 +13,7 @@
         pushState: true,
         root: "/admin/"
       });
-      $(document).on('click', 'a', function(e) {
+      return $(document).on('click', 'a', function(e) {
         var href;
         href = e.target.getAttribute('href').replace('/admin/', '');
         app.Router.navigate(href, {
@@ -23,11 +23,10 @@
         return false;
       });
     } else {
-      Backbone.history.start({
+      return Backbone.history.start({
         root: "/admin/"
       });
     }
-    return app.Router.navigate();
   });
 
 }).call(this);

@@ -234,6 +234,13 @@ Route::set('admin', function($uri)
 		}
 		else if (isset($uri_segments[1]))
 		{
+			// Temporary hack for Backbone.js
+			return array(
+				'controller' => 'admin',
+				'action' => 'index',
+			);
+			// End temporary hack!
+
 			$site->set('_id', new MongoId($uri_segments[1]))->load();
 
 			if ( ! $site->loaded())

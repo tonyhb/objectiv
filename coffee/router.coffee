@@ -1,5 +1,5 @@
 # Define our router, requiring our App dependency.
-define(["app", "views/dashboard/main", "views/content/view"], (app, DashboardView, ContentView) ->
+define(["app", "views/dashboard/main", "views/content/view", "views/themes/view", "views/themes/new"], (app, DashboardView, ContentView, ThemeView, NewThemeView) ->
 
   # Create the router
   Router = {
@@ -7,7 +7,8 @@ define(["app", "views/dashboard/main", "views/content/view"], (app, DashboardVie
       routes: {
         "" : "showDashboard",
         "content" : "showContent",
-        "theme" : "showTheme",
+        "themes" : "showTheme",
+        "themes/new" : "newTheme",
         "settings" : "showSettings",
         "*actions" : "defaultRoute"
       },
@@ -19,6 +20,10 @@ define(["app", "views/dashboard/main", "views/content/view"], (app, DashboardVie
         app.AppView.showPage(new ContentView())
 
       showTheme : ->
+        app.AppView.showPage(new ThemeView())
+
+      newTheme : ->
+        app.AppView.showPage(new NewThemeView())
 
       showSettings : ->
 

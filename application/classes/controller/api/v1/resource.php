@@ -32,7 +32,7 @@ class Controller_API_V1_Resource extends Controller_API_V1
 
 	public function action_get()
 	{
-		$this->data = $this->_model->api_get($this->request->query());
+		$this->response_data = $this->_model->api_get($this->request->query());
 	}
 
 }

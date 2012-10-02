@@ -5,7 +5,8 @@
     var app;
     app = {
       api: '/api.json/v1/',
-      currentSite: null
+      currentSite: null,
+      cache: {}
     };
     _.extend(Backbone.Collection.prototype, {
       parse: function(resp, xhr) {
@@ -14,6 +15,28 @@
         }
         return resp.content;
       }
+    });
+    _.extend(Backbone.Model.prototype, {
+      isNew: function() {
+        return this.attributes._id === null || this.attributes._id === void 0;
+      }
+    });
+    _.extend(Backbone.View.prototype, {
+      innerViews: {},
+      close: function() {
+        _.invoke(this.innerViews, 'close');
+        this.undelegateEvents();
+        this.unbind();
+        this.remove();
+        if (this.onClose) {
+          this.onClose();
+        }
+        return this.innerViews = {};
+      },
+      remove: function() {
+        return $(this.el).remove();
+      },
+      unbind: function() {}
     });
     return app;
   });

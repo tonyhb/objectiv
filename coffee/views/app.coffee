@@ -28,9 +28,18 @@ define(["app", "views/menu", "views/search"], (app, MenuView, SearchView) ->
 
     # Loads a CMS page.
     showPage: (view) ->
-      # @TODO unbind current page's events etc.
+      # Close the current view to unbind events and remove nodes
+      @.innerViews.ContentView.close() if @.innerViews.ContentView isnt undefined
+
+      # Add our content view and render it to the page
+      @.innerViews.ContentView = view
+
+      # Add the HTML to our wrapper
       data = view.render()
       $('#content').html(data)
+
+      # Bind events
+      view.delegateEvents()
 
   })
 )

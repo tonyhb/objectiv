@@ -20,6 +20,9 @@ define(["app", "text!templates/search.html"], (app, searchTemplate) ->
         @.rebuildCache(site)
       , @)
 
+    unbind: () ->
+      app.Sites.off('changeSite', null, @)
+
     events: {
       'keydown #omnibox_search': 'filter'
       'click #omnibox_search': 'filter'

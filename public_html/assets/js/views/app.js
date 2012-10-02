@@ -22,8 +22,13 @@
       },
       showPage: function(view) {
         var data;
+        if (this.innerViews.ContentView !== void 0) {
+          this.innerViews.ContentView.close();
+        }
+        this.innerViews.ContentView = view;
         data = view.render();
-        return $('#content').html(data);
+        $('#content').html(data);
+        return view.delegateEvents();
       }
     });
   });

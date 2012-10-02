@@ -16,7 +16,7 @@ class Controller_API_V1 extends Controller_API
 	 *
 	 * @var mixed
 	 */
-	protected $data;
+	protected $response_data;
 
 	/**
 	 * Initialises the requested resource model
@@ -65,7 +65,7 @@ class Controller_API_V1 extends Controller_API
 	public function after()
 	{
 		$output = View::factory('api/'.$this->request->param('format'))
-			->set('data', $this->data)
+			->set('data', $this->response_data)
 			->render();
 
 		$this->response->body($output);

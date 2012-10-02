@@ -94,8 +94,9 @@ trait Model_API_V1
 	 * @return boolean  True on success
 	 * @throws App_API_Exception  on any failure
 	 */
-	public function API_Post($field)
+	public function API_Post($data)
 	{
+		var_dump($data);
 	}
 
 	/**

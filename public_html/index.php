@@ -123,34 +123,34 @@ catch(Exception $e)
 
 		if ($e instanceof HTTP_Exception_404)
 		{
-			$response = App::$api->error("The requested URI '".$_SERVER['REQUEST_URI']."' was not found", 404);
+			$code = 404;
+			$message = "The requested URI '".$_SERVER['REQUEST_URI']."' was not found";
+		}
+		else if ( ! array_key_exists($e->getCode(), Response::$messages))
+		{
+			// This was a server error which has a status of something like '8'. This isn't a HTTP status code; throw a 500 server error.
+			$code = 500;
+			$message = $e->getMessage();
+			/**
+			* @todo Postmark/SendGrid integration to send an email with 50x server errors
+			*/
 		}
 		else
 		{
-			if ( ! array_key_exists($e->getCode(), Response::$messages))
-			{
-				// This was a server error which has a status of something like '8'. This isn't a HTTP status code; throw a 500 server error.
-				$code = 500;
-				/**
-				* @todo Postmark/SendGrid integration to send an email with 50x server errors
-				*/
-			}
-			else
-			{
-				$code = $e->getCode();
-			}
-
-			$error_data = View::Factory('api/error/'.$request->param('format'))
-				->set(array(
-					'message' => $e->getMessage(),
-					'status'  => $code,
-				));
-
-			$response = Response::factory(array('status'  => $code))
-				->headers('Content-type', File::mime_by_ext($request->param('format')))
-				->status($code)
-				->body($error_data);
+			$code = $e->getCode();
+			$message = $e->getMessage();
 		}
+
+		$error_data = View::Factory('api/error/'.$request->param('format'))
+			->set(array(
+				'message' => $message,
+				'status'  => $code,
+			));
+
+		$response = Response::factory(array('status'  => $code))
+			->headers('Content-type', File::mime_by_ext($request->param('format')))
+			->status($code)
+			->body($error_data);
 
 		echo $response->send_headers()->body();
 

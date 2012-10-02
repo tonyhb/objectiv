@@ -20,7 +20,7 @@
 <body>
 	<div id="app">
 		<header><div class='container' id='header-content'></div></header>
-		<section id="breadcrumbs"></section>
+		<section id="breadcrumbs"><ol class='container'></ol></section>
 		<section class='main'>
 			<div id='content' class='container'><?php echo isset($body) ? $body : '' ?></div>
 		</section>

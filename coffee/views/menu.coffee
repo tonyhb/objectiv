@@ -6,7 +6,7 @@ define(["app", "text!templates/menu.html"], (app, menuTemplate) ->
 
     template: _.template(menuTemplate),
 
-    initialize: ->
+    initialize: () ->
       app.Sites.on('changeSite', (site) ->
         @.render()
       , @)

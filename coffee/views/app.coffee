@@ -1,4 +1,4 @@
-define(["app", "views/menu", "views/search"], (app, MenuView, SearchView) ->
+define(["app", "views/menu", "views/search", "views/breadcrumbs"], (app, MenuView, SearchView, BreadcrumbView) ->
 
   # This is the core view for the app, and is the main entry point for other
   # views.
@@ -6,6 +6,7 @@ define(["app", "views/menu", "views/search"], (app, MenuView, SearchView) ->
     el: 'body',
 
     innerViews: {},
+    breadcrumbs: [],
 
     initialize: ->
       # Load the menu
@@ -40,6 +41,23 @@ define(["app", "views/menu", "views/search"], (app, MenuView, SearchView) ->
 
       # Bind events
       view.delegateEvents()
+
+      @
+
+    clearBreadcrumbs: () ->
+      _.invoke(@.breadcrumbs, 'close')
+
+      # Return this for chaining
+      @
+
+    addBreadcrumb: (params) ->
+      # Use the current location by default
+      params.link = window.location.pathname if params.link is undefined
+
+      breadcrumb = new BreadcrumbView(params.link, params.text)
+      @.breadcrumbs.push(breadcrumb)
+      $('#breadcrumbs ol').append(breadcrumb.render())
+      @
 
   })
 )

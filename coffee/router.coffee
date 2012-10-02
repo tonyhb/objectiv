@@ -15,15 +15,22 @@ define(["app", "views/dashboard/main", "views/content/view", "views/themes/view"
 
       showDashboard : ->
         app.AppView.showPage(new DashboardView())
+          .clearBreadcrumbs()
+          .addBreadcrumb({text: "Dashboard" })
 
       showContent : ->
         app.AppView.showPage(new ContentView())
+          .clearBreadcrumbs()
+          .addBreadcrumb({text: "Content" })
 
       showTheme : ->
         app.AppView.showPage(new ThemeView())
+          .clearBreadcrumbs()
+          .addBreadcrumb({text: "Themes" })
 
       newTheme : ->
         app.AppView.showPage(new NewThemeView())
+          .addBreadcrumb({text: "New Theme" })
 
       showSettings : ->
 

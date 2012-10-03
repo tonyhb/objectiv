@@ -24,7 +24,6 @@ define(["app", "models/theme", "collections/themes", "text!templates/themes/new.
       theme = new Theme()
       theme.set({
         'nme' : $('#themeName').val()
-        'dsc' : $('#themeDesc').val()
       })
 
       console.log(theme, theme.isNew(), theme.attributes._id);

@@ -24,7 +24,6 @@ define(["jquery", "underscore", "backbone", "modernizr"], ($, _, Backbone, Moder
   })
 
   _.extend(Backbone.View.prototype, {
-    innerViews : {},
 
     # Closes the view by cleaning all events then removing the container from
     # the DOM.

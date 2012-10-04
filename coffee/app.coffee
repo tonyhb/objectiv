@@ -29,22 +29,41 @@ define(["jquery", "underscore", "backbone", "modernizr"], ($, _, Backbone, Moder
     # the DOM.
     close: () ->
 
-      # Close all innerViews first; this will remove their event binds
-      _.invoke(@.innerViews, 'close')
+      # Ensure the innerViews property actually exists before we try invoking
+      # and closing the view
+      @.innerViews = @.innerViews || {}
 
-      # Stop any events from being delegated in jQuery
-      @.undelegateEvents()
+      # Close all innerViews first; this will remove their event binds
+      _.invoke(@.innerViews, 'close') if @.innerViews isnt {}
 
       # TODO: document?
       @.unbind()
 
-      # Remove the element from the DOM
+      # This calls Backbone's dispose method which removes all delegated
+      # events, model binds and collection binds.
+      # It also removes the element from the DOM
       @.remove()
 
       # If we have an onClose method with extra cleanup call it.
       @.onClose() if @.onClose
 
       @.innerViews = {}
+
+    # This is called from parent elements that have a template structure for
+    # their child views.
+    renderInnerViews: () ->
+      # Loop through each inner view and set the correct element.
+      _.each(@.innerViews, (view) ->
+        view.setElement(view.id)
+        view.$el.addClass(view.className) if view.className isnt null
+      )
+
+      # Loop through each subview and also render those. We're rendering after
+      # adding our parent view so our events bind fine.
+      #
+      # TODO: Do we need to call this here or can we call it before so we only
+      # have one repaint?
+      _.invoke(@.innerViews, 'render')
 
     remove: () ->
       $(@.el).remove()

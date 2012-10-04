@@ -1,20 +1,46 @@
-define(["app", "models/theme", "collections/themes", "text!templates/themes/new.html"], (app, Theme, Themes, contentTemplate) ->
+define((require) ->
+  # RequireJS loaders
+  app = require("app")
+  Theme = require("models/theme")
+  Themes = require("collections/themes")
+  Topbar = require("views/common/topbar")
+  EditableTag = require("views/common/editableTag")
+  template = require("text!templates/themes/new.html")
 
   NewThemeView = Backbone.View.extend({
-    template: _.template(contentTemplate)
-    events: {
+    template: _.template(template)
+    events:
       "submit #newTheme" : "submit"
-    },
+
+    model: null
 
     initialize: () ->
-      if app.cache.Themes is undefined
-        app.cache.Themes = new Themes()
+      # Inner view initialisation
+      @.innerViews = @.innerViews || {}
 
+      if app.cache.Themes is undefined
         # Load our models from the server
+        app.cache.Themes = new Themes()
         app.cache.Themes.fetch()
 
+      # Set our inner views. We're using local variables to kick this off
+      # because chaining is (marginally) more taxing on the parser - it has to
+      # look through each object and it's prototypes before descending.
+      assetHeader = new Topbar({ id: '#theme-header', model: @.model, className: "topbar container" })
+      assetHeader.innerViews.name = new EditableTag({ parent: '#assets-header', tagName: "h1", model: @.model, content: "Theme name, please" })
+
+      @.innerViews =
+        assetHeader: assetHeader
+
     render: () ->
-      @.$el.html(@.template({ siteName : app.currentSite.get('name') }))
+      # Render this view's template
+      @.$el.append(@.template({ siteName : app.currentSite.get('name') }))
+
+      @.renderInnerViews()
+
+      # Return our element, mofo. Our parent's probably going to be adding this,
+      # right? Right.
+      @.$el
 
     submit: (event) ->
       # Stop the form from actually being sent

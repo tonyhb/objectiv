@@ -2,6 +2,8 @@ define(["app", "collections/themes", "text!templates/themes/view.html", "text!te
 
   # @TODO extend page view class to abstract render etc. classes
   ContentView = Backbone.View.extend({
+    className: 'container',
+
     template: _.template(contentTemplate),
     blankSlateTemplate: _.template(blankSlateTemplate);
 

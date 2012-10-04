@@ -36,16 +36,20 @@ define(["app", "views/menu", "views/search", "views/breadcrumbs"], (app, MenuVie
       @.innerViews.ContentView = view
 
       # Add the HTML to our wrapper
-      data = view.render()
-      $('#content').html(data)
-
-      # Bind events
-      view.delegateEvents()
+      $('#main').html(view.el)
+      view.render()
 
       @
 
     clearBreadcrumbs: () ->
-      _.invoke(@.breadcrumbs, 'close')
+
+      # Close each view and delete the associated breadcrumb item
+      _.each(@.breadcrumbs, (item, index) ->
+        item.close()
+        delete @.breadcrumbs[item]
+      )
+
+      @.breadcrumbs = [];
 
       # Return this for chaining
       @

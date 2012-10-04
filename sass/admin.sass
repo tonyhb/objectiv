@@ -11,18 +11,18 @@
 html, body
   height: 100%
 
-nav
+nav, #main
   background: #fff
 
-header, #menu li, #menu li a
+header.nav, #menu li, #menu li a
   height: 62px
 
-header, #breadcrumbs
+header.nav, #breadcrumbs
   position: relative
   z-index: 2
   border-bottom: 1px solid #f2e9e1
 
-header
+header.nav
   background: #fcf9f7
   +background-image(linear-gradient(#fcf9f7, #fcf9f7 50%, #faf7f5 51%, #faf7f5))
 
@@ -60,8 +60,10 @@ header
 
   input
     border: 0 none
+    padding: 0
     height: 30px
     width: 330px
+    text-indent: .5em
     @include appearance('textfield')
     @include font
     &:focus
@@ -90,19 +92,18 @@ header
     li:last-child
       color: #3D4826
 
-section.main
+#main
   position: relative
   z-index: 1
   background: white
-  padding: 2em 0 6em 0
   border-bottom: 1px solid #f2f0ed
   @include box-shadow(0 0 7px rgba(black, 0.06))
 
-h1
-  color: $brown
-  font-size: 1.2em
-  font-weight: bold
-  margin: 0 0 1em 0
+#main > .container
+  padding: 1em 0 6em 0
+
+.topbar
+  padding: 1em 0 .5em 0
 
 input[type=text], input[type=password], input[type=email]
   border: 1px solid $input-borders

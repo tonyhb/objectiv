@@ -10,7 +10,7 @@ require.config({
 
 		jquery: '/assets/js/libs/jquery-1.8.0.min',
 		underscore: '/assets/js/libs/underscore-min',
-		backbone: '/assets/js/libs/backbone-min',
+		backbone: '/assets/js/libs/backbone',
 		modernizr: '/assets/js/libs/modernizr',
 		text: '/assets/js/libs/text',
 	},

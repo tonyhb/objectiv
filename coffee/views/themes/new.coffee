@@ -26,11 +26,15 @@ define((require) ->
       # Set our inner views. We're using local variables to kick this off
       # because chaining is (marginally) more taxing on the parser - it has to
       # look through each object and it's prototypes before descending.
-      assetHeader = new Topbar({ id: '#theme-header', model: @.model, className: "topbar container" })
-      assetHeader.innerViews.name = new EditableTag({ parent: '#assets-header', tagName: "h1", model: @.model, content: "Theme name, please" })
+      topbar = new Topbar({ model: @.model, className: "topbar container" })
 
-      @.innerViews =
-        assetHeader: assetHeader
+      topbar.addChildView({
+        "#theme-title": new EditableTag({ content: "Enter your theme name here" })
+      })
+
+      @.addChildView({
+        "#theme-header" : topbar
+      })
 
     render: () ->
       # Render this view's template
@@ -52,7 +56,7 @@ define((require) ->
         'nme' : $('#themeName').val()
       })
 
-      console.log(theme, theme.isNew(), theme.attributes._id);
+      console.log(theme, theme.isNew(), theme.attributes._id)
 
       # Attempt to validate and save
       if theme.isValid() is true

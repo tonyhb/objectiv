@@ -25,6 +25,54 @@ define(["jquery", "underscore", "backbone", "modernizr"], ($, _, Backbone, Moder
 
   _.extend(Backbone.View.prototype, {
 
+    # Child views
+    #
+    # There are two child view properties: children and innerViews.
+    #
+    # Because inner views can't be bound to a parent view until the element
+    # exists in the DOM (setting the 'el' property calls setElement, which looks
+    # for an existing element or creates one) we need to have a way to remember
+    # which elements a child view needs to be bound to once the parent is
+    # rendered.
+    #
+    # The 'children' property stores all unbound, unmade children which need to
+    # be rendered from renderInnerViews(). This should not be touched, really.
+    #
+    # The innerViews property stores all bound and rendered views. 
+
+    addChildView: (items) ->
+      @.children = @.children || {}
+
+      # Assign the element it's view in the @.children property
+      _.each(items, (view, el) ->
+        @.children[el] = view
+      , @)
+
+    # This is called from parent elements that have a template structure for
+    # their child views.
+    renderInnerViews: () ->
+      @.innerViews = @.innerViews || {}
+
+      # Loop through each inner view and set the correct element.
+      _.each(@.children, (view, el) ->
+        view.setElement(@.$(el))
+        view.$el.addClass(view.className) if view.className isnt null
+
+        # Transfer this view to the @.innerViews property
+        @.innerViews[el] = view
+
+        # Ensure this isn't kept laying about now it has been added
+        delete @.children[el]
+      , @)
+
+      # Loop through each subview and also render those. We're rendering after
+      # adding our parent view so our events bind fine.
+      #
+      # TODO: Do we need to call this here or can we call it before so we only
+      # have one repaint?
+      _.invoke(@.innerViews, 'render')
+
+
     # Closes the view by cleaning all events then removing the container from
     # the DOM.
     close: () ->
@@ -48,22 +96,6 @@ define(["jquery", "underscore", "backbone", "modernizr"], ($, _, Backbone, Moder
       @.onClose() if @.onClose
 
       @.innerViews = {}
-
-    # This is called from parent elements that have a template structure for
-    # their child views.
-    renderInnerViews: () ->
-      # Loop through each inner view and set the correct element.
-      _.each(@.innerViews, (view) ->
-        view.setElement(view.id)
-        view.$el.addClass(view.className) if view.className isnt null
-      )
-
-      # Loop through each subview and also render those. We're rendering after
-      # adding our parent view so our events bind fine.
-      #
-      # TODO: Do we need to call this here or can we call it before so we only
-      # have one repaint?
-      _.invoke(@.innerViews, 'render')
 
     remove: () ->
       $(@.el).remove()

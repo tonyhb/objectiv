@@ -13,9 +13,8 @@ define(["app"], (app) ->
       @.innerViews = @.innerViews || {}
 
     render: () ->
-      _.each(@.innerViews, (view) ->
-        @.$el.append(view.render().el)
-      , @)
+
+      @.renderInnerViews()
 
     scroll: () ->
       console.log("scrolling")

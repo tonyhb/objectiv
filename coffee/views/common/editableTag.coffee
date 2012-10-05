@@ -5,6 +5,7 @@ define(["app"], (app) ->
 
     events:
       'blur' : 'blur'
+      'keypress' : 'keypress'
 
     # Initializes the contenteditable tag. Valid properties to pass are:
     #   content:  The contnet to be shown to the user by default
@@ -33,6 +34,12 @@ define(["app"], (app) ->
       return @ if @.model is undefined or @.field is undefined
 
       @.model.set(@.field, @.$el.html())
+
+    keypress: (event) ->
+
+      if event.which is 13
+        @.$el.blur()
+        event.preventDefault()
 
   })
 )

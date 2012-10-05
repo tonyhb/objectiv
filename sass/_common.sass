@@ -9,7 +9,9 @@ $green: #cdf181
 $black: #1c140d
 $brown: #4d3724
 $orange: #ffcf7d
-$input-borders: #e3dbd3
+$blue: #00aeef
+$dark-border: #e3dbd3
+$light-border: #f2e9e1
 
 /* -------------------------------------------------------------------------
 /* Mixins
@@ -36,6 +38,9 @@ h1
   font-size: 1em
   font-weight: bold
   margin: 0 0 .5em 0
+
+p
+  font-size: .8em
 
 /* -------------------------------------------------------------------------
 /* Forms
@@ -84,6 +89,7 @@ input[type=text], input[type=password], input[type=email]
 /* Layout
 
 .container
+  position: relative
   +container
   +susy-grid-background
 

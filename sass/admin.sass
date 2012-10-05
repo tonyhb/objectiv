@@ -11,6 +11,9 @@
 html, body
   height: 100%
 
+/* -------------------------------------------------------------------------
+/* Header and Navigation
+
 nav, #main
   background: #fff
 
@@ -20,7 +23,7 @@ header.nav, #menu li, #menu li a
 header.nav, #breadcrumbs
   position: relative
   z-index: 2
-  border-bottom: 1px solid #f2e9e1
+  border-bottom: 1px solid $light-border
 
 header.nav
   background: #fcf9f7
@@ -36,7 +39,7 @@ header.nav
   li
     float: left
     line-height: 90px
-    border-left: 1px solid #f2e9e1
+    border-left: 1px solid $light-border
     font:
       size: .7em
       weight: bold
@@ -47,12 +50,12 @@ header.nav
       padding: 0 2em
       outline: none
   li:last-child
-    border-right: 1px solid #f2e9e1
+    border-right: 1px solid $light-border
 
 #omnibox
   height: 30px
   width: 330px
-  border: 1px solid $input-borders
+  border: 1px solid $dark-border
   background: white
   margin: 14px 0 0 0
   @include box-shadow(0 0 3px rgba(black, 0.05))
@@ -71,7 +74,7 @@ header.nav
 
 #breadcrumbs
   @include hashing(#fff)
-  border-bottom: 1px dashed #F2E9E1
+  border-bottom: 1px dashed $light-border
   ol
     height: 1.7em
     line-height: 1.8em
@@ -92,18 +95,100 @@ header.nav
     li:last-child
       color: #3D4826
 
+/* -------------------------------------------------------------------------
+/* Main content setup
+
 #main
   position: relative
   z-index: 1
   background: white
+  padding: 0 0 2em 0
   border-bottom: 1px solid #f2f0ed
   @include box-shadow(0 0 7px rgba(black, 0.06))
 
 #main > .container
   padding: 1em 0 6em 0
 
-.topbar
-  padding: 1em 0 .5em 0
+/* -------------------------------------------------------------------------
+/* Common view CSS
+
+.topbar > div
+  padding-top: 1em
+  padding-bottom: 0.5em
+
+.filter
+  position: absolute
+  right: 0
+  top: 1em
+
+  .title
+    text-transform: uppercase
+    font-size: .65em
+
+    em
+      color: $blue
+      font-weight: bold
+
+.list
+  font-size: .8em
+  text-indent: .5em
+
+  .title
+    border-bottom: 1px solid $dark-border
+    padding: 1.7em 0 0.3em 0
+    color: #4D3724
+    font:
+      weight: bold
+
+  li
+    text-indent: .5em
+    padding: .6em 0
+    border-bottom: 1px dashed $light-border
+    :hover
+      background: $green
+
+    .selected
+      @include hashing($green)
+
+  .footer
+    position: relative
+    cursor: pointer
+    padding: .6em 0
+    text-indent: 2em
+    text-align: center
+    color: #cdc5bd
+    @include hashing(white)
+
+    i
+      position: absolute
+      margin: -0.05em 0.5em 0 -3.5em
+      font-size: 1.8em
+
+  .footer:hover
+    color: $brown
+
+
+/* -------------------------------------------------------------------------
+/* Themes
+
+#theme-header
+  position: relative
+  @include box-shadow(0 0 5px rgba(black, 0.15))
+
+/** @todo - set the h1 tag to a lighter colour by default **/
+/* #theme-title color: darken($dark-border, 20) */
+
+.list
+  @include span-columns(6)
+
+#objects
+  @include span-columns(6 omega)
+
+/* -------------------------------------------------------------------------
+/* Input and form-related content
 
 input[type=text], input[type=password], input[type=email]
-  border: 1px solid $input-borders
+  border: 1px solid $dark-border
+
+.editableTag
+  outline: 0 none

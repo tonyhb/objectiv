@@ -5,6 +5,7 @@ define((require) ->
   Themes = require("collections/themes")
   Topbar = require("views/common/topbar")
   EditableTag = require("views/common/editableTag")
+  List = require("views/common/list")
   template = require("text!templates/themes/new.html")
 
   NewThemeView = Backbone.View.extend({
@@ -26,14 +27,18 @@ define((require) ->
       # Set our inner views. We're using local variables to kick this off
       # because chaining is (marginally) more taxing on the parser - it has to
       # look through each object and it's prototypes before descending.
-      topbar = new Topbar({ model: @.model, className: "topbar container" })
+      topbar = new Topbar({ model: @.model, className: "topbar" })
 
       topbar.addChildView({
         "#theme-title": new EditableTag({ content: "Enter your theme name here" })
       })
 
       @.addChildView({
-        "#theme-header" : topbar
+        "#theme-header" : topbar,
+        "#html" : new List({ title: 'HTML' })
+        "#css" : new List({ title: 'CSS, Sass &amp; Less' })
+        "#js" : new List({ title: 'JS &amp; CoffeeScript' })
+        "#objects" : new List({ title: 'Object templates' })
       })
 
     render: () ->

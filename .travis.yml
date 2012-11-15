@@ -1,3 +1,12 @@
 language: php
 php:
   - 5.4
+env:
+  - KOHANA_ENV=TESTING
+branches:
+  only:
+    - master
+    - develop
+before_install:
+  - git submodule update --init --recursive
+  - cd application/tests

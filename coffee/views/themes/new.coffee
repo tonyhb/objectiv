@@ -6,6 +6,7 @@ define((require) ->
   Topbar = require("views/common/topbar")
   EditableTag = require("views/common/editableTag")
   List = require("views/common/list")
+  CodeEditor = require("views/themes/codeEditor")
   template = require("text!templates/themes/new.html")
 
   NewThemeView = Backbone.View.extend({
@@ -19,10 +20,7 @@ define((require) ->
       # Inner view initialisation
       @.innerViews = @.innerViews || {}
 
-      if app.cache.Themes is undefined
-        # Load our models from the server
-        app.cache.Themes = new Themes()
-        app.cache.Themes.fetch()
+      @.model = new Theme()
 
       # Set our inner views. We're using local variables to kick this off
       # because chaining is (marginally) more taxing on the parser - it has to
@@ -35,10 +33,14 @@ define((require) ->
 
       @.addChildView({
         "#theme-header" : topbar,
-        "#html" : new List({ title: 'HTML' })
-        "#css" : new List({ title: 'CSS, Sass &amp; Less' })
-        "#js" : new List({ title: 'JS &amp; CoffeeScript' })
-        "#objects" : new List({ title: 'Object templates' })
+        "#html" : new List({ title: 'HTML', collection: @.model.html })
+        "#css" : new List({ title: 'CSS, Sass &amp; Less', collection: @.model.css })
+        "#js" : new List({ title: 'JS &amp; CoffeeScript', collection: @.model.js })
+        "#objects" : new List({ title: 'Object templates', collection: @.model.objects })
+        "#code": new CodeEditor({ codeSettings: {
+          value: "testing"
+          mode: "javascript"
+        }})
       })
 
     render: () ->
@@ -46,6 +48,9 @@ define((require) ->
       @.$el.append(@.template({ siteName : app.currentSite.get('name') }))
 
       @.renderInnerViews()
+
+      # Set the height of the code editor
+      @.innerViews['#code'].CodeMirror.setSize('100%', (app.height - $('#theme-header').height()) + 'px')
 
       # Return our element, mofo. Our parent's probably going to be adding this,
       # right? Right.

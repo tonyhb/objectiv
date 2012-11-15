@@ -14,6 +14,11 @@ $dark-border: #e3dbd3
 $light-border: #f2e9e1
 
 /* -------------------------------------------------------------------------
+/* Other variables
+
+$transition-speed: 100ms
+
+/* -------------------------------------------------------------------------
 /* Mixins
 
 @mixin shadow
@@ -39,11 +44,17 @@ h1
   font-weight: bold
   margin: 0 0 .5em 0
 
+a
+  @include single-transition(color, 100ms, linear)
 p
   font-size: .8em
 
+pre
+  font: .8em monospace
+
 /* -------------------------------------------------------------------------
 /* Forms
+
 @mixin button
   @include font
   @include adjust-font-size-to($base-font-size)

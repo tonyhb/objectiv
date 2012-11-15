@@ -12,6 +12,7 @@ require.config({
 		underscore: '/assets/js/libs/underscore-min',
 		backbone: '/assets/js/libs/backbone',
 		modernizr: '/assets/js/libs/modernizr',
+		codemirror: '/assets/js/libs/codemirror/codemirror',
 		text: '/assets/js/libs/text',
 	},
 
@@ -26,6 +27,9 @@ require.config({
 		},
 		modernizr: {
 			exports: 'Modernizr'
+		}
+		codemirror: {
+			exports: 'CodeMirror'
 		}
 	}
 })

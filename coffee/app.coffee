@@ -97,9 +97,6 @@ define(["jquery", "underscore", "backbone", "modernizr"], ($, _, Backbone, Moder
 
       @.innerViews = {}
 
-    remove: () ->
-      $(@.el).remove()
-
     unbind: () ->
 
   })

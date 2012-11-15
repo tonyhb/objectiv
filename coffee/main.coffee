@@ -21,7 +21,7 @@ require(["modernizr", "app", "router", "views/app", "collections/sites"], (Moder
     # And we now want to stop any proper links from working.
     $(document).on('click', 'a', (e) ->
       # Remove /admin/ from the href and navigate
-      href = e.target.getAttribute('href').replace('/admin/', '')
+      href = $(this).attr('href').replace('/admin/', '')
       app.Router.navigate(href, { trigger: true })
       e.preventDefault()
       false

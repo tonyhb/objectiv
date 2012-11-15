@@ -16,6 +16,7 @@
 
 	<link type="text/css" href="/css/admin.css" rel="stylesheet" media="all" />
 	<link type="text/css" href="/css/fontello.css" rel="stylesheet" media="all" />
+	<link type="text/css" href="/css/codemirror.css" rel="stylesheet" media="all" />
 	<link href='https://fonts.googleapis.com/css?family=Open+Sans:400italic,800italic,400,700,800' rel='stylesheet' type='text/css'>
 </head>
 <body>

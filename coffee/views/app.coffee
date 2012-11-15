@@ -13,6 +13,11 @@ define(["app", "views/menu", "views/search", "views/breadcrumbs"], (app, MenuVie
       @.innerViews.MenuView = new MenuView()
       @.innerViews.SearchView = new SearchView()
 
+      # Now the menu is in place work out how high the main content should be.
+      #@.render()
+      app.height = @.$el.height() - (@.$('header.nav').height() + @.$('#breadcrumbs').height()) - 3
+      $('#main').css('height',  app.height + 'px')
+
       if app.Sites.length is 1
         app.Sites.setCurrentSite(app.Sites.models[0])
       else
@@ -32,6 +37,8 @@ define(["app", "views/menu", "views/search", "views/breadcrumbs"], (app, MenuVie
       # Close the current view to unbind events and remove nodes
       @.innerViews.ContentView.close() if @.innerViews.ContentView isnt undefined
 
+      delete @.innerViews.ContentView
+
       # Add our content view and render it to the page
       @.innerViews.ContentView = view
 
@@ -49,7 +56,7 @@ define(["app", "views/menu", "views/search", "views/breadcrumbs"], (app, MenuVie
         delete @.breadcrumbs[item]
       )
 
-      @.breadcrumbs = [];
+      @.breadcrumbs = []
 
       # Return this for chaining
       @

@@ -6,7 +6,7 @@
 	url = git://github.com/goyote/hint.git
 [submodule "modules/mundo"]
 	path = modules/mundo
-	url = git://github.com/dynamism/Mundo.git
+	url = git://github.com/tonyhb/Mundo.git
 [submodule "modules/uuid"]
 	path = modules/uuid
 	url = https://github.com/shadowhand/uuid.git

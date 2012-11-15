@@ -1,6 +1,6 @@
-## Objectiv
+### Objectiv
 
-Ojectiv's aim is to provide a dead-easy content manager for cleints and
+Ojectiv's aim is to provide a dead-easy content manager for clients and
 designers, and leave the developers to the complex stuff.
 
 It's simple: create a basic HTML website with some lorem ipsum, upload it to

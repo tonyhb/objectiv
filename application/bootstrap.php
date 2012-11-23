@@ -200,55 +200,36 @@ Route::set('api', function($uri)
 Route::set('admin', function($uri)
 	{
 		// Check to see if we're accessing the admin section from a subdomain
-		$url_segments = explode('.', $_SERVER['HTTP_HOST']);
+		$requested_domain = explode('.', $_SERVER['HTTP_HOST']);
 
 		// Get our app URL from the config
 		$app_url = Kohana::$config->load('app')->url;
 
-		if ($url_segments[0] != 'admin' AND ($_SERVER['HTTP_HOST'] == $app_url AND substr($uri, 0, 5) != 'admin'))
+		if ($requested_domain[0] != 'admin' AND ($_SERVER['HTTP_HOST'] == $app_url AND substr($uri, 0, 5) != 'admin'))
 		{
+			// This isn't an admin subdomain on a hosted URL, and nor is it the 
+			// /admin/ section of objectiv.co. Returning will end matching for 
+			// this route.
 			return;
 		}
 
+		// So, now we need to find out what's going on with the requested path
 		$uri_segments = explode("/", $uri);
+		$uri_segments = array_filter($uri_segments); // Removes empty array values
 
-		// Remove the any empties, normally caused by a trailing slash
-		$uri_segments = array_filter($uri_segments);
-
-		// Load an initial Mundo site object
 		$site = App::model('sites');
 
-		// Try and find out if we're accessing a specific site
-		if (substr($_SERVER['HTTP_HOST'], 0, 5) == 'admin')
+		if ($requested_domain[0] == 'admin') // Is this something like "admin.example.com"?
 		{
-			// We logged in to a specific site's admin panel from the admin subdomain
-			$site_url = substr($_SERVER['HTTP_HOST'], 6);
-
 			// Try loading the site from the URL
-			$site->set('url.dom', $site_url)->load();
-
-			if ( ! $site->loaded())
-				return FALSE;
-
-			App::$site = $site;
+			$site->set('url.dom', $requested_domain[1])->load();
 		}
 		else if (isset($uri_segments[1]))
 		{
-			// Temporary hack for Backbone.js
-			return array(
-				'controller' => 'admin',
-				'action' => 'index',
-			);
-			// End temporary hack!
-
 			$site->set('_id', new MongoId($uri_segments[1]))->load();
 
-			if ( ! $site->loaded())
-				return FALSE;
-
-			App::$site = $site;
-
-			// Remove admin and the site id from uri segemnts
+			// Remove admin and the site id from uri segemnts to work with 
+			// later.
 			$uri_segments = array_slice($uri_segments, 2);
 		}
 		else
@@ -259,6 +240,11 @@ Route::set('admin', function($uri)
 				'action' => 'index',
 			);
 		}
+
+		if ( ! $site->loaded())
+			return FALSE;
+
+		App::$site = $site;
 
 		// Our controller is the first value
 		$controller = count($uri_segments) ? array_shift($uri_segments) : 'dashboard'; 

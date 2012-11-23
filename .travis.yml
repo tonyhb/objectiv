@@ -9,8 +9,7 @@ branches:
     - develop
 services:
   - mongodb
-before_script:
-  - ./.travis-mongo-php.sh
 before_install:
+  - ./.travis-mongo-php.sh
   - git submodule update --init --recursive
   - cd application/tests
